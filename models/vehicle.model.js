@@ -13,7 +13,7 @@ const VehicleSchema = mongoose.Schema(
         },
         fuel_type : {
             type : String,
-            required : ture
+            required : true
 
         },
         status : {

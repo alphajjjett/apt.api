@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const app = express();
 const Product = require('./models/product.model.js');
 const productRoute = require('./routes/product.route.js');
+const Vehicle = require ('./models/vehicle.model.js');
+const vehicleRoute = require('./routes/vehicle.route.js');
 
 require('dotenv').config();
 const uri = process.env.MONGO_URI;
@@ -16,6 +18,7 @@ app.use(express.urlencoded({extended: false}));
 
 // middleware
 app.use("/api/products", productRoute);
+app.use("/api/vehicle", vehicleRoute);
 
 
 

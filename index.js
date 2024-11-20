@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+
+const cors = require('cors');
+
 const Product = require('./models/product.model.js');
 const productRoute = require('./routes/product.route.js');
 
@@ -37,6 +40,10 @@ app.use(express.json());
 
 app.use(express.urlencoded({extended: false}));
 
+app.use(cors());
+
+
+
 
 
 // middleware
@@ -48,9 +55,11 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/booking-status', bookingStatusRoutes);
 app.use('/api/missions', missionRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/admins', adminRoutes);
 app.use('/api/fuel', fuelRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
+
+// ใช้ route ของ admin ซึ่งมีการใช้ auth middleware ใน route นั้น ๆ
+app.use('/api/admin', adminRoutes);
 
 
 app.get('/', (req, res) => {

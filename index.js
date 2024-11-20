@@ -12,6 +12,21 @@ const vehicleReturnRoute = require('./routes/vehiclereturn.route.js'); //คื�
 
 const vehicleStatusRoutes = require('./routes/vehiclestatus.route.js'); //สถานะรถ
 
+const bookingRoutes = require('./routes/booking.route.js');
+
+const bookingStatusRoutes = require('./routes/bookingstatus.route.js');
+
+const missionRoutes = require('./routes/mission.route.js');
+
+const userRoutes = require('./routes/user.route.js');
+
+const adminRoutes = require('./routes/admin.route.js');
+
+const fuelRoutes = require('./routes/fuel.route.js');
+
+const maintenanceRoutes = require('./routes/maintenance.route.js');
+
+
 
 
 require('dotenv').config();
@@ -29,6 +44,13 @@ app.use("/api/products", productRoute);
 app.use("/api/vehicles", vehicleRoute);
 app.use("/api/vehicle-returns", vehicleReturnRoute);
 app.use('/api/vehicle-statuses', vehicleStatusRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/booking-status', bookingStatusRoutes);
+app.use('/api/missions', missionRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/admins', adminRoutes);
+app.use('/api/fuel', fuelRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
 
 
 app.get('/', (req, res) => {
@@ -38,8 +60,8 @@ app.get('/', (req, res) => {
 mongoose.connect(uri)
   .then(() => {
     console.log("Connected to the database!");
-    app.listen(3000, () => {
-      console.log('Server is running on port 3000');
+    app.listen(5000, () => {
+      console.log('Server is running on port 5000');
     });
   })
   .catch(err => console.error('Failed to connect to MongoDB', err));

@@ -8,6 +8,7 @@ const {
     updateVehicle, 
     deleteVehicle,
 
+
 } = require('../controllers/vehicle.controller.js');
 
 // Route สำหรับการดึงข้อมูลรถทั้งหมด
@@ -24,6 +25,8 @@ router.put("/:id", updateVehicle);
 
 // Route สำหรับลบข้อมูลรถตาม ID
 router.delete("/:id", deleteVehicle);
+
+
 
 
 

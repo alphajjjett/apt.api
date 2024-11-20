@@ -1,17 +1,30 @@
 const express = require("express");
-const Product = require("../models/vehicle.model.js");
 const router = express.Router();
-const {getAllVehicles, createVehicle} = require('../controllers/vehicle.controller.js')
+// Import controllers
+const {
+    getAllVehicles, 
+    createVehicle, 
+    getVehicleById, 
+    updateVehicle, 
+    deleteVehicle,
 
+} = require('../controllers/vehicle.controller.js');
+
+// Route สำหรับการดึงข้อมูลรถทั้งหมด
 router.get('/', getAllVehicles);
 
-router.get("/:id", getAllVehicles);
+// Route สำหรับดึงข้อมูลรถตาม ID
+router.get("/:id", getVehicleById);
 
+// Route สำหรับสร้างข้อมูลรถใหม่
 router.post("/", createVehicle);
 
-router.put("/:id", createVehicle); //update
+// Route สำหรับอัปเดตข้อมูลรถตาม ID
+router.put("/:id", updateVehicle);
 
-router.delete("/:id", createVehicle); //delete
+// Route สำหรับลบข้อมูลรถตาม ID
+router.delete("/:id", deleteVehicle);
+
 
 
 

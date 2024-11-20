@@ -39,6 +39,7 @@ const loginAdmin = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
+        
         require('dotenv').config();
         // สร้าง JWT token พร้อมกับข้อมูล id และ role ของผู้ใช้
         const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });

@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+const authRoutes = require('./routes/auth.route');
 
 const cors = require('cors');
 
@@ -43,9 +44,6 @@ app.use(express.urlencoded({extended: false}));
 app.use(cors());
 
 
-
-
-
 // middleware
 app.use("/api/products", productRoute);
 app.use("/api/vehicles", vehicleRoute);
@@ -61,6 +59,8 @@ app.use('/api/maintenance', maintenanceRoutes);
 // ใช้ route ของ admin ซึ่งมีการใช้ auth middleware ใน route นั้น ๆ
 app.use('/api/admin', adminRoutes);
 
+app.use('/api/auth', authRoutes);
+
 
 app.get('/', (req, res) => {
     res.send("Hello form node api");
@@ -68,7 +68,7 @@ app.get('/', (req, res) => {
 
 mongoose.connect(uri)
   .then(() => {
-    console.log("Connected to the database!");
+      console.log("Connected to the database!");
     app.listen(5000, () => {
       console.log('Server is running on port 5000');
     });

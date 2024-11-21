@@ -52,13 +52,13 @@ app.use('/api/vehicle-statuses', vehicleStatusRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/booking-status', bookingStatusRoutes);
 app.use('/api/missions', missionRoutes);
-app.use('/api/users', userRoutes);
+
 app.use('/api/fuel', fuelRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 
 // ใช้ route ของ admin ซึ่งมีการใช้ auth middleware ใน route นั้น ๆ
 app.use('/api/admin', adminRoutes);
-
+app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 
 

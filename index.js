@@ -30,6 +30,7 @@ const fuelRoutes = require('./routes/fuel.route.js');
 
 const maintenanceRoutes = require('./routes/maintenance.route.js');
 
+const dashboardRoute = require('./routes/dashboard.route');  // นำเข้า route ของ dashboard
 
 
 
@@ -52,6 +53,9 @@ app.use('/api/vehicle-statuses', vehicleStatusRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/booking-status', bookingStatusRoutes);
 app.use('/api/missions', missionRoutes);
+// middleware
+app.use('/api', dashboardRoute);  // กำหนด route dashboard ที่ /api/dashboard
+
 
 app.use('/api/fuel', fuelRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
@@ -63,7 +67,7 @@ app.use('/api/auth', authRoutes);
 
 
 app.get('/', (req, res) => {
-    res.send("Hello form node api");
+    res.send("Hello form APT API");
 });
 
 mongoose.connect(uri)

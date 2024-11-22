@@ -32,6 +32,8 @@ const maintenanceRoutes = require('./routes/maintenance.route.js');
 
 const dashboardRoute = require('./routes/dashboard.route');  // นำเข้า route ของ dashboard
 
+const vehicleRoutes = require('./routes/vehicle.route'); 
+
 
 
 require('dotenv').config();
@@ -64,6 +66,17 @@ app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api', vehicleRoutes);  // รวม route เข้า API path
+
+app.get('/api/vehicles', async (req, res) => {
+  try {
+    const vehicles = await Vehicle.find({}, 'license_plate _id');  // ใช้ license_plate แทน name
+    res.json(vehicles);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching vehicles', error });
+  }
+});
+  
 
 
 app.get('/', (req, res) => {

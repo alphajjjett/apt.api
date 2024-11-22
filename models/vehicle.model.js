@@ -1,37 +1,32 @@
 const mongoose = require('mongoose');
 
-const VehicleSchema = mongoose.Schema(
+const VehicleSchema = new mongoose.Schema(
     {
-        license_plate : {
-            type : String,
-            required : true
-
-        },
-        model : {
+        name: {
             type: String,
-            required : true
+            required: true
         },
-        fuel_type : {
-            type : String,
-            required : true
-
+        license_plate: {
+            type: String,
+            required: true
         },
-        status : {
-            type : String,
-            enum : [
-                'available', 
-                'in-use',
-                'maintenace'
-            ],
-            default : 'available'
+        model: {
+            type: String,
+            required: true
+        },
+        fuel_type: {
+            type: String,
+            required: true
+        },
+        status: {
+            type: String,
+            enum: ['available', 'in-use', 'maintenance'],
+            default: 'available'
         }
-
     },
     {
-        timestamps : true
+        timestamps: true
     }
-
-
 );
 
 const Vehicle = mongoose.model("Vehicle", VehicleSchema);

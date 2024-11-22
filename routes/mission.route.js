@@ -1,11 +1,11 @@
 const express = require('express');
-const { getAllMissions, createMission } = require('../controllers/mission.controller');
 const router = express.Router();
+const { getAllMissions, createMission } = require('../controllers/mission.controller');
 
-// Route สำหรับดึงข้อมูลมิสชั่นทั้งหมด
+// ดึงข้อมูลภารกิจทั้งหมด
 router.get('/', getAllMissions);
 
-// Route สำหรับสร้างมิสชั่นใหม่
+// เพิ่มภารกิจใหม่
 router.post('/', createMission);
 
 module.exports = router;

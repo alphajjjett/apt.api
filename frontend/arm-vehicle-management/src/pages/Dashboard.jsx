@@ -34,6 +34,9 @@ const Dashboard = () => {
         <Link to="/users">Go to Users Page</Link>
         <br />
         <Link to="/missions">Go to Missions Page</Link>
+        <br />
+        <Link to="/missionslist">Go to Missions List</Link>
+
       </div>
     </div>
   );

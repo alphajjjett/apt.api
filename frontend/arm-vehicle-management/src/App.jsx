@@ -6,6 +6,7 @@ import Users from './pages/Users';
 import Missions from './pages/Missions';
 import Bookings from './pages/Bookings';
 import Maintenance from './pages/Maintenance';
+import MissionList from './pages/MissionList';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/missions" element={<Missions />} />
         <Route path="/bookings" element={<Bookings />} />
         <Route path="/maintenance" element={<Maintenance />} />
+        <Route path='/missionslist' element={<MissionList/>} />
       </Routes>
     </Router>
   );

@@ -1,24 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const MissionList = () => {
   const [missions, setMissions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
 
   // Fetch all missions
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/', { replace: true });  // ถ้าไม่มี token ให้ redirect ไปที่หน้า login
+    } 
     const fetchMissions = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/missions', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setMissions(response.data);
       } catch (error) {
-        setError('Failed to fetch missions');
+        setError('Failed to fetch users');
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchMissions();
-  }, []);
+  }, [navigate]);
+
+  if (loading) return <p>Loading missions...</p>;
 
   if (error) {
     return <p>{error}</p>;

@@ -8,7 +8,6 @@ const MissionList = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-
   // Fetch all missions
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -22,7 +21,7 @@ const MissionList = () => {
         });
         setMissions(response.data);
       } catch (error) {
-        setError('Failed to fetch users');
+        setError('Failed to fetch missions');
       } finally {
         setLoading(false);
       }
@@ -52,6 +51,8 @@ const MissionList = () => {
             <th>Status</th>
             <th>Vehicle</th>
             <th>Assigned User</th>
+            <th>Start Date</th>  {/* เพิ่มคอลัมน์ start date */}
+            <th>End Date</th>    {/* เพิ่มคอลัมน์ end date */}
           </tr>
         </thead>
         <tbody>
@@ -60,8 +61,10 @@ const MissionList = () => {
               <td>{mission.mission_name}</td>
               <td>{mission.description}</td>
               <td>{mission.status}</td>
-              <td>{mission.assigned_vehicle_id.license_plate}</td>
-              <td>{mission.assigned_user_id.name}</td>
+              <td>{mission.assigned_vehicle_id ? mission.assigned_vehicle_id.license_plate : 'N/A'}</td>
+              <td>{mission.assigned_user_id ? mission.assigned_user_id.name : 'N/A'}</td>
+              <td>{new Date(mission.start_date).toLocaleDateString()}</td>  {/* แสดง start date */}
+              <td>{new Date(mission.end_date).toLocaleDateString()}</td>    {/* แสดง end date */}
             </tr>
           ))}
         </tbody>

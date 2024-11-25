@@ -68,6 +68,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', vehicleRoutes);  // รวม route เข้า API path
 
+
+
 app.get('/api/vehicles', async (req, res) => {
   try {
     const vehicles = await Vehicle.find({}, 'license_plate _id');  // ใช้ license_plate แทน name
@@ -76,7 +78,38 @@ app.get('/api/vehicles', async (req, res) => {
     res.status(500).json({ message: 'Error fetching vehicles', error });
   }
 });
+
   
+app.post('/api/missions', async (req, res) => {
+  try {
+    const { mission_name, description, status, assigned_vehicle_id, assigned_user_id, start_date, end_date } = req.body;
+
+    // ตรวจสอบข้อมูลที่ได้รับมา
+    if (!mission_name || !description || !assigned_vehicle_id || !assigned_user_id || !start_date || !end_date) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const mission = new Mission({
+      mission_name,
+      description,
+      status: status || 'pending',  // กำหนดค่า default เป็น 'pending'
+      assigned_vehicle_id,
+      assigned_user_id,
+      start_date: new Date(start_date),  // แปลงเป็น Date object
+      end_date: new Date(end_date),      // แปลงเป็น Date object
+    });
+
+    await mission.save();
+
+    res.status(201).json({ message: 'Mission created successfully', mission });
+  } catch (error) {
+    console.error('Error creating mission:', error);  // แสดงข้อผิดพลาดใน server log
+    res.status(500).json({ message: 'Failed to create mission', error: error.message });
+  }
+});
+
+
+
 
 
 app.get('/', (req, res) => {

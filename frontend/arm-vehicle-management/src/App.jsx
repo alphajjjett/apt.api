@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Register from './pages/Register';
+
 import Users from './pages/Users';
 import Missions from './pages/Missions';
 import Bookings from './pages/Bookings';
@@ -10,11 +12,14 @@ import MissionList from './pages/MissionList';
 import ProtectedRoute from './pages/ProtectedRoute';
 import MissionRequest from './pages/MissionRequest';
 
+
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} /> {/* เพิ่ม route สำหรับ Register */}
+        
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/users" element={<Users />} />
         <Route path="/missions" element={<Missions />} />

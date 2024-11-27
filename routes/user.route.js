@@ -6,8 +6,8 @@ const auth = require('../middleware/auth.middleware');
 // Route สำหรับดึงข้อมูลผู้ใช้ทั้งหมด
 router.get('/', getAllUsers);
 
-// Route สำหรับสร้างผู้ใช้ใหม่
-router.post('/create', registerUser);
+// Route for user registration
+router.post('/register', registerUser); // This should match the endpoint you are hitting from the frontend
 
 // Route สำหรับหา ID USer
 router.get('/:id',getUserById);
@@ -15,6 +15,7 @@ router.get('/:id',getUserById);
 //route login
 
 router.post('/login', loginUser);
+
 
 router.get('/login', loginUser);
 

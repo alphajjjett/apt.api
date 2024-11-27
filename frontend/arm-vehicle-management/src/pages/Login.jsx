@@ -5,32 +5,36 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user'); // เพิ่ม role state
+  const [role, setRole] = useState('user'); // Default to user role
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Handle login for both user and admin
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-        // เปลี่ยน apiUrl ให้แน่ใจว่ามันถูกต้องสำหรับ user login
-        const apiUrl = role === 'admin' 
-            ? 'http://localhost:5000/api/auth/login' // admin login route
-            : 'http://localhost:5000/api/users/login'; // user login route
+      const apiUrl = role === 'admin'
+        ? 'http://localhost:5000/api/auth/login' // Admin login route
+        : 'http://localhost:5000/api/users/login'; // User login route
 
-        const response = await axios.post(apiUrl, { email, password });
-        localStorage.setItem('token', response.data.token);
-        navigate('/dashboard');
+      const response = await axios.post(apiUrl, { email, password });
+      localStorage.setItem('token', response.data.token);
+      navigate('/dashboard'); // Navigate to the dashboard upon successful login
     } catch (err) {
-        setError('Invalid credentials');
+      setError('Invalid credentials'); // Set error message for invalid login
     }
-};
+  };
 
+  // Handle navigate to the register page
+  const goToRegister = () => {
+    navigate('/register'); // Navigate to the registration page
+  };
 
   return (
     <div>
       <h2>Login</h2>
-      {error && <p>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleLogin}>
         <div>
           <label>Email:</label>
@@ -59,6 +63,11 @@ const Login = () => {
         </div>
         <button type="submit">Login</button>
       </form>
+
+      <div>
+        <p>Don't have an account?</p>
+        <button onClick={goToRegister}>Register</button> {/* Button to navigate to the register page */}
+      </div>
     </div>
   );
 };

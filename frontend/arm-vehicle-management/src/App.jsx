@@ -8,6 +8,7 @@ import Bookings from './pages/Bookings';
 import Maintenance from './pages/Maintenance';
 import MissionList from './pages/MissionList';
 import ProtectedRoute from './pages/ProtectedRoute';
+import MissionRequest from './pages/MissionRequest';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path='/missionslist' element={<MissionList/>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path='/mission_request' element={<MissionRequest/>}/>
 
       </Routes>
     </Router>

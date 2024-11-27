@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';  // Add navigate functionality
 
 const MissionRequest = () => {
   const [missions, setMissions] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();  // Initialize navigate
+   // ฟังก์ชันสำหรับปุ่ม "Back to Dashboard"
+  const handleBackClick = () => {
+    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+  };
 
   useEffect(() => {
     const fetchMissions = async () => {
@@ -68,6 +74,10 @@ const MissionRequest = () => {
           ))}
         </tbody>
       </table>
+      {/* ปุ่ม Back to Dashboard */}
+      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+        Back to Dashboard
+      </button>
     </div>
   );
 };

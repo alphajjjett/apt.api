@@ -14,6 +14,11 @@ const CreateMission = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();  // Initialize navigate
 
+   // ฟังก์ชันสำหรับปุ่ม "Back to Dashboard"
+  const handleBackClick = () => {
+    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+  };
+
   // Check user's role and redirect if admin
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -23,7 +28,7 @@ const CreateMission = () => {
 
       // If the user is an admin, redirect them to another page
       if (userRole === 'admin') {
-        navigate('/mission-request');  // Redirect to MissionRequest page for admins
+        navigate('/mission_request');  // Redirect to MissionRequest page for admins
       }
     }
   }, [navigate]);  // Dependency array includes navigate
@@ -134,6 +139,10 @@ const CreateMission = () => {
         </div>
         <button type="submit">Create Mission</button>
       </form>
+      {/* ปุ่ม Back to Dashboard */}
+      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+        Back to Dashboard
+      </button>
     </div>
   );
 };

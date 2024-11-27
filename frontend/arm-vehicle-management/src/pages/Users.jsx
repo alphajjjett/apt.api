@@ -9,6 +9,10 @@ const Users = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const handleBackClick = () => {
+    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -65,6 +69,10 @@ const Users = () => {
           ))}
         </tbody>
       </table>
+      {/* ปุ่ม Back to Dashboard */}
+      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+        Back to Dashboard
+      </button>
     </div>
   );
 };

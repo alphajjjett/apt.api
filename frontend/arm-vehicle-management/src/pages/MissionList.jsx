@@ -7,6 +7,10 @@ const MissionList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  
+  const handleBackClick = () => {
+    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+  };
 
   // Fetch all missions
   useEffect(() => {
@@ -69,6 +73,11 @@ const MissionList = () => {
           ))}
         </tbody>
       </table>
+      {/* ปุ่ม Back to Dashboard */}
+      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+        Back to Dashboard
+      </button>
+      
     </div>
   );
 };

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const authRoutes = require('./routes/auth.route');
+const jwt = require('jsonwebtoken'); // ต้องเพิ่มบรรทัดนี้
 
 const cors = require('cors');
 
@@ -33,7 +34,6 @@ const maintenanceRoutes = require('./routes/maintenance.route.js');
 const dashboardRoute = require('./routes/dashboard.route');  // นำเข้า route ของ dashboard
 
 const vehicleRoutes = require('./routes/vehicle.route'); 
-
 
 
 require('dotenv').config();

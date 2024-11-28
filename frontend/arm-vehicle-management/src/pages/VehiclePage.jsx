@@ -35,11 +35,13 @@ const VehiclePage = () => {
     navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
   };
 
-
+  
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setVehicleData({ ...vehicleData, [name]: value });
-  };
+    const { name, value } = e.target ;
+    
+    setVehicleData({ ...vehicleData, [name]: value }); 
+    
+    }; 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,6 +55,8 @@ const VehiclePage = () => {
       alert('Error creating vehicle');
     }
   };
+
+  
 
   return (
     <div>
@@ -72,7 +76,7 @@ const VehiclePage = () => {
             <div>
               <label>Name:</label>
               <input
-                type="text"
+                type="text" 
                 name="name"
                 value={vehicleData.name}
                 onChange={handleInputChange}

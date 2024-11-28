@@ -12,6 +12,7 @@ import MissionList from './pages/MissionList';
 import ProtectedRoute from './pages/ProtectedRoute';
 import MissionRequest from './pages/MissionRequest';
 import VehiclePage from './pages/VehiclePage';
+import UserProfilePage from './pages/UserProfilePage';
 
 
 function App() {
@@ -20,7 +21,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} /> {/* เพิ่ม route สำหรับ Register */}
-        
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/users" element={<Users />} />
         <Route path="/missions" element={<Missions />} />
@@ -30,6 +30,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path='/mission_request' element={<MissionRequest/>}/>
         <Route path='/vehicle' element={<VehiclePage/>}/>
+        <Route path="/users/:id" element={<UserProfilePage />} /> 
 
       </Routes>
     </Router>

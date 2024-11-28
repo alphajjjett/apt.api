@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';  // นำเข้า useNavigate สำหรับ redirect
+import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
-  const navigate = useNavigate();  // ใช้สำหรับการ navigate เมื่อ logout
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -14,11 +16,13 @@ const Dashboard = () => {
       const fetchData = async () => {
         try {
           const response = await axios.get('http://localhost:5000/api/dashboard', {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            headers: { Authorization: `Bearer ${token}` }
           });
           setData(response.data);  // เก็บข้อมูลจาก API
         } catch (error) {
-          console.log(error);
+          setError('Failed to fetch dashboard data');  // แสดงข้อความผิดพลาด
+        } finally {
+          setLoading(false);  // หยุดการโหลด
         }
       };
       fetchData();
@@ -27,11 +31,12 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');  // ลบ token ออกจาก localStorage
-    window.location.replace('/');  // เปลี่ยน URL และแทนที่ใน history
-    window.location.reload();  // โหลดหน้าใหม่ทั้งหมด
+    navigate('/');  // เปลี่ยนเส้นทางไปยังหน้า login
   };
 
-  if (!data) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;  // แสดงข้อความผิดพลาดหากมีข้อผิดพลาด
+  if (!data) return <div>No data available</div>;  // กรณีไม่พบข้อมูล
 
   return (
     <div>

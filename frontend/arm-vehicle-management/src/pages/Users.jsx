@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // ใช้ navigate เพื่อเปลี่ยนหน้า
+import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
 
 const Users = () => {
@@ -10,35 +10,58 @@ const Users = () => {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+    navigate('/dashboard');  // กดปุ่มกลับไปที่ dashboard
   };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/', { replace: true });  // ถ้าไม่มี token ให้ redirect ไปที่หน้า login
+      navigate('/', { replace: true });  // ถ้าไม่มี token ให้กลับไปที่หน้า login
     } else {
-      const decodedToken = jwtDecode(token);
-      if (decodedToken.role !== 'admin') {
-        navigate('/unauthorized', { replace: true });  // ถ้าผู้ใช้ไม่ใช่ admin ให้ redirect ไปที่ unauthorized
+      try {
+        const decodedToken = jwtDecode(token);  // decode token เพื่อดึง role
+        console.log(decodedToken);  // log decodedToken เพื่อตรวจสอบ
+        if (decodedToken.role !== 'admin') {
+          navigate('/dashboard', { replace: true });  // ถ้าไม่ใช่ admin ให้ redirect ไปที่ dashboard //เดี่ยวมาแก้ แม่งไม่ลิ้งไป userprofile
+        } else {
+          // ถ้าเป็น admin ให้ fetch ข้อมูลผู้ใช้
+          const fetchUsers = async () => {
+            try {
+              const response = await axios.get('http://localhost:5000/api/users', {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              console.log('Users fetched:', response);  // log response เพื่อตรวจสอบข้อมูล
+              setUsers(response.data);
+            } catch (error) {
+              console.error('Error fetching users:', error);  // log error ที่เกิดขึ้นจากการดึงข้อมูล
+              setError('Failed to fetch users');
+            } finally {
+              setLoading(false);
+            }
+          };
+
+          fetchUsers();
+        }
+      } catch (error) {
+        console.error('Invalid token:', error);
+        navigate('/', { replace: true });  // ถ้า token ไม่ถูกต้องให้ redirect ไปหน้า login
       }
     }
+  }, [navigate]);
 
-    const fetchUsers = async () => {
+  const handleDeleteUser = async (userId) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        const response = await axios.get('http://localhost:5000/api/users', {
+        await axios.delete(`http://localhost:5000/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
-        setUsers(response.data);
+        setUsers(users.filter(user => user._id !== userId));  // ลบผู้ใช้จาก state
       } catch (error) {
-        setError('Failed to fetch users');
-      } finally {
-        setLoading(false);
+        console.error('Error deleting user:', error);  // log error ที่เกิดขึ้นตอนลบ
+        setError('Failed to delete user');
       }
-    };
-
-    fetchUsers();
-  }, [navigate]);
+    }
+  };
 
   if (loading) return <p>Loading users...</p>;
   if (error) return <p>{error}</p>;
@@ -63,16 +86,15 @@ const Users = () => {
               <td>{user.email}</td>
               <td>{user.role}</td>
               <td>
-                <button onClick={() => navigate(`/users/${user._id}`)}>View Details</button>
+                <button onClick={() => navigate(`/users/${user._id}`)}>View Profile</button>
+                <button onClick={() => navigate(`/users/edit/${user._id}`)} style={{ marginLeft: '10px' }}>Edit</button>
+                <button onClick={() => handleDeleteUser(user._id)} style={{ marginLeft: '10px', color: 'red' }}>Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {/* ปุ่ม Back to Dashboard */}
-      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
-        Back to Dashboard
-      </button>
+      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>Back to Dashboard</button>
     </div>
   );
 };

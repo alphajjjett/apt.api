@@ -18,6 +18,10 @@ const VehicleSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        fuel_capacity: {
+            type: Number,
+            default: 80 // Set the default fuel capacity to 80 liters
+        },
         status: {
             type: String,
             enum: ['available', 'in-use', 'maintenance'],

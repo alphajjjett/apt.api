@@ -13,14 +13,23 @@ const getAllVehicles = async (req, res) => {
 
 // Controller สำหรับการสร้างข้อมูลรถใหม่
 const createVehicle = async (req, res) => {
+    const { name, license_plate, model, fuel_type, fuel_capacity } = req.body;
+  
     try {
-        const newVehicle = new Vehicle(req.body); // สร้าง object ของรถจากข้อมูลที่ส่งมา
-        await newVehicle.save(); // บันทึกลงฐานข้อมูล
-        res.status(201).json(newVehicle);
+      const newVehicle = new Vehicle({
+        name,
+        license_plate,
+        model,
+        fuel_type,
+        fuel_capacity: fuel_capacity || 80 // default to 80 liters if not provided
+      });
+  
+      await newVehicle.save();
+      res.status(201).json(newVehicle);
     } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+      res.status(500).json({ message: 'Error creating vehicle', error });
     }
-};
+  };
 
 // Controller สำหรับการดึงข้อมูลรถตาม ID
 const getVehicleById = async (req, res) => {

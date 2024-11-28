@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const verifyAdmin = require('../middleware/auth.middleware.js');
 // Import controllers
 const {
     getAllVehicles, 
@@ -18,7 +19,9 @@ router.get('/', getAllVehicles);
 router.get("/:id", getVehicleById);
 
 // Route สำหรับสร้างข้อมูลรถใหม่
-router.post("/", createVehicle);
+// router.post("/", createVehicle);
+
+router.post('/create', verifyAdmin, createVehicle);
 
 // Route สำหรับอัปเดตข้อมูลรถตาม ID
 router.put("/:id", updateVehicle);

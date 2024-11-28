@@ -49,6 +49,8 @@ const Dashboard = () => {
         <br />
         <Link to="/missionslist">Go to Missions List</Link>
         <br />
+        <Link to="/vehicle">Go to Vehicle list</Link>
+        <br/>
       </div>
 
       {/* เพิ่มปุ่ม logout */}

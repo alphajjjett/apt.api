@@ -11,6 +11,7 @@ import Maintenance from './pages/Maintenance';
 import MissionList from './pages/MissionList';
 import ProtectedRoute from './pages/ProtectedRoute';
 import MissionRequest from './pages/MissionRequest';
+import VehiclePage from './pages/VehiclePage';
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path='/missionslist' element={<MissionList/>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path='/mission_request' element={<MissionRequest/>}/>
+        <Route path='/vehicle' element={<VehiclePage/>}/>
 
       </Routes>
     </Router>

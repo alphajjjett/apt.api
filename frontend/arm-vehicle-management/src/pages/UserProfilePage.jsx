@@ -1,48 +1,51 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
 
 const UserProfilePage = () => {
-  const { id } = useParams();  // ดึง ID จาก URL
+  const { id } = useParams();  // ดึง id จาก URL
+  console.log(id);  // ตรวจสอบว่า id ดึงมาได้ถูกต้องหรือไม่
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
+      const token = localStorage.getItem('token');  // ดึง token จาก localStorage
+      if (!token) {
+        setError('No token found, please login again');
+        return;
+      }
+      
       try {
         const response = await axios.get(`http://localhost:5000/api/users/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          headers: { Authorization: `Bearer ${token}` }  // ส่ง token ไปใน header
         });
-        setUser(response.data);
+        setUser(response.data);  // เก็บข้อมูล user ที่ได้จาก API
       } catch (error) {
-        setError('Failed to fetch user details');
+        setError('Error fetching user data');  // แสดง error ถ้าดึงข้อมูลไม่สำเร็จ
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchUser();
   }, [id]);
+  
 
-  if (loading) return <p>Loading user profile...</p>;
+  if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-  if (!user) return <p>No user found</p>;
 
   return (
     <div>
       <h2>User Profile</h2>
-      <div>
-        <strong>Name:</strong> {user.name}
-      </div>
-      <div>
-        <strong>Email:</strong> {user.email}
-      </div>
-      <div>
-        <strong>Role:</strong> {user.role}
-      </div>
-      <button onClick={() => navigate('/users')}>Back to Users</button>
+      {user && (
+        <div>
+          <p><strong>Name:</strong> {user.name}</p>  {/* แสดงข้อมูล Name ของผู้ใช้ */}
+          <p><strong>Email:</strong> {user.email}</p>  {/* แสดงข้อมูล Email ของผู้ใช้ */}
+          <p><strong>Role:</strong> {user.role}</p>  {/* แสดงข้อมูล Role ของผู้ใช้ */}
+        </div>
+      )}
     </div>
   );
 };

@@ -71,13 +71,22 @@ const getAllUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
+    const token = req.headers.authorization.split(' ')[1]; // ดึง token จาก header
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // ตรวจสอบว่า id ของผู้ใช้ที่ร้องขอเหมือนกับ id ที่ได้รับจาก token หรือไม่
+    if (decoded.userId !== id) {
+      return res.status(403).json({ message: 'You are not authorized to access this data.' });
+    }
+
+    // ดึงข้อมูลจาก database (สมมุติใช้ MongoDB)
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(200).json(user);
+    res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 

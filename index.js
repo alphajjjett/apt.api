@@ -6,9 +6,6 @@ const jwt = require('jsonwebtoken'); // ต้องเพิ่มบรรท�
 
 const cors = require('cors');
 
-const Product = require('./models/product.model.js');
-const productRoute = require('./routes/product.route.js');
-
 const Vehicle = require ('./models/vehicle.model.js');
 const vehicleRoute = require('./routes/vehicle.route.js'); //ข้อมูลรถ
 
@@ -48,7 +45,7 @@ app.use(cors());
 
 
 // middleware
-app.use("/api/products", productRoute);
+
 app.use("/api/vehicles", vehicleRoute);
 app.use("/api/vehicle-returns", vehicleReturnRoute);
 app.use('/api/vehicle-statuses', vehicleStatusRoutes);

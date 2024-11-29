@@ -30,7 +30,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path='/mission_request' element={<MissionRequest/>}/>
         <Route path='/vehicle' element={<VehiclePage/>}/>
-        <Route path="/users/:id" element={<UserProfilePage />} /> 
+        <Route path="/userprofile/:id" element={<UserProfilePage />} /> 
 
       </Routes>
     </Router>

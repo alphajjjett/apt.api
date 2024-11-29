@@ -21,10 +21,13 @@ const Users = () => {
       try {
         const decodedToken = jwtDecode(token);  // decode token เพื่อดึง role
         console.log(decodedToken);  // log decodedToken เพื่อตรวจสอบ
-        if (decodedToken.role !== 'admin') {
-          navigate('/dashboard', { replace: true });  // ถ้าไม่ใช่ admin ให้ redirect ไปที่ dashboard //เดี่ยวมาแก้ แม่งไม่ลิ้งไป userprofile
-        } else {
-          // ถ้าเป็น admin ให้ fetch ข้อมูลผู้ใช้
+
+        // ตรวจสอบ role
+        if (decodedToken.role === 'user') {
+          // ถ้า role เป็น user ให้ redirect ไปหน้า user profile ของตัวเอง
+          navigate(`/userprofile/${decodedToken.userId}`, { replace: true });  // ให้ redirect ไปที่หน้า user profile
+        } else if (decodedToken.role === 'admin') {
+          // ถ้า role เป็น admin ให้ fetch ข้อมูลผู้ใช้
           const fetchUsers = async () => {
             try {
               const response = await axios.get('http://localhost:5000/api/users', {
@@ -39,8 +42,10 @@ const Users = () => {
               setLoading(false);
             }
           };
-
           fetchUsers();
+        } else {
+          // ถ้า role ไม่ใช่ user หรือ admin ให้ redirect กลับหน้า login
+          navigate('/', { replace: true });
         }
       } catch (error) {
         console.error('Invalid token:', error);

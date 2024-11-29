@@ -8,15 +8,16 @@ const { getAllUsers,
         } = require('../controllers/user.controller');
 const router = express.Router();
 const auth = require('../middleware/auth.middleware');
+const verifyAdmin = require('../middleware/auth.middleware'); 
 
 // Route สำหรับดึงข้อมูลผู้ใช้ทั้งหมด
-router.get('/', getAllUsers);
+router.get('/', verifyAdmin, getAllUsers);
 
 // Route for user registration
 router.post('/register', registerUser); // This should match the endpoint you are hitting from the frontend
 
 // Route สำหรับหา ID USer
-router.get('/:id', auth ,getUserById);
+router.get('/:id', auth, getUserById);
 
 //route login
 

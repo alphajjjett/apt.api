@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';  // Admin role still uses jwtDecode
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -10,33 +10,33 @@ const Users = () => {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate('/dashboard');  // กดปุ่มกลับไปที่ dashboard
+    navigate('/dashboard');  // Back to dashboard button
   };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/', { replace: true });  // ถ้าไม่มี token ให้กลับไปที่หน้า login
+      navigate('/', { replace: true });  // If no token, redirect to login
     } else {
       try {
-        const decodedToken = jwtDecode(token);  // decode token เพื่อดึง role
-        console.log(decodedToken);  // log decodedToken เพื่อตรวจสอบ
+        const decodedToken = jwtDecode(token);  // Only used for admin role
+        console.log(decodedToken);  // Log decoded token to check
 
-        // ตรวจสอบ role
+        // Check role
         if (decodedToken.role === 'user') {
-          // ถ้า role เป็น user ให้ redirect ไปหน้า user profile ของตัวเอง
-          navigate(`/userprofile/${decodedToken.userId}`, { replace: true });  // ให้ redirect ไปที่หน้า user profile
+          // For user, directly fetch their profile without using jwtDecode
+          navigate(`/userprofile/${decodedToken.id}`, { replace: true });
         } else if (decodedToken.role === 'admin') {
-          // ถ้า role เป็น admin ให้ fetch ข้อมูลผู้ใช้
+          // Admin role fetches all users
           const fetchUsers = async () => {
             try {
               const response = await axios.get('http://localhost:5000/api/users', {
                 headers: { Authorization: `Bearer ${token}` }
               });
-              console.log('Users fetched:', response);  // log response เพื่อตรวจสอบข้อมูล
+              console.log('Users fetched:', response);
               setUsers(response.data);
             } catch (error) {
-              console.error('Error fetching users:', error);  // log error ที่เกิดขึ้นจากการดึงข้อมูล
+              console.error('Error fetching users:', error);
               setError('Failed to fetch users');
             } finally {
               setLoading(false);
@@ -44,12 +44,12 @@ const Users = () => {
           };
           fetchUsers();
         } else {
-          // ถ้า role ไม่ใช่ user หรือ admin ให้ redirect กลับหน้า login
+          // If the role is not user or admin, redirect to login
           navigate('/', { replace: true });
         }
       } catch (error) {
         console.error('Invalid token:', error);
-        navigate('/', { replace: true });  // ถ้า token ไม่ถูกต้องให้ redirect ไปหน้า login
+        navigate('/', { replace: true });  // If token is invalid, redirect to login
       }
     }
   }, [navigate]);
@@ -60,9 +60,9 @@ const Users = () => {
         await axios.delete(`http://localhost:5000/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
-        setUsers(users.filter(user => user._id !== userId));  // ลบผู้ใช้จาก state
+        setUsers(users.filter(user => user._id !== userId));  // Remove user from state
       } catch (error) {
-        console.error('Error deleting user:', error);  // log error ที่เกิดขึ้นตอนลบ
+        console.error('Error deleting user:', error);
         setError('Failed to delete user');
       }
     }

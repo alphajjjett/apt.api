@@ -33,6 +33,7 @@ const dashboardRoute = require('./routes/dashboard.route');  // นำเข้�
 const vehicleRoutes = require('./routes/vehicle.route'); 
 
 
+
 require('dotenv').config();
 const uri = process.env.MONGO_URI;
 console.log(uri);
@@ -107,11 +108,44 @@ app.post('/api/missions', async (req, res) => {
 
 
 
-
-
 app.get('/', (req, res) => {
     res.send("Hello form APT API");
 });
+
+// Route สำหรับการ login
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // ค้นหาผู้ใช้จากฐานข้อมูลตาม email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    // ตรวจสอบรหัสผ่าน
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(400).json({ message: 'Invalid password' });
+    }
+
+    // สร้าง JWT token
+    const token = jwt.sign(
+      { id: user._id, name: user.name, email: user.email, role: user.role },
+      'your_secret_key', // รหัสลับที่ใช้ในการเข้ารหัส JWT (เก็บใน environment variable จริงๆ)
+      { expiresIn: '1h' } // ตั้งเวลาหมดอายุ token (เช่น 1 ชั่วโมง)
+    );
+
+    // ส่ง token กลับไปยัง client
+    res.json({ token });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 mongoose.connect(uri)
   .then(() => {

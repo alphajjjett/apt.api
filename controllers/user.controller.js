@@ -20,7 +20,7 @@ const loginUser = async (req, res) => {
 
         // สร้าง JWT token พร้อมข้อมูล id และ role
         const token = jwt.sign(
-            { id: user._id, role: user.role }, 
+            { id: user._id, role: user.role, email: user.email, name : user.name }, 
             process.env.JWT_SECRET, 
             { expiresIn: '1h' }
         );
@@ -32,7 +32,7 @@ const loginUser = async (req, res) => {
     }
 };
 
-// Register User
+// Register User สมัครเข้าระบบ
 const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -48,7 +48,7 @@ const registerUser = async (req, res) => {
     await newUser.save();
 
     // Use the user's role from the database
-    const token = jwt.sign({ id: newUser._id, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: newUser._id,name : newUser.name ,email : newUser.email , role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' }); // แก้ล่าสุด
 
     res.status(201).json({ message: 'User registered successfully', token });
   } catch (error) {
@@ -56,6 +56,13 @@ const registerUser = async (req, res) => {
     res.status(500).json({ message: 'Error registering user', error });
   }
 };
+
+
+
+
+
+
+
 
 // Get all users
 const getAllUsers = async (req, res) => {
@@ -66,6 +73,9 @@ const getAllUsers = async (req, res) => {
     res.status(500).json({ message: 'Error fetching users', error });
   }
 };
+
+
+
 
 // Get user by id
 const getUserById = async (req, res) => {
@@ -127,6 +137,32 @@ const updateCurrentUser = async (req, res) => {
   }
 };
 
+// ฟังก์ชันลบผู้ใช้
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // ตรวจสอบว่าผู้ใช้มีอยู่ในฐานข้อมูลหรือไม่
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // ตรวจสอบว่า user ที่จะลบเป็นคนที่ล็อกอินอยู่หรือไม่ หรือเป็น admin ที่ลบ
+    if (user._id.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'You do not have permission to delete this user' });
+    }
+
+    // ลบผู้ใช้
+    await User.findByIdAndDelete(userId);
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Error deleting user', error: error.message });
+  }
+};
+
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -134,4 +170,5 @@ module.exports = {
   registerUser,
   updateCurrentUser,
   getCurrentUser,
+  deleteUser
 };

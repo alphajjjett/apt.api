@@ -79,8 +79,10 @@ const VehicleStatusPage = () => {
         <thead>
           <tr>
             <th>Vehicle Name</th>
+            <th>Model</th>
             <th>License Plate</th>
             <th>Status</th>
+            <th>Last Updated</th>
             {isAdmin && <th>Actions</th>}
           </tr>
         </thead>
@@ -88,8 +90,10 @@ const VehicleStatusPage = () => {
           {vehicles.map((vehicle) => (
             <tr key={vehicle._id}>
               <td>{vehicle.name}</td>
+              <td>{vehicle.model}</td>
               <td>{vehicle.license_plate}</td>
               <td>{vehicle.status}</td>
+              <td>{new Date(vehicle.updatedAt).toLocaleDateString()}</td> {/* Display Last Updated date */}
               {isAdmin && (
                 <td>
                   {/* เพิ่มปุ่มให้ Admin เปลี่ยนสถานะของรถ */}

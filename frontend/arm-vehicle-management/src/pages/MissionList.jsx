@@ -79,6 +79,7 @@ const MissionList = () => {
             <th>Start Date</th>
             <th>End Date</th>
             {isAdmin && <th>Action</th>} {/* แสดงปุ่ม Delete เฉพาะ Admin */}
+            <th>Last Updated</th>
           </tr>
         </thead>
         <tbody>
@@ -95,7 +96,9 @@ const MissionList = () => {
                 <td>
                   <button onClick={() => handleDelete(mission._id)}>Delete</button>
                 </td>
+                
               )}
+              <td>{new Date(mission.updatedAt).toLocaleDateString()}</td> {/* Display Last Updated date */}
             </tr>
           ))}
         </tbody>

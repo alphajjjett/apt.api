@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';  // Add navigate functionality
 import {jwtDecode} from 'jwt-decode'; // นำเข้า jwt-decode เพื่อถอดรหัส JWT
 
 const VehicleStatusPage = () => {
@@ -7,6 +8,12 @@ const VehicleStatusPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();  // Initialize navigate
+   // ฟังก์ชันสำหรับปุ่ม "Back to Dashboard"
+   const handleBackClick = () => {
+    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+  };
+  
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -100,6 +107,10 @@ const VehicleStatusPage = () => {
           ))}
         </tbody>
       </table>
+      {/* ปุ่ม Back to Dashboard */}
+      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+        Back to Dashboard
+      </button>
     </div>
   );
 };

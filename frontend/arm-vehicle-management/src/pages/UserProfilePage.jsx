@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';  // Add navigate functionality
 // import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';  // ใช้ jwt-decode
 
@@ -8,6 +9,12 @@ const UserProfilePage = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const navigate = useNavigate();  // Initialize navigate
+   // ฟังก์ชันสำหรับปุ่ม "Back to Dashboard"
+   const handleBackClick = () => {
+    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -58,8 +65,12 @@ const UserProfilePage = () => {
           <p><strong>Name:</strong> {user.name}</p>
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Role:</strong> {user.role}</p>
-        </div>
+        </div>  
       )}
+      {/* ปุ่ม Back to Dashboard */}
+      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+        Back to Dashboard
+      </button>
     </div>
   );
 };

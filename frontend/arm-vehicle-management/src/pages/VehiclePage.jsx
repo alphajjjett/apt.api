@@ -30,18 +30,14 @@ const VehiclePage = () => {
     }
   }, []);
 
-  
   const handleBackClick = () => {
     navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
   };
 
-  
   const handleInputChange = (e) => {
-    const { name, value } = e.target ;
-    
-    setVehicleData({ ...vehicleData, [name]: value }); 
-    
-    }; 
+    const { name, value } = e.target;
+    setVehicleData({ ...vehicleData, [name]: value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,7 +52,20 @@ const VehiclePage = () => {
     }
   };
 
-  
+  const handleDelete = async (vehicleId) => {
+    if (window.confirm('Are you sure you want to delete this vehicle?')) {
+      try {
+        const token = localStorage.getItem('token');
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        
+        await axios.delete(`http://localhost:5000/api/vehicles/${vehicleId}`, config);
+        setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));  // Remove vehicle from state
+        alert('Vehicle deleted successfully');
+      } catch (error) {
+        alert('Error deleting vehicle');
+      }
+    }
+  };
 
   return (
     <div>
@@ -64,7 +73,12 @@ const VehiclePage = () => {
       <ul>
         {vehicles.map((vehicle) => (
           <li key={vehicle._id}>
-            Model: {vehicle.model}, License Plate: {vehicle.license_plate}, Fuel Type: {vehicle.fuel_type}, Fuel Capacity: {vehicle.fuel_capacity} liters
+            <p>Model: {vehicle.model}, License Plate: {vehicle.license_plate}, Fuel Type: {vehicle.fuel_type}, Fuel Capacity: {vehicle.fuel_capacity} liters</p>
+            {isAdmin && (
+              <button onClick={() => handleDelete(vehicle._id)} style={{ marginLeft: '10px' }}>
+                Delete
+              </button>
+            )}
           </li>
         ))}
       </ul>
@@ -126,10 +140,11 @@ const VehiclePage = () => {
           </form>
         </div>
       )}
+      
       {/* ปุ่ม Back to Dashboard */}
       <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
         Back to Dashboard
-        </button>
+      </button>
     </div>
   );
 };

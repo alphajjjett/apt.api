@@ -12,11 +12,11 @@ const vehicleRoute = require('./routes/vehicle.route.js'); //ข้อมูล�
 const VehicleReturn = require ('./models/vehiclereturn.model.js');
 const vehicleReturnRoute = require('./routes/vehiclereturn.route.js'); //คืนรถ
 
-const vehicleStatusRoutes = require('./routes/vehiclestatus.route.js'); //สถานะรถ
+
 
 const bookingRoutes = require('./routes/booking.route.js');
 
-const bookingStatusRoutes = require('./routes/bookingstatus.route.js');
+
 
 const missionRoutes = require('./routes/mission.route.js');
 
@@ -49,9 +49,9 @@ app.use(cors());
 
 app.use("/api/vehicles", vehicleRoute);
 app.use("/api/vehicle-returns", vehicleReturnRoute);
-app.use('/api/vehicle-statuses', vehicleStatusRoutes);
+
 app.use('/api/bookings', bookingRoutes);
-app.use('/api/booking-status', bookingStatusRoutes);
+
 app.use('/api/missions', missionRoutes);
 // middleware
 app.use('/api', dashboardRoute);  // กำหนด route dashboard ที่ /api/dashboard

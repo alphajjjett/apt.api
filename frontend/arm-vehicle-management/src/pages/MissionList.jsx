@@ -6,18 +6,20 @@ const MissionList = () => {
   const [missions, setMissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false); // ใช้เพื่อตรวจสอบว่าเป็น Admin หรือไม่
   const navigate = useNavigate();
-  
+
   const handleBackClick = () => {
-    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+    navigate('/dashboard');
   };
 
   // Fetch all missions
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/', { replace: true });  // ถ้าไม่มี token ให้ redirect ไปที่หน้า login
-    } 
+      navigate('/', { replace: true });
+    }
+
     const fetchMissions = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/missions', {
@@ -31,8 +33,27 @@ const MissionList = () => {
       }
     };
 
+    // ตรวจสอบว่าเป็น Admin หรือไม่จาก Token
+    const { role } = JSON.parse(atob(token.split('.')[1])); // decode JWT
+    setIsAdmin(role === 'admin');
+
     fetchMissions();
   }, [navigate]);
+
+  const handleDelete = async (missionId) => {
+    if (window.confirm('Are you sure you want to delete this mission?')) {
+      try {
+        const token = localStorage.getItem('token');
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        
+        await axios.delete(`http://localhost:5000/api/missions/${missionId}`, config);
+        setMissions(missions.filter(mission => mission._id !== missionId));
+        alert('Mission deleted successfully');
+      } catch (error) {
+        alert('Error deleting mission');
+      }
+    }
+  };
 
   if (loading) return <p>Loading missions...</p>;
 
@@ -55,8 +76,9 @@ const MissionList = () => {
             <th>Status</th>
             <th>Vehicle</th>
             <th>Assigned User</th>
-            <th>Start Date</th>  {/* เพิ่มคอลัมน์ start date */}
-            <th>End Date</th>    {/* เพิ่มคอลัมน์ end date */}
+            <th>Start Date</th>
+            <th>End Date</th>
+            {isAdmin && <th>Action</th>} {/* แสดงปุ่ม Delete เฉพาะ Admin */}
           </tr>
         </thead>
         <tbody>
@@ -67,17 +89,20 @@ const MissionList = () => {
               <td>{mission.status}</td>
               <td>{mission.assigned_vehicle_id ? mission.assigned_vehicle_id.license_plate : 'N/A'}</td>
               <td>{mission.assigned_user_id ? mission.assigned_user_id.name : 'N/A'}</td>
-              <td>{new Date(mission.start_date).toLocaleDateString()}</td>  {/* แสดง start date */}
-              <td>{new Date(mission.end_date).toLocaleDateString()}</td>    {/* แสดง end date */}
+              <td>{new Date(mission.start_date).toLocaleDateString()}</td>
+              <td>{new Date(mission.end_date).toLocaleDateString()}</td>
+              {isAdmin && (
+                <td>
+                  <button onClick={() => handleDelete(mission._id)}>Delete</button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
-      {/* ปุ่ม Back to Dashboard */}
       <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
         Back to Dashboard
       </button>
-      
     </div>
   );
 };

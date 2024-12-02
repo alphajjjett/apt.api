@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const verifyAdmin = require('../middleware/auth.middleware.js');
+const verifyAdmin = require('../middleware/auth.middleware');
 // Import controllers
 const {
     getAllVehicles, 
@@ -8,7 +8,8 @@ const {
     getVehicleById, 
     updateVehicle, 
     deleteVehicle,
-
+    updateVehicleStatus,
+    getAllVehicleStatuses
 
 } = require('../controllers/vehicle.controller.js');
 
@@ -27,8 +28,13 @@ router.post('/create', verifyAdmin, createVehicle);
 router.put("/:id", updateVehicle);
 
 // Route สำหรับลบข้อมูลรถตาม ID
-router.delete("/:id", deleteVehicle);
+router.delete("/:vehicleId", verifyAdmin, deleteVehicle);
 
+// GET all vehicles with their statuses
+router.get('/statuses', getAllVehicleStatuses);
+
+// PUT for updating vehicle status
+router.put('/statuses/:id', updateVehicleStatus);
 
 
 

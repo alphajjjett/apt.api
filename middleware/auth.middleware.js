@@ -1,28 +1,31 @@
 const jwt = require('jsonwebtoken');
 
 const verifyAdmin = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  // ดึง token จาก header Authorization
+  const token = req.headers.authorization?.split(' ')[1]; 
 
+  // ตรวจสอบว่า token มีอยู่ใน header หรือไม่
   if (!token) {
     return res.status(401).json({ message: 'Access denied, no token provided' });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // ตรวจสอบความถูกต้องของ token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
     
-    // ตรวจสอบ role ของ user ที่ถูก decode
+    // ตรวจสอบ role ของผู้ใช้
     if (decoded.role !== 'admin') {
       return res.status(403).json({ message: 'Access denied, not an admin' });
     }
 
+    // เพิ่มข้อมูล user ลงใน request สำหรับใช้งานใน middleware หรือ controller ถัดไป
     req.user = decoded;
-    next(); // ผ่านเงื่อนไขแล้วไปยังฟังก์ชันถัดไป
+    next(); // ถ้าเป็น Admin ให้ไปยังฟังก์ชันถัดไป
+
   } catch (error) {
-    res.status(400).json({ message: 'Invalid token' });
+    // หากเกิดข้อผิดพลาดในการตรวจสอบ token
+    res.status(400).json({ message: 'Invalid token', error: error.message });
   }
 };
-
-
-
 
 module.exports = verifyAdmin;

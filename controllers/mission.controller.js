@@ -86,4 +86,21 @@ const updateMissionStatus = async (req, res) => {
     }
   };
 
-module.exports = { createMission, getAllMissions, updateMissionStatus };
+
+// ฟังก์ชันลบภารกิจ
+const deleteMission = async (req, res) => {
+  try {
+    const { missionId } = req.params;
+    const deletedMission = await Mission.findByIdAndDelete(missionId);
+    
+    if (!deletedMission) {
+      return res.status(404).json({ message: 'Mission not found' });
+    }
+
+    res.status(200).json({ message: 'Mission deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting mission', error: error.message });
+  }
+};
+
+module.exports = { createMission, getAllMissions, updateMissionStatus, deleteMission };

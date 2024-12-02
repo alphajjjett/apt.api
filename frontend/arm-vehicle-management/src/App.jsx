@@ -13,6 +13,8 @@ import ProtectedRoute from './pages/ProtectedRoute';
 import MissionRequest from './pages/MissionRequest';
 import VehiclePage from './pages/VehiclePage';
 import UserProfilePage from './pages/UserProfilePage';
+import VehicleStatusPage from './pages/VehicleStatusPage';
+
 
 
 function App() {
@@ -31,6 +33,9 @@ function App() {
         <Route path='/mission_request' element={<MissionRequest/>}/>
         <Route path='/vehicle' element={<VehiclePage/>}/>
         <Route path="/userprofile/:id" element={<UserProfilePage />} /> 
+        
+        <Route path="/vehicle-status" element={<VehicleStatusPage/>}/>
+        
 
       </Routes>
     </Router>

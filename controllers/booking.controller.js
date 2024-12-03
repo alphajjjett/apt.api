@@ -1,31 +1,71 @@
 const Booking = require('../models/booking.model');
+const Mission = require('../models/mission.model');
+const User = require('../models/user.model');
+const Vehicle = require('../models/vehicle.model');
 
-
-const getAllBookings = async (req, res) => {
-    try {
-        const bookings = await Booking.find();
-        res.status(200).json(bookings);
-    } catch (error) {
-        res.status(500).json({ message: error.message});
-    }
-};
-
+// Create a new booking
 const createBooking = async (req, res) => {
-    const { user_id, 
-            vehicle_id,
-            mission_id,
-            start_time,
-            end_time,
-            status } = req.body;
-    try {
-        const newBooking = new Booking({ user_id, vehicle_id, mission_id, start_time, end_time, status });
-        await newBooking.save();
-        res.status(201).json(newBooking);
-    } catch (error) {
-        res.status(500).json({ message: error.message});
+  try {
+    const { missionId, userId, vehicleId,bookingDate } = req.body;
+
+    // Check if the mission, user, and vehicle exist
+    const mission = await Mission.findById(missionId);
+    const user = await User.findById(userId);
+    const vehicle = await Vehicle.findById(vehicleId);
+
+    if (!mission || !user || !vehicle) {
+      return res.status(400).json({ message: 'Invalid mission, user, or vehicle ID' });
     }
+
+    const newBooking = new Booking({
+      mission: missionId,
+      user: userId,
+      vehicle: vehicleId,
+      bookingDate
+    });
+
+    await newBooking.save();
+    res.status(201).json(newBooking);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating booking', error: error.message });
+  }
 };
 
-module.exports = { getAllBookings, 
-                    createBooking 
-                };
+// Get all bookings
+const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find().populate('mission user vehicle');
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching bookings', error: error.message });
+  }
+};
+
+// Update booking status
+const updateBookingStatus = async (req, res) => {
+  try {
+    const { bookingId, status } = req.body;
+
+    // Ensure status is valid
+    if (!['Pending', 'Confirmed', 'Cancelled'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    booking.status = status;
+    await booking.save();
+    res.json(booking);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating booking status', error: error.message });
+  }
+};
+
+module.exports = {
+  createBooking,
+  getAllBookings,
+  updateBookingStatus,
+};

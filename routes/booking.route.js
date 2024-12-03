@@ -1,11 +1,14 @@
 const express = require('express');
-const { getAllBookings, createBooking } = require('../controllers/booking.controller');
 const router = express.Router();
+const { createBooking, getAllBookings, updateBookingStatus } = require('../controllers/booking.controller');
 
-// Route สำหรับดึงข้อมูลการจองทั้งหมด
+// Route for creating a new booking
+router.post('/', createBooking);
+
+// Route for getting all bookings
 router.get('/', getAllBookings);
 
-// Route สำหรับสร้างการจองใหม่
-router.post('/', createBooking);
+// Route for updating booking status
+router.put('/status', updateBookingStatus);
 
 module.exports = router;

@@ -4,9 +4,6 @@ const app = express();
 const authRoutes = require('./routes/auth.route');
 const jwt = require('jsonwebtoken'); // ต้องเพิ่มบรรทัดนี้
 
-const multer = require('multer');
-const User = require('./models/user.model'); // ดึง model user
-
 const cors = require('cors');
 
 const Vehicle = require ('./models/vehicle.model.js');
@@ -146,41 +143,6 @@ app.post('/login', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-
-// กำหนดให้ Multer อัปโหลดไฟล์ไปยังโฟลเดอร์ 'uploads'
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');  // ตั้งที่เก็บไฟล์
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);  // ตั้งชื่อไฟล์
-  },
-});
-
-const upload = multer({ storage: storage });
-
-// Route สำหรับอัปโหลดไฟล์โปรไฟล์
-app.post('/api/users/upload-profile-picture', upload.single('profilePicture'), async (req, res) => {
-  if (req.file) {
-    try {
-      const userId = req.body.userId;  // สมมติว่า userId มาจาก request body
-      const filePath = `/uploads/${req.file.filename}`;  // Path ของไฟล์ที่อัปโหลด
-
-      // อัปเดต URL ของรูปโปรไฟล์ใน MongoDB
-      const user = await User.findByIdAndUpdate(userId, { profilePicture: filePath }, { new: true });
-
-      res.status(200).json({
-        message: 'Profile picture uploaded successfully',
-        user,
-      });
-    } catch (error) {
-      res.status(500).json({ error: 'Error uploading profile picture' });
-    }
-  } else {
-    res.status(400).json({ message: 'No file uploaded' });
   }
 });
 

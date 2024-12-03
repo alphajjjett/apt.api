@@ -6,8 +6,6 @@ const { getAllUsers,
         getCurrentUser,
         updateCurrentUser,
         deleteUser,
-        uploadProfilePicture, 
-        upload
         } = require('../controllers/user.controller');
 const router = express.Router();
 const auth = require('../middleware/auth.middleware');
@@ -38,8 +36,5 @@ router.put('/me', updateCurrentUser);
 
 // Route สำหรับลบผู้ใช้
 router.delete('/:id', auth, deleteUser);
-
-// Route สำหรับอัปโหลดไฟล์โปรไฟล์
-router.post('/upload-profile-picture', upload, uploadProfilePicture);
 
 module.exports = router;

@@ -21,12 +21,7 @@ const UserSchema = mongoose.Schema(
         password : {
             type : String,
             required : true
-        },
-        profilePicture: { 
-            type: String, default: '' 
-        
-        },  // เก็บ URL ของภาพโปรไฟล์
-
+        }
     },
     {
         timestamps : true

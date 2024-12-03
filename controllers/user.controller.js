@@ -1,7 +1,5 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
-const multer = require('multer');
-const path = require('path');
 const jwt = require('jsonwebtoken');
 
 const loginUser = async (req, res) => {
@@ -164,35 +162,6 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// กำหนดให้ Multer อัปโหลดไฟล์ไปยังโฟลเดอร์ 'uploads'
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');  // ตั้งที่เก็บไฟล์
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));  // ตั้งชื่อไฟล์ให้ไม่ซ้ำ
-  },
-});
-
-const upload = multer({ storage: storage }).single('profilePicture');
-
-// ฟังก์ชันสำหรับอัปโหลดไฟล์โปรไฟล์
-const uploadProfilePicture = async (req, res) => {
-  try {
-    const userId = req.body.userId;  // สมมติว่า userId มาจาก request body
-    const filePath = `uploads/${req.file.filename}`;  // URL ของไฟล์ที่อัปโหลด
-
-    // อัปเดต URL ของรูปโปรไฟล์ใน MongoDB
-    const user = await User.findByIdAndUpdate(userId, { profilePicture: filePath }, { new: true });
-
-    res.json({
-      message: 'Profile picture uploaded successfully',
-      user,
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Error uploading profile picture' });
-  }
-};
 
 
 
@@ -203,7 +172,5 @@ module.exports = {
   registerUser,
   updateCurrentUser,
   getCurrentUser,
-  deleteUser,
-  uploadProfilePicture,
-  upload // ให้ Multer middleware สามารถใช้งานได้จากไฟล์นี้
+  deleteUser
 };

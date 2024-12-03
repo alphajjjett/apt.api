@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';  // For making API calls
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';  // Decoding JWT token
 
 const BookingPage = () => {
   const [missions, setMissions] = useState([]);
@@ -14,7 +14,7 @@ const BookingPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch missions and vehicles
+    // Fetch missions, vehicles, and bookings
     const fetchData = async () => {
       try {
         const missionsRes = await axios.get('http://localhost:5000/api/missions');
@@ -48,6 +48,7 @@ const BookingPage = () => {
         bookingDate: selectedDate
       };
 
+      // ส่งคำขอจองใหม่ไปยังเซิร์ฟเวอร์
       await axios.post('http://localhost:5000/api/bookings', newBooking, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -55,6 +56,12 @@ const BookingPage = () => {
       // Refresh the bookings list
       const bookingsRes = await axios.get('http://localhost:5000/api/bookings');
       setBookings(bookingsRes.data);
+      
+      // Clear error if booking is successful
+      setError('');
+
+      // แสดง alert เมื่อการจองสำเร็จ
+      alert('Booking Completed');
     } catch (error) {
       setError('Failed to create booking');
     }
@@ -64,7 +71,7 @@ const BookingPage = () => {
     <div>
       <h2>Booking Page</h2>
 
-      {error && <p>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}  {/* แสดงข้อความแจ้งเตือนข้อผิดพลาด */}
 
       <div>
         <h3>Create New Booking</h3>
@@ -106,7 +113,9 @@ const BookingPage = () => {
         </div>
 
         <br />
-        <button onClick={handleCreateBooking}>Create Booking</button>
+        <button onClick={handleCreateBooking}>
+          Create Booking
+        </button>
       </div>
 
       <div>

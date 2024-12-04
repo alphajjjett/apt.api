@@ -11,6 +11,7 @@ const BookingPage = () => {
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [error, setError] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);  // State to track admin role
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +25,13 @@ const BookingPage = () => {
         setMissions(missionsRes.data);
         setVehicles(vehiclesRes.data);
         setBookings(bookingsRes.data);
+
+        // Check for user role
+        const token = localStorage.getItem('token');
+        if (token) {
+          const decodedToken = jwtDecode(token);
+          setIsAdmin(decodedToken.role === 'admin');  // Check if the user is an admin
+        }
       } catch (error) {
         setError('Error fetching data');
       }
@@ -48,7 +56,7 @@ const BookingPage = () => {
         bookingDate: selectedDate
       };
 
-      // ส่งคำขอจองใหม่ไปยังเซิร์ฟเวอร์
+      // Send new booking request to server
       await axios.post('http://localhost:5000/api/bookings', newBooking, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -60,7 +68,7 @@ const BookingPage = () => {
       // Clear error if booking is successful
       setError('');
 
-      // แสดง alert เมื่อการจองสำเร็จ
+      // Show alert when booking is completed
       alert('Booking Completed');
     } catch (error) {
       setError('Failed to create booking');
@@ -71,52 +79,54 @@ const BookingPage = () => {
     <div>
       <h2>Booking Page</h2>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}  {/* แสดงข้อความแจ้งเตือนข้อผิดพลาด */}
+      {error && <p style={{ color: 'red' }}>{error}</p>}  {/* Show error message if any */}
 
-      <div>
-        <h3>Create New Booking</h3>
-        <label>
-          Mission:
-          <select onChange={(e) => setSelectedMission(e.target.value)} value={selectedMission}>
-            <option value="">Select Mission</option>
-            {missions.length > 0 ? (
-              missions.map((mission) => (
-                <option key={mission._id} value={mission._id}>
-                  {mission.mission_name}
-                </option>
-              ))
-            ) : (
-              <option>No missions available</option>
-            )}
-          </select>
-        </label>
-        <br />
-        <label>
-          Vehicle:
-          <select onChange={(e) => setSelectedVehicle(e.target.value)} value={selectedVehicle}>
-            <option value="">Select Vehicle</option>
-            {vehicles.map((vehicle) => (
-              <option key={vehicle._id} value={vehicle._id}>
-                {vehicle.name} ({vehicle.license_plate})
-              </option>
-            ))}
-          </select>
-        </label>
+      {!isAdmin && (
         <div>
-          <label>Select Date</label>
-          <input 
-            type="date" 
-            value={selectedDate} 
-            onChange={(e) => setSelectedDate(e.target.value)} 
-            required 
-          />
-        </div>
+          <h3>Create New Booking</h3>
+          <label>
+            Mission:
+            <select onChange={(e) => setSelectedMission(e.target.value)} value={selectedMission}>
+              <option value="">Select Mission</option>
+              {missions.length > 0 ? (
+                missions.map((mission) => (
+                  <option key={mission._id} value={mission._id}>
+                    {mission.mission_name}
+                  </option>
+                ))
+              ) : (
+                <option>No missions available</option>
+              )}
+            </select>
+          </label>
+          <br />
+          <label>
+            Vehicle:
+            <select onChange={(e) => setSelectedVehicle(e.target.value)} value={selectedVehicle}>
+              <option value="">Select Vehicle</option>
+              {vehicles.map((vehicle) => (
+                <option key={vehicle._id} value={vehicle._id}>
+                  {vehicle.name} ({vehicle.license_plate})
+                </option>
+              ))}
+            </select>
+          </label>
+          <div>
+            <label>Select Date</label>
+            <input 
+              type="date" 
+              value={selectedDate} 
+              onChange={(e) => setSelectedDate(e.target.value)} 
+              required 
+            />
+          </div>
 
-        <br />
-        <button onClick={handleCreateBooking}>
-          Create Booking
-        </button>
-      </div>
+          <br />
+          <button onClick={handleCreateBooking}>
+            Create Booking
+          </button>
+        </div>
+      )}
 
       <div>
         <h3>Bookings</h3>

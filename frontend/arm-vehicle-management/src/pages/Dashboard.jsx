@@ -44,6 +44,8 @@ const Dashboard = () => {
       <div>
         <h3>Total Users: {data.usersCount}</h3>
         <h3>Total Missions: {data.missionsCount}</h3>
+        <h3>Total Bookings: {data.bookingCount}</h3>
+        <h3>Total Vehicles: {data.vehicleCount}</h3>
       </div>
 
       {/* เพิ่มลิ้งค์ไปยังหน้าอื่น ๆ */}

@@ -59,6 +59,8 @@ const Dashboard = () => {
         <Link to="/vehicle-status">Go to Vehicle Status</Link>
         <br/>
         <Link to="/booking">Go to Booking</Link>
+        <br/>
+        <Link to="/booking-status">Go to Booking Status</Link>
       </div>
 
       {/* เพิ่มปุ่ม logout */}

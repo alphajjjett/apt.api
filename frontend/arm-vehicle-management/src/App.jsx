@@ -15,6 +15,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import VehicleStatusPage from './pages/VehicleStatusPage';
 
 import BookingPage from './pages/BookingPage';
+import BookingStatusPage from './pages/BookingStatusPage';
 
 
 
@@ -37,6 +38,8 @@ function App() {
         <Route path="/vehicle-status" element={<VehicleStatusPage/>}/>
 
         <Route path="/booking" element={<BookingPage/>}/>
+
+        <Route path="/booking-status" element={<BookingStatusPage/>}/>
         
 
       </Routes>

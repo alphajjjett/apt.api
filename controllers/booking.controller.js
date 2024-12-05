@@ -44,23 +44,19 @@ const getAllBookings = async (req, res) => {
 // Update booking status
 const updateBookingStatus = async (req, res) => {
   try {
-    const { bookingId, status } = req.body;
+    const { bookingId } = req.params;  // Get bookingId from URL parameters
+    const { status } = req.body;  // Get new status from request body
 
-    // Ensure status is valid
-    if (!['Pending', 'Confirmed', 'Cancelled'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status' });
-    }
+    // Find the booking by ID and update its status
+    const booking = await Booking.findByIdAndUpdate(bookingId, { status }, { new: true });
 
-    const booking = await Booking.findById(bookingId);
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
 
-    booking.status = status;
-    await booking.save();
-    res.json(booking);
+    res.status(200).json(booking);  // Return the updated booking
   } catch (error) {
-    res.status(500).json({ message: 'Error updating booking status', error: error.message });
+    res.status(500).json({ message: 'Error updating booking status' });
   }
 };
 

@@ -9,6 +9,6 @@ router.post('/', createBooking);
 router.get('/', getAllBookings);
 
 // Route for updating booking status
-router.put('/status', updateBookingStatus);
+router.put('/:bookingId/status', updateBookingStatus);
 
 module.exports = router;

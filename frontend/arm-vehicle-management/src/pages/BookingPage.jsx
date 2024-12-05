@@ -40,6 +40,10 @@ const BookingPage = () => {
     fetchData();
   }, []);
 
+  const handleBackClick = () => {
+    navigate('/dashboard');
+  };
+
   const handleCreateBooking = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -71,22 +75,25 @@ const BookingPage = () => {
       // Show alert when booking is completed
       alert('Booking Completed');
     } catch (error) {
-      setError('Failed to create booking');
+      setError('');
+      alert('Fail to create Booking !');
     }
   };
 
   return (
     <div>
       <h2>Booking Page</h2>
+      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+        Back to Dashboard
+      </button>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}  {/* Show error message if any */}
-
+      {error && <p>{error}</p>}  {/* Show error message if any */}    
       {!isAdmin && (
         <div>
           <h3>Create New Booking</h3>
           <label>
             Mission:
-            <select onChange={(e) => setSelectedMission(e.target.value)} value={selectedMission}>
+            <select onChange={(e) => setSelectedMission(e.target.value)} value={selectedMission}> 
               <option value="">Select Mission</option>
               {missions.length > 0 ? (
                 missions.map((mission) => (
@@ -127,7 +134,7 @@ const BookingPage = () => {
           </button>
         </div>
       )}
-
+      {/*  {!isAdmin && ()} */}
       <div>
         <h3>Bookings</h3>
         <ul>

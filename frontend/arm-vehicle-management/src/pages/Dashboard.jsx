@@ -63,6 +63,8 @@ const Dashboard = () => {
         <Link to="/booking">Go to Booking</Link>
         <br/>
         <Link to="/booking-status">Go to Booking Status</Link>
+        <br/>
+        <Link to="/return">Go to Return</Link>
       </div>
 
       {/* เพิ่มปุ่ม logout */}

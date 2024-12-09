@@ -32,14 +32,18 @@ const VehicleReturnPage = () => {
   const handleBookingChange = (e) => {
     const selectedBooking = bookings.find(booking => booking._id === e.target.value);
     if (selectedBooking) {
+      const vehicleId = selectedBooking.vehicle_id ? selectedBooking.vehicle_id._id : '';  // ตรวจสอบว่ามี vehicle_id ไหม
+      const userId = selectedBooking.user_id ? selectedBooking.user_id._id : '';  // ตรวจสอบว่ามี user_id ไหม
+  
       setFormData({
         ...formData,
         booking_id: selectedBooking._id,
-        vehicle_id: selectedBooking.vehicle_id._id, // Assuming booking has vehicle_id populated
-        user_id: selectedBooking.user_id._id, // Assuming booking has user_id populated
+        vehicle_id: vehicleId,  // ใส่ค่า vehicle_id ถ้ามี
+        user_id: userId,  // ใส่ค่า user_id ถ้ามี
       });
     }
   };
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

@@ -106,6 +106,30 @@ app.post('/api/missions', async (req, res) => {
   }
 });
 
+app.post('/api/vehicle-returns', (req, res) => {
+  const { bookingId, userId, vehicleId, returnDate, condition, fuelLevel, remark } = req.body;
+  
+  // ตรวจสอบและบันทึกข้อมูลลง database
+  const newReturn = new VehicleReturn({
+    bookingId,
+    userId,
+    vehicleId,
+    returnDate,
+    condition,
+    fuelLevel,
+    remark
+  });
+  
+  newReturn.save()
+    .then(() => res.status(201).json({ message: 'Vehicle return submitted successfully' }))
+    .catch((error) => res.status(500).json({ error: 'Failed to submit vehicle return' }));
+});
+
+
+
+
+
+
 
 
 app.get('/', (req, res) => {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {jwtDecode} from 'jwt-decode';  // นำเข้า jwt-decode
 
 const VehicleReturnPage = () => {
   const [bookings, setBookings] = useState([]);
@@ -15,12 +16,12 @@ const VehicleReturnPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Fetch bookings from API
+  // ดึงข้อมูลจาก API
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/bookings');
-        setBookings(response.data); // Assuming this endpoint returns populated data with vehicle and user info
+        setBookings(response.data); // สมมุติว่า API คืนข้อมูล booking ที่มี vehicle และ user_id
       } catch (error) {
         setError('Error fetching bookings');
       }
@@ -29,21 +30,37 @@ const VehicleReturnPage = () => {
     fetchBookings();
   }, []);
 
+  // ใช้ jwt-decode เพื่อดึงข้อมูล user จาก token
+  const getUserIdFromToken = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken.id;  // ดึง user ID จาก token
+      } catch (error) {
+        console.error('Error decoding token', error);
+        return null;
+      }
+    }
+    return null;
+  };
+
   const handleBookingChange = (e) => {
     const selectedBooking = bookings.find(booking => booking._id === e.target.value);
+    const userIdFromToken = getUserIdFromToken(); // ดึง user ID จาก token
+
     if (selectedBooking) {
-      const vehicleId = selectedBooking.vehicle_id ? selectedBooking.vehicle_id._id : '';  // ตรวจสอบว่ามี vehicle_id ไหม
-      const userId = selectedBooking.user_id ? selectedBooking.user_id._id : '';  // ตรวจสอบว่ามี user_id ไหม
-  
+      const vehicleId = selectedBooking.vehicle_id ? selectedBooking.vehicle_id._id : '';
+      const userId = selectedBooking.user_id ? selectedBooking.user_id._id : userIdFromToken; // ถ้าไม่มี user_id ใน booking ใช้จาก token
+
       setFormData({
         ...formData,
         booking_id: selectedBooking._id,
-        vehicle_id: vehicleId,  // ใส่ค่า vehicle_id ถ้ามี
-        user_id: userId,  // ใส่ค่า user_id ถ้ามี
+        vehicle_id: vehicleId,
+        user_id: userId,  // ใช้ user ID จาก token หรือจาก booking
       });
     }
   };
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

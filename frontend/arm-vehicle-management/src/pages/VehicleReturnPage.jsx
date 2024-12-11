@@ -21,6 +21,7 @@ const VehicleReturnPage = () => {
     const fetchBookings = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/bookings');
+        console.log(response.data);
         setBookings(response.data); // สมมุติว่า API คืนข้อมูล booking ที่มี vehicle และ user_id
       } catch (error) {
         setError('Error fetching bookings');
@@ -48,23 +49,28 @@ const VehicleReturnPage = () => {
   const handleBookingChange = (e) => {
     const selectedBooking = bookings.find(booking => booking._id === e.target.value);
     const userIdFromToken = getUserIdFromToken(); // ดึง user ID จาก token
-  
+    
     if (selectedBooking) {
       const vehicleId = selectedBooking.vehicle ? selectedBooking.vehicle.license_plate : '';
       const userId = selectedBooking.user ? selectedBooking.user.name : userIdFromToken; // ถ้าไม่มี user_id ใน booking ใช้จาก token
-  
+      const returnDate = selectedBooking.return_date ? selectedBooking.return_date : new Date().toISOString().split('T')[0]; // ใช้ return_date จาก booking หรือเป็นวันที่ปัจจุบันถ้าไม่มี
+      
       // Log booking_id และ vehicle_id
       console.log('Selected Booking ID:', selectedBooking._id);
       console.log('Selected Vehicle ID:', vehicleId);
+      console.log('Return Date:', returnDate);
   
       setFormData({
         ...formData,
-        booking_id: selectedBooking,
+        booking_id: selectedBooking._id,  // ใช้ _id แทน object
         vehicle_id: vehicleId,
         user_id: userId,  // ใช้ user ID จาก token หรือจาก booking
+        return_date: returnDate  // ตั้งค่า return_date อัตโนมัติ
       });
     }
   };
+  
+  
   
 
   const handleInputChange = (e) => {
@@ -105,17 +111,19 @@ const VehicleReturnPage = () => {
 
       {/* Form to create a new vehicle return */}
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Booking:</label>
+      <div>
+          <label>Booking (Mission):</label>
           <select name="booking_id" value={formData.booking_id} onChange={handleBookingChange}>
-            <option value="">Select Booking</option> 
+            <option value="">Select Mission</option> 
             {bookings.map(booking => (
               <option key={booking._id} value={booking._id}>
-                {booking.start_time} - {booking.end_time}
+                {booking.mission.mission_name}
               </option>
             ))}
           </select>
         </div>
+
+
         <div>
           <label>Vehicle ID:</label>
           <input
@@ -135,14 +143,15 @@ const VehicleReturnPage = () => {
           />
         </div>
         <div>
-          <label>Return Date:</label>
-          <input
-            type="date"
-            name="return_date"
-            value={formData.return_date}
-            onChange={handleInputChange}
-          />
-        </div>
+            <label>Return Date:</label>
+            <input
+              type="date"
+              name="return_date"
+              value={formData.return_date}
+              onChange={handleInputChange}
+            />
+          </div>
+
         <div>
           <label>Condition:</label>
           <select name="condition" value={formData.condition} onChange={handleInputChange}>

@@ -60,8 +60,9 @@ const updateBookingStatus = async (req, res) => {
   }
 };
 
+
 module.exports = {
   createBooking,
   getAllBookings,
-  updateBookingStatus,
+  updateBookingStatus
 };

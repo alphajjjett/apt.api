@@ -48,19 +48,24 @@ const VehicleReturnPage = () => {
   const handleBookingChange = (e) => {
     const selectedBooking = bookings.find(booking => booking._id === e.target.value);
     const userIdFromToken = getUserIdFromToken(); // ดึง user ID จาก token
-
+  
     if (selectedBooking) {
-      const vehicleId = selectedBooking.vehicle_id ? selectedBooking.vehicle_id._id : '';
-      const userId = selectedBooking.user_id ? selectedBooking.user_id._id : userIdFromToken; // ถ้าไม่มี user_id ใน booking ใช้จาก token
-
+      const vehicleId = selectedBooking.vehicle ? selectedBooking.vehicle.license_plate : '';
+      const userId = selectedBooking.user ? selectedBooking.user.name : userIdFromToken; // ถ้าไม่มี user_id ใน booking ใช้จาก token
+  
+      // Log booking_id และ vehicle_id
+      console.log('Selected Booking ID:', selectedBooking._id);
+      console.log('Selected Vehicle ID:', vehicleId);
+  
       setFormData({
         ...formData,
-        booking_id: selectedBooking._id,
+        booking_id: selectedBooking,
         vehicle_id: vehicleId,
         user_id: userId,  // ใช้ user ID จาก token หรือจาก booking
       });
     }
   };
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

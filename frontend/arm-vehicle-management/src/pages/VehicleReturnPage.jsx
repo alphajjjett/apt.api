@@ -53,23 +53,29 @@ const VehicleReturnPage = () => {
     if (selectedBooking) {
       const vehicleId = selectedBooking.vehicle ? selectedBooking.vehicle.license_plate : '';
       const userId = selectedBooking.user ? selectedBooking.user.name : userIdFromToken; // ถ้าไม่มี user_id ใน booking ใช้จาก token
-      const returnDate = selectedBooking.return_date ? selectedBooking.return_date : new Date().toISOString().split('T')[0]; // ใช้ return_date จาก booking หรือเป็นวันที่ปัจจุบันถ้าไม่มี
-      
-      // Log booking_id และ vehicle_id
+      const returnDate = selectedBooking.mission && selectedBooking.mission.end_date ? new Date(selectedBooking.mission.end_date) : ''; // ดึง end_date จาก mission
+  
+      // แปลง returnDate เป็น วัน/เดือน/ปี สำหรับการแสดงผล
+      const formattedDate = returnDate instanceof Date ? returnDate.toLocaleDateString('th-TH') : '';
+  
+      // แปลง returnDate เป็น yyyy-MM-dd สำหรับการตั้งค่าใน form
+      const inputDateFormat = returnDate instanceof Date ? returnDate.toISOString().split('T')[0] : '';
+  
+      // Log booking_id, vehicle_id, และ return_date ที่แปลงแล้ว
       console.log('Selected Booking ID:', selectedBooking._id);
       console.log('Selected Vehicle ID:', vehicleId);
-      console.log('Return Date:', returnDate);
+      console.log('Formatted Return Date:', formattedDate);  // แสดงวันที่ในรูปแบบ วัน/เดือน/ปี
+      console.log('Input Date Format:', inputDateFormat);    // แสดงวันที่ในรูปแบบ yyyy-MM-dd
   
       setFormData({
         ...formData,
         booking_id: selectedBooking._id,  // ใช้ _id แทน object
         vehicle_id: vehicleId,
         user_id: userId,  // ใช้ user ID จาก token หรือจาก booking
-        return_date: returnDate  // ตั้งค่า return_date อัตโนมัติ
+        return_date: inputDateFormat  // ตั้งค่า return_date เป็นวันที่ในรูปแบบ yyyy-MM-dd
       });
     }
   };
-  
   
   
 
@@ -149,9 +155,9 @@ const VehicleReturnPage = () => {
               name="return_date"
               value={formData.return_date}
               onChange={handleInputChange}
+              readOnly  // ให้ฟิลด์นี้เป็น readOnly เพื่อป้องกันการแก้ไข
             />
           </div>
-
         <div>
           <label>Condition:</label>
           <select name="condition" value={formData.condition} onChange={handleInputChange}>

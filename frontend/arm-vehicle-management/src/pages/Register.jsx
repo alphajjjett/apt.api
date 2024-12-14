@@ -6,13 +6,14 @@ const Register = () => {
   const [name, setName] = useState(''); // Add state for name
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [description, setDescription] = useState('');  // State for description
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
   
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !description) {  // Ensure description is provided
       setError('Please fill in all fields.');
       return;
     }
@@ -22,6 +23,7 @@ const Register = () => {
         name,
         email,
         password,
+        description,  // Add description to the request
         role: 'user'  // Ensure role is always 'user'
       });
       localStorage.setItem('token', response.data.token);
@@ -31,7 +33,6 @@ const Register = () => {
       setError('Failed to register. Please try again.');
     }
   };
-  
 
   return (
     <div>
@@ -39,7 +40,7 @@ const Register = () => {
       {error && <p>{error}</p>}
       <form onSubmit={handleRegister}>
         <div>
-          <label>Name:</label> {/* Add Name Input */}
+          <label>Name:</label>
           <input
             type="text"
             value={name}
@@ -62,6 +63,14 @@ const Register = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Description:</label>  {/* Add Description Input */}
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             required
           />
         </div>

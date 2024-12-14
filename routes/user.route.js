@@ -4,7 +4,7 @@ const { getAllUsers,
         getUserById, 
         loginUser,
         getCurrentUser,
-        updateCurrentUser,
+        updateUser,
         deleteUser,
         } = require('../controllers/user.controller');
 const router = express.Router();
@@ -31,7 +31,7 @@ router.get('/login', loginUser);
 router.get('/me',  getCurrentUser);
 
 // Route สำหรับแก้ไขข้อมูล user ที่ล็อกอินอยู่
-router.put('/me', updateCurrentUser);
+router.put('/:id', updateUser);
 
 
 // Route สำหรับลบผู้ใช้

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import '../styles/Login.css'; // นำเข้าไฟล์ CSS ที่ถูกต้อง
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -32,41 +33,60 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Role:</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-        <button type="submit">Login</button>
-      </form>
+    <div className="login-container">
+      <div className="login-form">
+        <h2>Login</h2>
+        {error && <p className="error-message">{error}</p>}
 
-      <div>
-        <p>Don't have an account?</p>
-        <button onClick={goToRegister}>Register</button> {/* Button to navigate to the register page */}
+        <form onSubmit={handleLogin}>
+          <div>
+            <label htmlFor="email" className="block">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="input-field"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="input-field"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="role" className="block">Role</label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="select-role"
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            className="button"
+          >
+            Login
+          </button>
+        </form>
+
+        <div className="register-link">
+          <p>Don't have an account? <a href="/register" onClick={goToRegister}>Register</a></p>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import '../styles/Dashboard.css';  // import CSS file ของ Dashboard
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
@@ -34,41 +35,44 @@ const Dashboard = () => {
     navigate('/');  // เปลี่ยนเส้นทางไปยังหน้า login
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;  // แสดงข้อความผิดพลาดหากมีข้อผิดพลาด
-  if (!data) return <div>No data available</div>;  // กรณีไม่พบข้อมูล
+  if (loading) return <div className="text-center py-6">Loading...</div>;
+  if (error) return <div className="text-center text-red-500 py-6">{error}</div>;
+  if (!data) return <div className="text-center py-6">No data available</div>;
 
   return (
-    <div>
-      <h2>Dashboard</h2>
-      <div>
-        <h3>Total Users: {data.usersCount}</h3>
-        <h3>Total Missions: {data.missionsCount}</h3>
-        <h3>Total Bookings: {data.bookingCount}</h3>
-        <h3>Total Vehicles: {data.vehicleCount}</h3>
-      </div>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-6">Dashboard</h2>
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold">Total Users: <span className="text-gray-600">{data.usersCount}</span></h3>
+          <h3 className="text-xl font-semibold">Total Missions: <span className="text-gray-600">{data.missionsCount}</span></h3>
+          <h3 className="text-xl font-semibold">Total Bookings: <span className="text-gray-600">{data.bookingCount}</span></h3>
+          <h3 className="text-xl font-semibold">Total Vehicles: <span className="text-gray-600">{data.vehicleCount}</span></h3>
+        </div>
 
-      {/* เพิ่มลิ้งค์ไปยังหน้าอื่น ๆ */}
-      <div>
-        <Link to="/users">Go to Users Page</Link>
-        <br />
-        <Link to="/missions">Go to Missions Page</Link>
-        <br />
-        <Link to="/missionslist">Go to Missions List</Link>
-        <br />
-        <Link to="/vehicle">Go to Vehicle list</Link>
-        <br/>
-        <Link to="/vehicle-status">Go to Vehicle Status</Link>
-        <br/>
-        <Link to="/booking">Go to Booking</Link>
-        <br/>
-        <Link to="/booking-status">Go to Booking Status</Link>
-        <br/>
-        <Link to="/return">Go to Return</Link>
-      </div>
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold">Quick Links:</h3>
+          <ul className="list-none p-0">
+            <li><Link to="/users" className="text-blue-500 hover:text-blue-700">Go to Users Page</Link></li>
+            <li><Link to="/missions" className="text-blue-500 hover:text-blue-700">Go to Missions Page</Link></li>
+            <li><Link to="/missionslist" className="text-blue-500 hover:text-blue-700">Go to Missions List</Link></li>
+            <li><Link to="/vehicle" className="text-blue-500 hover:text-blue-700">Go to Vehicle List</Link></li>
+            <li><Link to="/vehicle-status" className="text-blue-500 hover:text-blue-700">Go to Vehicle Status</Link></li>
+            <li><Link to="/booking" className="text-blue-500 hover:text-blue-700">Go to Booking</Link></li>
+            <li><Link to="/booking-status" className="text-blue-500 hover:text-blue-700">Go to Booking Status</Link></li>
+            <li><Link to="/return" className="text-blue-500 hover:text-blue-700">Go to Return</Link></li>
+          </ul>
+        </div>
 
-      {/* เพิ่มปุ่ม logout */}
-      <button onClick={handleLogout}>Logout</button>
+        <div className="text-center">
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white py-2 px-6 rounded-md hover:bg-red-600 focus:outline-none"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

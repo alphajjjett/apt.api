@@ -1,0 +1,36 @@
+/* src/styles/register.css */
+
+body {
+    background-color: #f3f4f6;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  input, textarea {
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+  
+  button {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  button:hover {
+    cursor: pointer;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+  

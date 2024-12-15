@@ -74,30 +74,28 @@ const BookingPage = () => {
     }
   };
 
-    const handleDeleteBooking = async (bookingId) => {
-      if (window.confirm('Are you sure you want to delete this booking?')) {
-        try {
-          const token = localStorage.getItem('token');
-          await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          setBookings(bookings.filter(booking => booking._id !== bookingId));
-          console.log (setBookings);
-          alert('Booking deleted successfully');
-        } catch (error) {
-          setError('Failed to delete booking');
-          alert('Failed to delete booking');
-        }
+  const handleDeleteBooking = async (bookingId) => {
+    if (window.confirm('Are you sure you want to delete this booking?')) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setBookings(bookings.filter(booking => booking._id !== bookingId));
+        console.log(setBookings);
+        alert('Booking deleted successfully');
+      } catch (error) {
+        setError('Failed to delete booking');
+        alert('Failed to delete booking');
       }
-    };
-    
-
+    }
+  };
 
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold mb-6">Booking Page</h2>
       <button onClick={handleBackClick} className="bg-blue-500 text-white py-2 px-4 rounded mb-6">
-              Back to Dashboard
+        Back to Dashboard
       </button>
       {error && <p className="text-red-500">{error}</p>}
       {!isAdmin && (
@@ -152,15 +150,14 @@ const BookingPage = () => {
           <button onClick={handleCreateBooking} className="bg-green-500 text-white py-2 px-4 rounded">
             Create Booking
           </button>
-          
         </div>
       )}
 
       <div>
         <h3 className="text-xl font-semibold mb-4">Bookings</h3>
-        <ul className="space-y-4">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {bookings.map((booking) => (
-            <li key={booking._id} className="border border-gray-300 p-4 rounded">
+            <li key={booking._id} className="border border-gray-300 p-4 rounded shadow-md bg-white">
               <p className="mb-2">
                 <span className="font-bold">Mission:</span> {booking.mission.mission_name}
               </p>
@@ -174,14 +171,12 @@ const BookingPage = () => {
                 <span className="font-bold">Booking Date:</span>{' '}
                 {new Date(booking.bookingDate).toLocaleDateString()}
               </p>
-
               <button
-                  onClick={() => handleDeleteBooking(booking._id)} //deletebooking
-                  className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded ml-2"
-                >
-                  Delete
-                </button>
-
+                onClick={() => handleDeleteBooking(booking._id)} 
+                className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded"
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Add navigate functionality
+import { useNavigate } from 'react-router-dom';
+import '../styles/MRequest.css'; // Import external CSS
 
 const MissionRequest = () => {
   const [missions, setMissions] = useState([]);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();  // Initialize navigate
-   // ฟังก์ชันสำหรับปุ่ม "Back to Dashboard"
+  const navigate = useNavigate();
+
   const handleBackClick = () => {
-    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+    navigate('/dashboard');
   };
 
   useEffect(() => {
@@ -29,7 +30,6 @@ const MissionRequest = () => {
       await axios.put(`http://localhost:5000/api/missions/${missionId}/status`, {
         status: newStatus,
       });
-      // Update the local state to reflect the new status
       setMissions((prevMissions) =>
         prevMissions.map((mission) =>
           mission._id === missionId ? { ...mission, status: newStatus } : mission
@@ -42,42 +42,29 @@ const MissionRequest = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Mission Requests</h2>
-      {error && <p>{error}</p>}
-      <table>
-        <thead>
-          <tr>
-            <th>Mission Name</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {missions.map((mission) => (
-            <tr key={mission._id}>
-              <td>{mission.mission_name}</td>
-              <td>{mission.description}</td>
-              <td>{mission.status}</td>
-              <td>
-                <select
-                  value={mission.status}
-                  onChange={(e) => handleStatusChange(mission._id, e.target.value)}
-                >
-                  <option value="pending">Pending</option>
-                  <option value="in progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {/* ปุ่ม Back to Dashboard */}
-      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
-        Back to Dashboard
-      </button>
+      {error && <p className="error-message">{error}</p>}
+
+      <div className="card-container">
+        {missions.map((mission) => (
+          <div key={mission._id} className="mission-card">
+            <h3>{mission.mission_name}</h3>
+            <p>{mission.description}</p>
+            <p>Status: {mission.status}</p>
+            <select
+              value={mission.status}
+              onChange={(e) => handleStatusChange(mission._id, e.target.value)}
+            >
+              <option value="pending">Pending</option>
+              <option value="in progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        ))}
+      </div>
+
+      <button onClick={handleBackClick}>Back to Dashboard</button>
     </div>
   );
 };

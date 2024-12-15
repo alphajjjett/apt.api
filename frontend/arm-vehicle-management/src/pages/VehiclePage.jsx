@@ -77,7 +77,8 @@ const VehiclePage = () => {
           <li key={vehicle._id} className="max-w-md mx-auto mb-4 p-6 bg-white border border-gray-300 rounded-lg shadow-md">
           <div className="flex justify-between">
             <div>
-              <p className="text-xl font-semibold">Model: {vehicle.model}</p>
+              <p className="text-xl font-semibold">Name: {vehicle.name}</p>
+              <p className="text-sm text-gray-500">Model: {vehicle.model}</p>
               <p className="text-sm text-gray-500">License Plate: {vehicle.license_plate}</p>
               <p className="text-sm text-gray-500">Fuel Type: {vehicle.fuel_type}</p>
               <p className="text-sm text-gray-500">Fuel Capacity: {vehicle.fuel_capacity} liters</p>

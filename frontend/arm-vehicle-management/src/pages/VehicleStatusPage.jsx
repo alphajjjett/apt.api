@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Add navigate functionality
-import {jwtDecode} from 'jwt-decode'; // นำเข้า jwt-decode เพื่อถอดรหัส JWT
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import '../styles/VehicleStatus.css';  // Import the external CSS
 
 const VehicleStatusPage = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const navigate = useNavigate();  // Initialize navigate
-   // ฟังก์ชันสำหรับปุ่ม "Back to Dashboard"
-   const handleBackClick = () => {
-    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+  const navigate = useNavigate();
+
+  const handleBackClick = () => {
+    navigate('/dashboard');
   };
-  
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -23,7 +23,6 @@ const VehicleStatusPage = () => {
       return;
     }
 
-    // ถอดรหัส JWT เพื่อตรวจสอบว่าเป็น Admin หรือไม่
     try {
       const decodedToken = jwtDecode(token);
       setIsAdmin(decodedToken.role === 'admin');
@@ -47,18 +46,15 @@ const VehicleStatusPage = () => {
     fetchVehicles();
   }, []);
 
-  // ฟังก์ชันอัปเดตสถานะของรถ
   const handleStatusChange = async (vehicleId, newStatus) => {
     const token = localStorage.getItem('token');
     try {
-      // ส่งคำขอ PUT เพื่ออัปเดตสถานะของรถ
       await axios.put(
         `http://localhost:5000/api/vehicles/${vehicleId}`, 
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
-      // อัปเดตสถานะใน local state
+
       setVehicles((prevVehicles) =>
         prevVehicles.map((vehicle) =>
           vehicle._id === vehicleId ? { ...vehicle, status: newStatus } : vehicle
@@ -68,51 +64,39 @@ const VehicleStatusPage = () => {
       setError('Failed to update vehicle status');
     }
   };
-  
+
   if (loading) return <p>Loading vehicles...</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div>
-      <h2>Vehicle Status</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Vehicle Name</th>
-            <th>Model</th>
-            <th>License Plate</th>
-            <th>Status</th>
-            <th>Last Updated</th>
-            {isAdmin && <th>Actions</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {vehicles.map((vehicle) => (
-            <tr key={vehicle._id}>
-              <td>{vehicle.name}</td>
-              <td>{vehicle.model}</td>
-              <td>{vehicle.license_plate}</td>
-              <td>{vehicle.status}</td>
-              <td>{new Date(vehicle.updatedAt).toLocaleDateString()}</td> {/* Display Last Updated date */}
-              {isAdmin && (
-                <td>
-                  {/* เพิ่มปุ่มให้ Admin เปลี่ยนสถานะของรถ */}
-                  <select
-                    value={vehicle.status}
-                    onChange={(e) => handleStatusChange(vehicle._id, e.target.value)}
-                  >
-                    <option value="available">Available</option>
-                    <option value="in-use">In Use</option>
-                    <option value="maintenance">Maintenance</option>
-                  </select>
-                </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {/* ปุ่ม Back to Dashboard */}
-      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+    <div className="vehicle-status-container">
+      <h2 className="vehicle-status-heading">Vehicle Status</h2>
+      <div className="vehicle-grid">
+        {vehicles.map((vehicle) => (
+          <div key={vehicle._id} className="vehicle-card">
+            <h3 className="vehicle-name">{vehicle.name}</h3>
+            <p className="vehicle-info"><strong>Model:</strong> {vehicle.model}</p>
+            <p className="vehicle-info"><strong>License Plate:</strong> {vehicle.license_plate}</p>
+            <p className="vehicle-info"><strong>Status:</strong> {vehicle.status}</p>
+            <p className="vehicle-info"><strong>Last Updated:</strong> {new Date(vehicle.updatedAt).toLocaleDateString()}</p>
+            {isAdmin && (
+              <div className="vehicle-status-update">
+                <label className="vehicle-label">Update Status</label>
+                <select
+                  value={vehicle.status}
+                  onChange={(e) => handleStatusChange(vehicle._id, e.target.value)}
+                  className="vehicle-select"
+                >
+                  <option value="available">Available</option>
+                  <option value="in-use">In Use</option>
+                  <option value="maintenance">Maintenance</option>
+                </select>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      <button onClick={handleBackClick} className="back-button">
         Back to Dashboard
       </button>
     </div>

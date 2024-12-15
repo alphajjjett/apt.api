@@ -6,14 +6,13 @@ const MissionList = () => {
   const [missions, setMissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false); // ใช้เพื่อตรวจสอบว่าเป็น Admin หรือไม่
+  const [isAdmin, setIsAdmin] = useState(false); // ตรวจสอบว่าเป็น Admin หรือไม่
   const navigate = useNavigate();
 
   const handleBackClick = () => {
     navigate('/dashboard');
   };
 
-  // Fetch all missions
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -33,7 +32,6 @@ const MissionList = () => {
       }
     };
 
-    // ตรวจสอบว่าเป็น Admin หรือไม่จาก Token
     const { role } = JSON.parse(atob(token.split('.')[1])); // decode JWT
     setIsAdmin(role === 'admin');
 
@@ -66,44 +64,34 @@ const MissionList = () => {
   }
 
   return (
-    <div>
-      <h2>Mission List</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Mission Name</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Vehicle</th>
-            <th>Assigned User</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            {isAdmin && <th>Action</th>} {/* แสดงปุ่ม Delete เฉพาะ Admin */}
-            <th>Last Updated</th>
-          </tr>
-        </thead>
-        <tbody>
-          {missions.map((mission) => (
-            <tr key={mission._id}>
-              <td>{mission.mission_name}</td>
-              <td>{mission.description}</td>
-              <td>{mission.status}</td>
-              <td>{mission.assigned_vehicle_id ? mission.assigned_vehicle_id.license_plate : 'N/A'}</td>
-              <td>{mission.assigned_user_id ? mission.assigned_user_id.name : 'N/A'}</td>
-              <td>{new Date(mission.start_date).toLocaleDateString()}</td>
-              <td>{new Date(mission.end_date).toLocaleDateString()}</td>
-              {isAdmin && (
-                <td>
-                  <button onClick={() => handleDelete(mission._id)}>Delete</button>
-                </td>
-                
-              )}
-              <td>{new Date(mission.updatedAt).toLocaleDateString()}</td> {/* Display Last Updated date */}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+    <div className="container mx-auto px-4">
+      <h2 className="text-2xl font-bold mb-4">Mission List</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {missions.map((mission) => (
+          <div key={mission._id} className="bg-white shadow-md rounded-lg p-4">
+            <h3 className="text-xl font-semibold mb-2">{mission.mission_name}</h3>
+            <p className="text-gray-700 mb-2">Description: {mission.description}</p>
+            <p className="text-gray-700 mb-2">Status: {mission.status}</p>
+            <p className="text-gray-700 mb-2">Vehicle: {mission.assigned_vehicle_id ? mission.assigned_vehicle_id.license_plate : 'N/A'}</p>
+            <p className="text-gray-700 mb-2">Assigned User: {mission.assigned_user_id ? mission.assigned_user_id.name : 'N/A'}</p>
+            <p className="text-gray-700 mb-2">Start Date: {new Date(mission.start_date).toLocaleDateString()}</p>
+            <p className="text-gray-700 mb-2">End Date: {new Date(mission.end_date).toLocaleDateString()}</p>
+            <p className="text-gray-500 text-sm mb-2">Last Updated: {new Date(mission.updatedAt).toLocaleDateString()}</p>
+            {isAdmin && (
+              <button
+                onClick={() => handleDelete(mission._id)}
+                className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600"
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      <button
+        onClick={handleBackClick}
+        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+      >
         Back to Dashboard
       </button>
     </div>

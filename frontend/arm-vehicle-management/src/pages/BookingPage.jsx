@@ -74,23 +74,23 @@ const BookingPage = () => {
     }
   };
 
-  const handleDeleteBooking = async (bookingId) => {
-    if (window.confirm('Are you sure you want to delete this booking?')) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setBookings(bookings.filter(booking => booking._id !== bookingId));
-        console.log (setBookings);
-        alert('Booking deleted successfully');
-      } catch (error) {
-        setError('Failed to delete booking');
-        alert('Failed to delete booking');
+    const handleDeleteBooking = async (bookingId) => {
+      if (window.confirm('Are you sure you want to delete this booking?')) {
+        try {
+          const token = localStorage.getItem('token');
+          await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setBookings(bookings.filter(booking => booking._id !== bookingId));
+          console.log (setBookings);
+          alert('Booking deleted successfully');
+        } catch (error) {
+          setError('Failed to delete booking');
+          alert('Failed to delete booking');
+        }
       }
-    }
-  };
-  
+    };
+    
 
 
   return (

@@ -44,7 +44,7 @@ const Dashboard = () => {
       <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-6">Dashboard</h2>
         <div className="mb-6">
-          <h3 className="text-xl font-semibold">Total Users: <span className="text-gray-600">{data.usersCount}</span></h3>
+          {/* <h3 className="text-xl font-semibold">Total Users: <span className="text-gray-600">{data.usersCount}</span></h3> */}
           <h3 className="text-xl font-semibold">Total Missions: <span className="text-gray-600">{data.missionsCount}</span></h3>
           <h3 className="text-xl font-semibold">Total Bookings: <span className="text-gray-600">{data.bookingCount}</span></h3>
           <h3 className="text-xl font-semibold">Total Vehicles: <span className="text-gray-600">{data.vehicleCount}</span></h3>

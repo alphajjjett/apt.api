@@ -1,64 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';  // Add navigate functionality
-import { jwtDecode } from 'jwt-decode';  // ใช้ jwt-decode
-import axios from 'axios';  // ใช้ axios สำหรับการทำ HTTP requests
+import { useNavigate } from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';  // jwtDecode without destructuring
+import axios from 'axios';
+import '../styles/UserProfilePage.css'; // นำเข้าไฟล์ CSS ที่สร้างขึ้น
 
 const UserProfilePage = () => {
-  const { id } = useParams();  // ใช้ id จาก URL
+  const { id } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(false); // Track edit state
-  const [editableName, setEditableName] = useState(""); // Track editable name
-  const [editableEmail, setEditableEmail] = useState(""); // Track editable email
-  const [editableDescription, setEditableDescription] = useState(""); // Track editable description
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableName, setEditableName] = useState("");
+  const [editableEmail, setEditableEmail] = useState("");
+  const [editableDescription, setEditableDescription] = useState("");
 
-  const navigate = useNavigate();  // Initialize navigate
+  const navigate = useNavigate();
 
-  // ฟังก์ชันสำหรับปุ่ม "Back to Dashboard"
   const handleBackClick = () => {
-    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+    navigate('/dashboard');
   };
 
-  // ฟังก์ชันสำหรับการคลิก "Edit"
   const handleEditClick = () => {
-    setIsEditing(true);  // เปลี่ยนเป็นโหมดแก้ไข
-    setEditableName(user.name);  // ตั้งค่า name ที่จะแก้ไข
-    setEditableEmail(user.email);  // ตั้งค่า email ที่จะแก้ไข
-    setEditableDescription(user.description || "");  // ตั้งค่าคำอธิบายที่จะแก้ไข
+    setIsEditing(true);
+    setEditableName(user.name);
+    setEditableEmail(user.email);
+    setEditableDescription(user.description || "");
   };
 
-  // ฟังก์ชันสำหรับบันทึกการแก้ไข
   const handleSaveClick = async () => {
     const updatedUser = {
       name: editableName,
       email: editableEmail,
-      description: editableDescription, // ใช้ description ที่แก้ไข
+      description: editableDescription,
     };
 
     try {
-      // ส่งข้อมูลที่แก้ไขไปยัง backend (PUT request)
       const response = await axios.put(`http://localhost:5000/api/users/${id}`, updatedUser, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,  // ใช้ token สำหรับการตรวจสอบ
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         }
       });
 
-      console.log("User data updated on server:", response.data);  // ตรวจสอบข้อมูลที่ส่งกลับจากเซิร์ฟเวอร์
-
-      // อัปเดตข้อมูลใน state
-      setUser(response.data); 
-      setIsEditing(false);  // ปิดโหมดแก้ไข
-
-      // เรียกฟังก์ชันเพื่อดึงข้อมูลใหม่จาก server
-      fetchUserData(); 
+      setUser(response.data);
+      setIsEditing(false);
+      fetchUserData();
     } catch (error) {
       setError('Error updating user data');
     }
   };
 
-  // ฟังก์ชันเพื่อดึงข้อมูลผู้ใช้
   const fetchUserData = async () => {
     try {
       const response = await axios.get(`/api/users/${id}`, {
@@ -66,7 +57,7 @@ const UserProfilePage = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      setUser(response.data); // อัปเดตข้อมูลผู้ใช้ใน state
+      setUser(response.data);
     } catch (error) {
       console.error('Error fetching user data', error);
     } finally {
@@ -75,10 +66,10 @@ const UserProfilePage = () => {
   };
 
   useEffect(() => {
-    let isMounted = true; // Track if the component is mounted
+    let isMounted = true;
 
     const fetchUser = async () => {
-      const token = localStorage.getItem('token');  // ดึง token จาก localStorage
+      const token = localStorage.getItem('token');
 
       if (!token) {
         setError('No token found, please login again');
@@ -87,31 +78,26 @@ const UserProfilePage = () => {
       }
 
       try {
-        // ใช้ jwtDecode เพื่อถอดรหัส token และดึงข้อมูลผู้ใช้
-        const decodedToken = jwtDecode(token);  
-        console.log(decodedToken); // log เพื่อดูข้อมูลใน token
+        const decodedToken = jwtDecode(token);
 
-        // ตรวจสอบว่า token ยังไม่หมดอายุ
         if (decodedToken.exp < Date.now() / 1000) {
           setError('Token has expired, please login again');
           setLoading(false);
           return;
         }
 
-        // ตรวจสอบว่า id จาก URL ตรงกับ id ใน token หรือไม่
         if (decodedToken.id !== id) {
           setError('User not authorized to view this profile');
           setLoading(false);
           return;
         }
 
-        // ถ้า id ตรงกัน แสดงข้อมูลจาก decodedToken
         if (isMounted) {
           setUser({
             name: decodedToken.name,
             email: decodedToken.email,
             role: decodedToken.role,
-            description: decodedToken.description || "",  // ใช้ description จาก token
+            description: decodedToken.description || "",
           });
         }
       } catch (error) {
@@ -126,7 +112,7 @@ const UserProfilePage = () => {
     fetchUser();
 
     return () => {
-      isMounted = false; // Cleanup on component unmount
+      isMounted = false;
     };
   }, [id]);
 
@@ -134,57 +120,64 @@ const UserProfilePage = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div>
-      <h2>User Profile</h2>
+    <div className="user-profile-container">
+      <h2 className="user-profile-title">User Profile</h2>
       {user && (
         <div>
-          <p><strong>Name:</strong> 
-            {isEditing ? 
+          <div className="user-profile-info">
+            <label>Name:</label>
+            {isEditing ? (
               <input
+                className="user-profile-input"
                 type="text"
                 value={editableName}
                 onChange={(e) => setEditableName(e.target.value)}
-              /> 
-              : 
-              user.name
-            }
-          </p>
-          <p><strong>Email:</strong> 
-            {isEditing ? 
+              />
+            ) : (
+              <span>{user.name}</span>
+            )}
+          </div>
+          <div className="user-profile-info">
+            <label>Email:</label>
+            {isEditing ? (
               <input
+                className="user-profile-input"
                 type="email"
                 value={editableEmail}
                 onChange={(e) => setEditableEmail(e.target.value)}
-              /> 
-              : 
-              user.email
-            }
-          </p>
-          <p><strong>Role:</strong> {user.role}</p>
-          <p><strong>Description:</strong> 
-            {isEditing ? 
+              />
+            ) : (
+              <span>{user.email}</span>
+            )}
+          </div>
+          <div className="user-profile-info">
+            <label>Role:</label> {user.role}
+          </div>
+          <div className="user-profile-info">
+            <label>Description:</label>
+            {isEditing ? (
               <textarea
+                className="user-profile-textarea"
                 value={editableDescription}
                 onChange={(e) => setEditableDescription(e.target.value)}
-              /> 
-              : 
-              user.description
-            }
-          </p>
+              />
+            ) : (
+              <span>{user.description}</span>
+            )}
+          </div>
         </div>
       )}
-      {/* ปุ่ม Back to Dashboard */}
-      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+  
+      <button className="user-profile-button" onClick={handleBackClick}>
         Back to Dashboard
       </button>
-
-      {/* ปุ่ม Edit หรือ Save */}
+  
       {isEditing ? (
-        <button onClick={handleSaveClick} style={{ marginTop: '20px' }}>
+        <button className="user-profile-button" onClick={handleSaveClick}>
           Save Changes
         </button>
       ) : (
-        <button onClick={handleEditClick} style={{ marginTop: '20px' }}>
+        <button className="user-profile-button" onClick={handleEditClick}>
           Edit Profile
         </button>
       )}

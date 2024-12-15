@@ -60,9 +60,31 @@ const updateBookingStatus = async (req, res) => {
   }
 };
 
+// Controller for deleting a booking by ID
+const deleteBooking = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the booking ID from the route params
+    const booking = await Booking.findById(id); // Find the booking by ID
+
+    if (!booking) {
+      // If the booking doesn't exist, return 404 error
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    await booking.remove(); // Remove the booking from the database
+    res.status(200).json({ message: 'Booking deleted successfully' });
+  } catch (error) {
+    // Handle any server errors
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 
 module.exports = {
   createBooking,
   getAllBookings,
-  updateBookingStatus
+  updateBookingStatus,
+  deleteBooking
 };

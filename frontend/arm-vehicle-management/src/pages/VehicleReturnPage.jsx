@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import '../styles/Return.css';  // Import external CSS
 
 const VehicleReturnPage = () => {
   const [bookings, setBookings] = useState([]);
   const [formData, setFormData] = useState({
     booking_id: '',
-    vehicle_id: '', // จะเก็บ ObjectId ของ vehicle
-    user_id: '', // จะเก็บ ObjectId ของ user
+    vehicle_id: '',
+    user_id: '',
     return_date: '',
     condition: '',
     fuel_level: '',
     remark: ''
   });
-  
-  const [vehicleDisplay, setVehicleDisplay] = useState('');  // เก็บทะเบียนรถที่จะแสดง
-  const [userDisplay, setUserDisplay] = useState('');        // เก็บชื่อผู้ใช้ที่จะแสดง
+
+  const [vehicleDisplay, setVehicleDisplay] = useState('');
+  const [userDisplay, setUserDisplay] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -46,33 +49,32 @@ const VehicleReturnPage = () => {
     return null;
   };
 
+  const handleBackClick = () => {
+    navigate('/dashboard');
+  };
+
   const handleBookingChange = (e) => {
     const selectedBookingId = e.target.value;
     const selectedBooking = bookings.find(booking => booking._id === selectedBookingId);
-    
+
     const userIdFromToken = getUserIdFromToken();
-    
+
     if (selectedBooking) {
       const vehicleId = selectedBooking.vehicle ? selectedBooking.vehicle._id : '';
-      const vehiclePlate = selectedBooking.vehicle ? selectedBooking.vehicle.license_plate : ''; // แสดงทะเบียนรถ
+      const vehiclePlate = selectedBooking.vehicle ? selectedBooking.vehicle.license_plate : '';
       const userId = selectedBooking.user ? selectedBooking.user._id : userIdFromToken;
-      const userName = selectedBooking.user ? selectedBooking.user.name : ''; // แสดงชื่อผู้ใช้
-
-      // Log ObjectId values for debugging
-      console.log('Selected Vehicle ID (ObjectId):', vehicleId);
-      console.log('Selected User ID (ObjectId):', userId);
+      const userName = selectedBooking.user ? selectedBooking.user.name : '';
 
       setFormData({
         ...formData,
         booking_id: selectedBooking._id,
-        vehicle_id: vehicleId,  // เก็บ _id ของ vehicle เพื่อส่งไปยัง backend
-        user_id: userId,        // เก็บ _id ของ user เพื่อส่งไปยัง backend
+        vehicle_id: vehicleId,
+        user_id: userId,
         return_date: selectedBooking.mission && selectedBooking.mission.end_date 
           ? new Date(selectedBooking.mission.end_date).toISOString().split('T')[0] 
           : ''
       });
 
-      // แสดงทะเบียนรถ และชื่อผู้ใช้บนหน้าเว็บ
       setVehicleDisplay(vehiclePlate);
       setUserDisplay(userName);
     }
@@ -110,49 +112,50 @@ const VehicleReturnPage = () => {
   };
 
   return (
-    <div>
-      <h2>Vehicle Return Management</h2>
+    <div className="form-container">
+      <h2 className="text-center font-bold text-2xl">Vehicle Return Management</h2>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
+      {error && <p className="error-message">{error}</p>}
+      {success && <p className="success-message">{success}</p>}
 
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Booking (Mission):</label>
-          <select name="booking_id" value={formData.booking_id} onChange={handleBookingChange}>
-            <option value="">Select Mission</option> 
+        <div className="input-container">
+          <label className="label">Booking (Mission):</label>
+          <select name="booking_id" value={formData.booking_id} onChange={handleBookingChange} className="input">
+            <option value="">Select Mission</option>
             {bookings.map(booking => (
               <option key={booking._id} value={booking._id}>
-                {booking.mission.mission_name} - {booking.vehicle.license_plate} {/* แสดงทะเบียนรถ */}
+                {booking.mission.mission_name} - {booking.vehicle.license_plate}
               </option>
             ))}
           </select>
         </div>
 
-        <div>
-          <label>Vehicle:</label>
-          <input type="text" value={vehicleDisplay} readOnly />  {/* แสดงทะเบียนรถ */}
+        <div className="input-container">
+          <label className="label">Vehicle:</label>
+          <input type="text" value={vehicleDisplay} readOnly className="input" />
         </div>
 
-        <div>
-          <label>User:</label>
-          <input type="text" value={userDisplay} readOnly />  {/* แสดงชื่อผู้ใช้งาน */}
+        <div className="input-container">
+          <label className="label">User:</label>
+          <input type="text" value={userDisplay} readOnly className="input" />
         </div>
 
-        <div>
-          <label>Return Date:</label>
+        <div className="input-container">
+          <label className="label">Return Date:</label>
           <input
             type="date"
             name="return_date"
             value={formData.return_date}
             onChange={handleInputChange}
+            className="input"
             readOnly
           />
         </div>
 
-        <div>
-          <label>Condition:</label>
-          <select name="condition" value={formData.condition} onChange={handleInputChange}>
+        <div className="input-container">
+          <label className="label">Condition:</label>
+          <select name="condition" value={formData.condition} onChange={handleInputChange} className="input">
             <option value="">Select Condition</option>
             <option value="good">Good</option>
             <option value="damaged">Damaged</option>
@@ -160,27 +163,32 @@ const VehicleReturnPage = () => {
           </select>
         </div>
 
-        <div>
-          <label>Fuel Level:</label>
+        <div className="input-container">
+          <label className="label">Fuel Level:</label>
           <input
             type="number"
             name="fuel_level"
             value={formData.fuel_level}
             onChange={handleInputChange}
+            className="input"
           />
         </div>
 
-        <div>
-          <label>Remark:</label>
+        <div className="input-container">
+          <label className="label">Remark:</label>
           <input
             type="text"
             name="remark"
             value={formData.remark}
             onChange={handleInputChange}
+            className="input"
           />
         </div>
-
-        <button type="submit">Submit</button>
+        <button type="submit" className="submit-btn">Submit</button>
+        <br/>
+        <button onClick={handleBackClick} className="bg-blue-500 text-white py-2 px-4 rounded mb-6">
+              Back to Dashboard
+        </button>
       </form>
     </div>
   );

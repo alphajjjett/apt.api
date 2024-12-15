@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import '../styles/BookingStatus.css'
 
 const BookingStatusPage = () => {
   const [bookings, setBookings] = useState([]);
@@ -52,38 +53,46 @@ const BookingStatusPage = () => {
   };
 
   return (
-    <div>
-      <h2>Booking Status Page</h2>
-      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+    <div className="p-6 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6">Booking Status Page</h2>
+      <button 
+        onClick={handleBackClick} 
+        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+      >
         Back to Dashboard
       </button>
 
-      {error && <p>{error}</p>}  {/* Show error message if any */}
+      {error && <p className="text-red-500 mt-4">{error}</p>}  {/* Show error message if any */}
 
-      <div>
-        <h3>Bookings List</h3>
-        <ul>
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold mb-4">Bookings List</h3>
+        <ul className="space-y-4">
           {bookings.map((booking) => (
-            <li key={booking._id}>
-              <p>Mission: {booking.mission.mission_name}</p>
-              <p>Vehicle: {booking.vehicle.name}</p>
-              <p>Status: {booking.status}</p>
-              <p>Booking Date: {new Date(booking.bookingDate).toLocaleDateString()}</p>
-
-              {/* Only admins can update the status */}
-              {isAdmin && (
+            <li key={booking._id} className="border-b border-gray-300 pb-4">
+              <div className="flex justify-between items-center mb-2">
                 <div>
-                  <label>Update Status:</label>
-                  <select 
-                    value={booking.status} 
-                    onChange={(e) => handleStatusChange(booking._id, e.target.value)}
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
+                  <p className="text-lg font-medium">Mission: {booking.mission.mission_name}</p>
+                  <p className="text-sm text-gray-500">Vehicle: {booking.vehicle.name}</p>
+                  <p className="text-sm text-gray-500">Status: {booking.status}</p>
+                  <p className="text-sm text-gray-500">Booking Date: {new Date(booking.bookingDate).toLocaleDateString()}</p>
                 </div>
-              )}
+
+                {/* Only admins can update the status */}
+                {isAdmin && (
+                  <div className="ml-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Update Status:</label>
+                    <select 
+                      value={booking.status} 
+                      onChange={(e) => handleStatusChange(booking._id, e.target.value)}
+                      className="p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="approved">Approved</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </div>
+                )}
+              </div>
             </li>
           ))}
         </ul>

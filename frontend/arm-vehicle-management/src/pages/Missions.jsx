@@ -1,39 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';  // Remove curly braces from jwtDecode
-import { useNavigate } from 'react-router-dom';  // Add navigate functionality
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
+import '../styles/CreateMission.css';  // Import external CSS
 
 const CreateMission = () => {
   const [missionName, setMissionName] = useState('');
   const [description, setDescription] = useState('');
-  const [status] = useState('pending'); // ตั้งค่าเป็น 'pending' โดยไม่ต้องให้ผู้ใช้เลือก
+  const [status] = useState('pending');
   const [vehicles, setVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState(null);
-  const navigate = useNavigate();  // Initialize navigate
+  const navigate = useNavigate();
 
-   // ฟังก์ชันสำหรับปุ่ม "Back to Dashboard"
   const handleBackClick = () => {
-    navigate('/dashboard');  // นำทางกลับไปที่หน้า Dashboard
+    navigate('/dashboard');
   };
 
-  // Check user's role and redirect if admin
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       const decodedToken = jwtDecode(token);
-      const userRole = decodedToken.role;
-
-      // If the user is an admin, redirect them to another page
-      if (userRole === 'admin') {
-        navigate('/mission_request');  // Redirect to MissionRequest page for admins
+      if (decodedToken.role === 'admin') {
+        navigate('/mission_request');
       }
     }
-  }, [navigate]);  // Dependency array includes navigate
+  }, [navigate]);
 
-  // Fetch vehicles for dropdown
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
@@ -46,101 +41,104 @@ const CreateMission = () => {
     fetchVehicles();
   }, []);
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         setError('No token found, please log in.');
         return;
       }
-  
+
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.id;
-  
+
       const missionData = {
         mission_name: missionName,
         description,
-        status,  // ใช้ค่า status ที่ได้จากการเลือกในฟอร์ม
+        status,
         assigned_vehicle_id: selectedVehicle,
         assigned_user_id: userId,
-        start_date: startDate,  // ใช้วันที่เริ่มต้นจากฟอร์ม
-        end_date: endDate,      // ใช้วันที่สิ้นสุดจากฟอร์ม
+        start_date: startDate,
+        end_date: endDate,
       };
-  
+
       await axios.post('http://localhost:5000/api/missions', missionData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       alert('Mission created successfully');
     } catch (error) {
-      console.error('Error creating mission:', error); // แสดงข้อผิดพลาดใน console
+      console.error('Error creating mission:', error);
       setError('Failed to create mission');
     }
   };
-  
 
   return (
-    <div>
-      <h2>Create Mission</h2>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="create-mission-container">
+      <h2 className="create-mission-heading">Create Mission</h2>
+      {error && <p className="create-mission-error">{error}</p>}
+      <form onSubmit={handleSubmit} className="create-mission-form">
         <div>
-          <label>Mission Name:</label>
+          <label className="create-mission-label">Mission Name:</label>
           <input
             type="text"
             value={missionName}
             onChange={(e) => setMissionName(e.target.value)}
             required
+            className="create-mission-input"
           />
         </div>
         <div>
-          <label>Description:</label>
+          <label className="create-mission-label">Description:</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
+            className="create-mission-textarea"
           />
         </div>
         <div>
-          <label>Assigned Vehicle:</label>
+          <label className="create-mission-label">Assigned Vehicle:</label>
           <select
             value={selectedVehicle}
             onChange={(e) => setSelectedVehicle(e.target.value)}
             required
+            className="create-mission-select"
           >
             <option value="">Select a vehicle</option>
             {vehicles.map((vehicle) => (
               <option key={vehicle._id} value={vehicle._id}>
-                {vehicle.license_plate} {/* หรือใช้ model ถ้าต้องการแสดงรุ่น */}
+                {vehicle.license_plate}
               </option>
             ))}
           </select>
         </div>
         <div>
-          <label>Start Date:</label>
+          <label className="create-mission-label">Start Date:</label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             required
+            className="create-mission-input"
           />
         </div>
         <div>
-          <label>End Date:</label>
+          <label className="create-mission-label">End Date:</label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             required
+            className="create-mission-input"
           />
         </div>
-        <button type="submit">Create Mission</button>
+        <button type="submit" className="create-mission-button">
+          Create Mission
+        </button>
       </form>
-      {/* ปุ่ม Back to Dashboard */}
-      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+      <button onClick={handleBackClick} className="create-mission-back-button">
         Back to Dashboard
       </button>
     </div>

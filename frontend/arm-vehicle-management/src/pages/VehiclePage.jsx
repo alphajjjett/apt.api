@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import '../styles/Vehicle.css'; // Import external CSS
 
 const VehiclePage = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -68,81 +69,107 @@ const VehiclePage = () => {
   };
 
   return (
-    <div>
-      <h1>Vehicle Information</h1>
-      <ul>
+    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <h1 className="text-2xl font-bold text-center mb-6">Vehicle Information</h1>
+      
+      <ul className="list-none p-0">
         {vehicles.map((vehicle) => (
-          <li key={vehicle._id}>
-            <p>Model: {vehicle.model}, License Plate: {vehicle.license_plate}, Fuel Type: {vehicle.fuel_type}, Fuel Capacity: {vehicle.fuel_capacity} liters</p>
+          <li key={vehicle._id} className="max-w-md mx-auto mb-4 p-6 bg-white border border-gray-300 rounded-lg shadow-md">
+          <div className="flex justify-between">
+            <div>
+              <p className="text-xl font-semibold">Model: {vehicle.model}</p>
+              <p className="text-sm text-gray-500">License Plate: {vehicle.license_plate}</p>
+              <p className="text-sm text-gray-500">Fuel Type: {vehicle.fuel_type}</p>
+              <p className="text-sm text-gray-500">Fuel Capacity: {vehicle.fuel_capacity} liters</p>
+            </div>
             {isAdmin && (
-              <button onClick={() => handleDelete(vehicle._id)} style={{ marginLeft: '10px' }}>
+              <button 
+                onClick={() => handleDelete(vehicle._id)} 
+                className="ml-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+              >
                 Delete
               </button>
             )}
-          </li>
+          </div>
+        </li>
+        
         ))}
       </ul>
 
-      {isAdmin && (
-        <div>
-          <h2>Create New Vehicle</h2>
-          <form onSubmit={handleSubmit}>
+        {isAdmin && (
+        <div className="mt-8 max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+          <h2 className="text-xl font-bold mb-4">Create New Vehicle</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label>Name:</label>
+              <label className="block text-sm font-medium mb-2">Name:</label>
               <input
-                type="text" 
+                type="text"
                 name="name"
                 value={vehicleData.name}
                 onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
                 required
               />
             </div>
             <div>
-              <label>License Plate:</label>
+              <label className="block text-sm font-medium mb-2">License Plate:</label>
               <input
                 type="text"
                 name="license_plate"
                 value={vehicleData.license_plate}
                 onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
                 required
               />
             </div>
             <div>
-              <label>Model:</label>
+              <label className="block text-sm font-medium mb-2">Model:</label>
               <input
                 type="text"
                 name="model"
                 value={vehicleData.model}
                 onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
                 required
               />
             </div>
             <div>
-              <label>Fuel Type:</label>
+              <label className="block text-sm font-medium mb-2">Fuel Type:</label>
               <input
                 type="text"
                 name="fuel_type"
                 value={vehicleData.fuel_type}
                 onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
                 required
               />
             </div>
             <div>
-              <label>Fuel Capacity (liters):</label>
+              <label className="block text-sm font-medium mb-2">Fuel Capacity (liters):</label>
               <input
                 type="number"
                 name="fuel_capacity"
                 value={vehicleData.fuel_capacity}
                 onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
               />
             </div>
-            <button type="submit">Create Vehicle</button>
+            <button 
+              type="submit" 
+              className="w-full py-3 bg-green-500 text-white rounded-md hover:bg-green-700"
+            >
+              Create Vehicle
+            </button>
           </form>
         </div>
       )}
+
       
-      {/* ปุ่ม Back to Dashboard */}
-      <button onClick={handleBackClick} style={{ marginTop: '20px' }}>
+      {/* Back to Dashboard Button */}
+      <button 
+        onClick={handleBackClick} 
+        className="mt-6 py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+      >
         Back to Dashboard
       </button>
     </div>

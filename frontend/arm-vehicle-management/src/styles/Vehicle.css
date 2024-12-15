@@ -1,0 +1,61 @@
+/* VehiclePage.css */
+
+/* Add general styles for the page */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  /* Form elements customization */
+  input, button {
+    font-size: 1rem;
+  }
+  
+  button:hover {
+    cursor: pointer;
+  }
+  
+  ul {
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Button style for Delete */
+  button.bg-red-500 {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  button.bg-red-500:hover {
+    background-color: #c53030;
+  }
+  
+  /* Button style for Create Vehicle */
+  button.bg-green-500 {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  button.bg-green-500:hover {
+    background-color: #2f855a;
+  }
+  
+  /* Button style for Back to Dashboard */
+  button.bg-blue-500 {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  button.bg-blue-500:hover {
+    background-color: #3182ce;
+  }
+  
+  form input {
+    padding: 12px;
+    border-radius: 5px;
+  }
+  
+  form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  

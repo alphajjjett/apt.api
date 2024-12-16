@@ -33,7 +33,9 @@ const CreateMission = () => {
     const fetchVehicles = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/vehicles');
-        setVehicles(response.data);
+        // Filter out vehicles that are not 'Available'
+        const availableVehicles = response.data.filter(vehicle => vehicle.status === 'available');
+        setVehicles(availableVehicles);
       } catch (error) {
         setError('Failed to fetch vehicles');
       }
@@ -109,7 +111,7 @@ const CreateMission = () => {
             <option value="">Select a vehicle</option>
             {vehicles.map((vehicle) => (
               <option key={vehicle._id} value={vehicle._id}>
-                {vehicle.license_plate}
+                {vehicle.name} ({vehicle.license_plate})
               </option>
             ))}
           </select>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import '../styles/Return.css';  // Import external CSS
+import {jwtDecode} from 'jwt-decode';
 
 const VehicleReturnPage = () => {
   const [bookings, setBookings] = useState([]);
+  const [vehicleReturns, setVehicleReturns] = useState([]);
   const [formData, setFormData] = useState({
     booking_id: '',
     vehicle_id: '',
@@ -32,7 +32,17 @@ const VehicleReturnPage = () => {
       }
     };
 
+    const fetchVehicleReturns = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/vehicle-returns');
+        setVehicleReturns(response.data);
+      } catch (error) {
+        setError('Error fetching vehicle returns');
+      }
+    };
+
     fetchBookings();
+    fetchVehicleReturns();
   }, []);
 
   const getUserIdFromToken = () => {
@@ -111,85 +121,198 @@ const VehicleReturnPage = () => {
     }
   };
 
+  const handlePrint = () => {
+    const printContent = document.getElementById('printContent').innerHTML;
+    const printWindow = window.open('', '', 'height=500,width=800');
+    printWindow.document.write('<html><head><title>Vehicle Return Report</title></head><body>');
+    printWindow.document.write(printContent);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
-    <div className="form-container">
-      <h2 className="text-center font-bold text-2xl">Vehicle Return Management</h2>
+    <div className="p-6">
+      <div className="w-full max-w-3xl mx-auto">
+        {/* Form Card */}
+        <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
+          <h2 className="text-2xl font-bold text-center">Vehicle Return Management</h2>
 
-      {error && <p className="error-message">{error}</p>}
-      {success && <p className="success-message">{success}</p>}
+          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+          {success && <p className="text-green-500 text-center mt-4">{success}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <div className="input-container">
-          <label className="label">Booking (Mission):</label>
-          <select name="booking_id" value={formData.booking_id} onChange={handleBookingChange} className="input">
-            <option value="">Select Mission</option>
-            {bookings.map(booking => (
-              <option key={booking._id} value={booking._id}>
-                {booking.mission.mission_name} - {booking.vehicle.license_plate}
-              </option>
-            ))}
-          </select>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label htmlFor="booking_id" className="block text-sm font-medium">Booking (Mission):</label>
+              <select 
+                name="booking_id"
+                value={formData.booking_id}
+                onChange={handleBookingChange}
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+              >
+                <option value="">Select Mission</option>
+                {bookings.map(booking => (
+                  <option key={booking._id} value={booking._id}>
+                    {booking.mission.mission_name} - {booking.vehicle.license_plate}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="vehicle_id" className="block text-sm font-medium">Vehicle:</label>
+              <input
+                type="text"
+                id="vehicle_id"
+                value={vehicleDisplay}
+                readOnly
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="user_id" className="block text-sm font-medium">User:</label>
+              <input
+                type="text"
+                id="user_id"
+                value={userDisplay}
+                readOnly
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="return_date" className="block text-sm font-medium">Return Date:</label>
+              <input
+                type="date"
+                id="return_date"
+                name="return_date"
+                value={formData.return_date}
+                onChange={handleInputChange}
+                readOnly
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="condition" className="block text-sm font-medium">Condition:</label>
+              <select
+                name="condition"
+                value={formData.condition}
+                onChange={handleInputChange}
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+              >
+                <option value="">Select Condition</option>
+                <option value="good">Good</option>
+                <option value="damaged">Damaged</option>
+                <option value="needs repair">Needs Repair</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="fuel_level" className="block text-sm font-medium">Fuel Level:</label>
+              <input
+                type="number"
+                id="fuel_level"
+                name="fuel_level"
+                value={formData.fuel_level}
+                onChange={handleInputChange}
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="remark" className="block text-sm font-medium">Remark:</label>
+              <input
+                type="text"
+                id="remark"
+                name="remark"
+                value={formData.remark}
+                onChange={handleInputChange}
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+
+            <button type="submit" className="w-full bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Submit</button>
+          </form>
+
+          <button onClick={handleBackClick} className="w-full mt-4 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">
+            Back to Dashboard
+          </button>
         </div>
 
-        <div className="input-container">
-          <label className="label">Vehicle:</label>
-          <input type="text" value={vehicleDisplay} readOnly className="input" />
-        </div>
+        {/* Vehicle Returns Table Card */}
+        <div className="p-6 bg-white rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-center">Vehicle Returns</h2>
 
-        <div className="input-container">
-          <label className="label">User:</label>
-          <input type="text" value={userDisplay} readOnly className="input" />
-        </div>
+          <table className="w-full mt-4 table-auto border-collapse">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-sm font-medium">Booking ID</th>
+                <th className="px-4 py-2 text-sm font-medium">Vehicle</th>
+                <th className="px-4 py-2 text-sm font-medium">User</th>
+                <th className="px-4 py-2 text-sm font-medium">Return Date</th>
+                <th className="px-4 py-2 text-sm font-medium">Condition</th>
+                <th className="px-4 py-2 text-sm font-medium">Fuel Level</th>
+                <th className="px-4 py-2 text-sm font-medium">Remark</th>
+              </tr>
+            </thead>
+            <tbody>
+              {vehicleReturns.map(vehicleReturn => {
+                // หาข้อมูล booking ที่ตรงกับ booking_id ของ vehicleReturn
+                const booking = bookings.find(booking => booking._id === vehicleReturn.booking_id._id);
+                const missionName = booking ? booking.mission.mission_name : 'ไม่พบภารกิจ'; // ถ้าไม่พบจะให้ค่าเริ่มต้น
 
-        <div className="input-container">
-          <label className="label">Return Date:</label>
-          <input
-            type="date"
-            name="return_date"
-            value={formData.return_date}
-            onChange={handleInputChange}
-            className="input"
-            readOnly
-          />
-        </div>
+                return (
+                  <tr key={vehicleReturn._id} className="border-t">
+                    <td className="px-4 py-2">{missionName}</td> {/* แสดง mission_name */}
+                    <td className="px-4 py-2">{vehicleReturn.vehicle_id.license_plate}</td>
+                    <td className="px-4 py-2">{vehicleReturn.user_id.name}</td>
+                    <td className="px-4 py-2">{new Date(vehicleReturn.return_date).toLocaleDateString()}</td>
+                    <td className="px-4 py-2">{vehicleReturn.condition}</td>
+                    <td className="px-4 py-2">{vehicleReturn.fuel_level}</td>
+                    <td className="px-4 py-2">{vehicleReturn.remark}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
 
-        <div className="input-container">
-          <label className="label">Condition:</label>
-          <select name="condition" value={formData.condition} onChange={handleInputChange} className="input">
-            <option value="">Select Condition</option>
-            <option value="good">Good</option>
-            <option value="damaged">Damaged</option>
-            <option value="needs repair">Needs Repair</option>
-          </select>
-        </div>
+          </table>
 
-        <div className="input-container">
-          <label className="label">Fuel Level:</label>
-          <input
-            type="number"
-            name="fuel_level"
-            value={formData.fuel_level}
-            onChange={handleInputChange}
-            className="input"
-          />
-        </div>
+          <div id="printContent" className="hidden">
+            <table className="w-full mt-4 table-auto border-collapse">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-sm font-medium">Booking ID</th>
+                  <th className="px-4 py-2 text-sm font-medium">Vehicle</th>
+                  <th className="px-4 py-2 text-sm font-medium">User</th>
+                  <th className="px-4 py-2 text-sm font-medium">Return Date</th>
+                  <th className="px-4 py-2 text-sm font-medium">Condition</th>
+                  <th className="px-4 py-2 text-sm font-medium">Fuel Level</th>
+                  <th className="px-4 py-2 text-sm font-medium">Remark</th>
+                </tr>
+              </thead>
+              <tbody>
+                {vehicleReturns.map(vehicleReturn => (
+                  <tr key={vehicleReturn._id}>
+                    <td className="px-4 py-2">{vehicleReturn.booking_id._id}</td>
+                    <td className="px-4 py-2">{vehicleReturn.vehicle_id.license_plate}</td>
+                    <td className="px-4 py-2">{vehicleReturn.user_id.name}</td>
+                    <td className="px-4 py-2">{new Date(vehicleReturn.return_date).toLocaleDateString()}</td>
+                    <td className="px-4 py-2">{vehicleReturn.condition}</td>
+                    <td className="px-4 py-2">{vehicleReturn.fuel_level}</td>
+                    <td className="px-4 py-2">{vehicleReturn.remark}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        <div className="input-container">
-          <label className="label">Remark:</label>
-          <input
-            type="text"
-            name="remark"
-            value={formData.remark}
-            onChange={handleInputChange}
-            className="input"
-          />
+          <button onClick={handlePrint} className="w-full mt-4 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">
+            Print Report
+          </button>
         </div>
-        <button type="submit" className="submit-btn">Submit</button>
-        <br/>
-        <button onClick={handleBackClick} className="bg-blue-500 text-white py-2 px-4 rounded mb-6">
-              Back to Dashboard
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

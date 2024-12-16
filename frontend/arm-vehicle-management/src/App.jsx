@@ -19,6 +19,7 @@ import BookingStatusPage from './pages/BookingStatusPage';
 
 import VehicleReturnPage from './pages/VehicleReturnPage';
 
+
 import './index.css';
 
 
@@ -46,7 +47,6 @@ function App() {
         <Route path="/booking-status" element={<BookingStatusPage/>}/>
 
         <Route path="/return" element={<VehicleReturnPage/>}/>
-        
 
       </Routes>
     </Router>

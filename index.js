@@ -156,6 +156,17 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.get('/api/vehicle-returns/:id', async (req, res) => {
+  const { id } = req.params;
+  // ค้นหาข้อมูลตาม id ในฐานข้อมูล
+  const vehicleReturnData = await VehicleReturn.findById(id);
+  if (!vehicleReturnData) {
+    return res.status(404).json({ message: 'Vehicle return data not found' });
+  }
+  res.json(vehicleReturnData);
+});
+
+
 
 
 mongoose.connect(uri)

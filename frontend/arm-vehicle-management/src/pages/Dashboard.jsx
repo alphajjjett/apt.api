@@ -43,8 +43,11 @@ const Dashboard = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');  // ลบ token ออกจาก localStorage
-    navigate('/');  // เปลี่ยนเส้นทางไปยังหน้า login
+    // Clear the token from localStorage (or your auth state)
+    localStorage.removeItem('token');
+    
+    // Reload the page
+    window.location.reload();
   };
 
   if (loading) return <div className="text-center py-6">Loading...</div>;

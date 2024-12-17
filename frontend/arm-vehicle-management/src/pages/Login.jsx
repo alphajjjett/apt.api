@@ -13,15 +13,18 @@ const Login = () => {
   // Handle login for both user and admin
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
       const apiUrl = role === 'admin'
         ? 'http://localhost:5000/api/auth/login' // Admin login route
         : 'http://localhost:5000/api/users/login'; // User login route
-
+  
       const response = await axios.post(apiUrl, { email, password });
       localStorage.setItem('token', response.data.token);
       navigate('/dashboard'); // Navigate to the dashboard upon successful login
+  
+      // Reload the page to reflect the login status
+      window.location.reload();
     } catch (err) {
       setError('Invalid credentials'); // Set error message for invalid login
     }

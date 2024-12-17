@@ -13,12 +13,12 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
+  
     if (!name || !email || !password || !description) {
       setError('Please fill in all fields.');
       return;
     }
-
+  
     try {
       const response = await axios.post('http://localhost:5000/api/users/register', {
         name,
@@ -28,12 +28,16 @@ const Register = () => {
         role: 'user',
       });
       localStorage.setItem('token', response.data.token);
-      navigate('/dashboard');
+      navigate('/dashboard'); // Navigate to dashboard after registration
+  
+      // Reload the page to reflect the registration status
+      window.location.reload();
     } catch (err) {
       console.error(err);
       setError('Failed to register. Please try again.');
     }
   };
+  
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 py-6">

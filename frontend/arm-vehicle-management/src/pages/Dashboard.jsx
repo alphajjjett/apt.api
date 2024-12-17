@@ -1,7 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import '../styles/Dashboard.css';  // import CSS file ของ Dashboard
+
+// Register the chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
@@ -39,15 +51,46 @@ const Dashboard = () => {
   if (error) return <div className="text-center text-red-500 py-6">{error}</div>;
   if (!data) return <div className="text-center py-6">No data available</div>;
 
+  // ข้อมูลที่จะแสดงในกราฟ
+  const chartData = {
+    labels: ['Missions', 'Bookings', 'Vehicles'], // แท็กในแกน X
+    datasets: [
+      {
+        label: 'Total Count', // ชื่อกราฟ
+        data: [data.missionsCount, data.bookingCount, data.vehicleCount], // ข้อมูลที่ใช้สร้างกราฟ
+        backgroundColor: 'rgba(75, 192, 192, 0.2)', // สีพื้นหลังของบาร์
+        borderColor: 'rgba(75, 192, 192, 1)', // สีเส้นขอบ
+        borderWidth: 1, // ขนาดเส้นขอบ
+      },
+    ],
+  };
+
+  // ตัวเลือกการแสดงผลของกราฟ
+  const options = {
+    responsive: true, // ให้กราฟปรับขนาดตามหน้าจอ
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      tooltip: {
+        enabled: true,
+      },
+    },
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-6">Dashboard</h2>
         <div className="mb-6">
-          {/* <h3 className="text-xl font-semibold">Total Users: <span className="text-gray-600">{data.usersCount}</span></h3> */}
           <h3 className="text-xl font-semibold">Total Missions: <span className="text-gray-600">{data.missionsCount}</span></h3>
           <h3 className="text-xl font-semibold">Total Bookings: <span className="text-gray-600">{data.bookingCount}</span></h3>
           <h3 className="text-xl font-semibold">Total Vehicles: <span className="text-gray-600">{data.vehicleCount}</span></h3>
+        </div>
+
+        {/* กราฟ */}
+        <div className="mb-6">
+          <Bar data={chartData} options={options} />
         </div>
 
         <div className="mb-6">
@@ -77,4 +120,10 @@ const Dashboard = () => {
   );
 };
 
+
+
 export default Dashboard;
+
+
+
+ 

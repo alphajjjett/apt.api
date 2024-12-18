@@ -124,31 +124,54 @@ const VehicleReturnPage = () => {
   const handlePrint = (vehicleReturn) => {
     const booking = bookings.find(booking => booking._id === vehicleReturn.booking_id._id);
     const missionName = booking ? booking.mission.mission_name : 'ไม่พบภารกิจ';
+  
     const printContent = `
-      <table class="w-full mt-4 table-auto border-collapse bg-white shadow-lg rounded-lg overflow-hidden">
-        <thead>
-          <tr class="bg-gray-100 text-left">
-            <th class="px-6 py-3 text-sm font-medium text-gray-600">Mission Name</th>
-            <th class="px-6 py-3 text-sm font-medium text-gray-600">Vehicle License Plate</th>
-            <th class="px-6 py-3 text-sm font-medium text-gray-600">User</th>
-            <th class="px-6 py-3 text-sm font-medium text-gray-600">Return Date</th>
-            <th class="px-6 py-3 text-sm font-medium text-gray-600">Condition</th>
-            <th class="px-6 py-3 text-sm font-medium text-gray-600">Fuel Level</th>
-            <th class="px-6 py-3 text-sm font-medium text-gray-600">Remark</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-t hover:bg-gray-50">
-            <td class="px-6 py-4 text-sm text-gray-800">${missionName}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">${vehicleReturn.vehicle_id.license_plate}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">${vehicleReturn.user_id.name}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">${new Date(vehicleReturn.return_date).toLocaleDateString()}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">${vehicleReturn.condition}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">${vehicleReturn.fuel_level}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">${vehicleReturn.remark}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="w-full p-6 bg-white shadow-lg rounded-lg overflow-hidden">
+        <h2 class="text-xl font-bold mb-4">Vehicle Return Report</h2>
+        <div class="mb-4">
+          <p class="text-sm font-medium text-gray-600">Mission Name:</p>
+          <p class="text-sm text-gray-800">${missionName}</p>
+        </div>
+        <div class="mb-4">
+          <p class="text-sm font-medium text-gray-600">Vehicle License Plate:</p>
+          <p class="text-sm text-gray-800">${vehicleReturn.vehicle_id.license_plate}</p>
+        </div>
+        <div class="mb-4">
+          <p class="text-sm font-medium text-gray-600">User:</p>
+          <p class="text-sm text-gray-800">${vehicleReturn.user_id.name}</p>
+        </div>
+        <div class="mb-4">
+          <p class="text-sm font-medium text-gray-600">Return Date:</p>
+          <p class="text-sm text-gray-800">${new Date(vehicleReturn.return_date).toLocaleDateString()}</p>
+        </div>
+        <div class="mb-4">
+          <p class="text-sm font-medium text-gray-600">Condition:</p>
+          <p class="text-sm text-gray-800">${vehicleReturn.condition}</p>
+        </div>
+        <div class="mb-4">
+          <p class="text-sm font-medium text-gray-600">Fuel Level:</p>
+          <p class="text-sm text-gray-800">${vehicleReturn.fuel_level}</p>
+        </div>
+        <div class="mb-4">
+          <p class="text-sm font-medium text-gray-600">Remark:</p>
+          <p class="text-sm text-gray-800">${vehicleReturn.remark}</p>
+        </div>
+  
+        <!-- ช่องลายเซ็นของ User -->
+        <div class="mt-8">
+         <p class="text-sm font-medium text-gray-600">ลงชื่อ:</p> 
+          <div class="border-t border-gray-400 w-64 mt-4"></div>
+          <p class="text-sm text-gray-800 mt-2">${vehicleReturn.user_id.name}</p>
+        </div>
+        <br/>
+
+        <!-- ช่องลายเซ็นของหัวหน้าธุรการ -->
+        <div class="mt-8">
+          <p class="text-sm font-medium text-gray-600">ลงชื่อ:</p>
+          <div class="border-t border-gray-400 w-64 mt-4"></div>
+          <p class="text-sm text-gray-800 mt-2">หัวหน้าธุรการ กรว.5</p>
+        </div>
+      </div>
     `;
   
     const printWindow = window.open('', '', 'height=500,width=800');
@@ -160,6 +183,8 @@ const VehicleReturnPage = () => {
     printWindow.document.close();
     printWindow.print();
   };
+  
+  
   return (
     <div className="p-6">
       <div className="w-full max-w-3xl mx-auto">
@@ -271,81 +296,51 @@ const VehicleReturnPage = () => {
         </div>
 
         {/* Vehicle Returns Table Card */}
-        <div className="p-6 bg-white rounded-lg shadow-lg">
+        <div className="p-6 bg-white rounded-lg shadow-lg max-w-full overflow-x-auto">
           <h2 className="text-2xl font-bold text-center">Vehicle Returns</h2>
 
           <table className="w-full mt-4 table-auto border-collapse">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 text-sm font-medium">Mission Name</th>
-            <th className="px-4 py-2 text-sm font-medium">Vehicle License Plate</th>
-            <th className="px-4 py-2 text-sm font-medium">User</th>
-            <th className="px-4 py-2 text-sm font-medium">Return Date</th>
-            <th className="px-4 py-2 text-sm font-medium">Condition</th>
-            <th className="px-4 py-2 text-sm font-medium">Fuel Level</th>
-            <th className="px-4 py-2 text-sm font-medium">Remark</th>
-            <th className="px-4 py-2 text-sm font-medium">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        {vehicleReturns.map(vehicleReturn => {
-            // หาข้อมูล booking ที่ตรงกับ booking_id ของ vehicleReturn
-            const booking = bookings.find(booking => booking._id === vehicleReturn.booking_id._id);
-            const missionName = booking ? booking.mission.mission_name : 'ไม่พบภารกิจ'; // ถ้าไม่พบจะให้ค่าเริ่มต้น
-
-            return (
-              <tr key={vehicleReturn._id} className="border-t">
-                <td className="px-4 py-2">{missionName}</td> {/* แสดง mission_name */}
-                <td className="px-4 py-2">{vehicleReturn.vehicle_id.license_plate}</td>
-                <td className="px-4 py-2">{vehicleReturn.user_id.name}</td>
-                <td className="px-4 py-2">{new Date(vehicleReturn.return_date).toLocaleDateString()}</td>
-                <td className="px-4 py-2">{vehicleReturn.condition}</td>
-                <td className="px-4 py-2">{vehicleReturn.fuel_level}</td>
-                <td className="px-4 py-2">{vehicleReturn.remark}</td>
-                <td className="px-4 py-2">
-                  <button onClick={() => handlePrint(vehicleReturn)} className="w-full mt-4 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">
-                    Print Report
-                  </button>
-                </td> {/* เพิ่มปุ่ม print report ในแถวนี้ */}
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-sm font-medium">Mission Name</th>
+                <th className="px-4 py-2 text-sm font-medium">Vehicle License Plate</th>
+                <th className="px-4 py-2 text-sm font-medium">User</th>
+                <th className="px-4 py-2 text-sm font-medium">Return Date</th>
+                <th className="px-4 py-2 text-sm font-medium">Condition</th>
+                <th className="px-4 py-2 text-sm font-medium">Fuel Level</th>
+                <th className="px-4 py-2 text-sm font-medium">Remark</th>
+                <th className="px-4 py-2 text-sm font-medium">Actions</th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {vehicleReturns.map(vehicleReturn => {
+                const booking = bookings.find(booking => booking._id === vehicleReturn.booking_id._id);
+                const missionName = booking ? booking.mission.mission_name : 'ไม่พบภารกิจ';
 
-          <div id="printContent" className="hidden">
-            <table className="w-full mt-4 table-auto border-collapse">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-sm font-medium">Booking ID</th>
-                  <th className="px-4 py-2 text-sm font-medium">Vehicle</th>
-                  <th className="px-4 py-2 text-sm font-medium">User</th>
-                  <th className="px-4 py-2 text-sm font-medium">Return Date</th>
-                  <th className="px-4 py-2 text-sm font-medium">Condition</th>
-                  <th className="px-4 py-2 text-sm font-medium">Fuel Level</th>
-                  <th className="px-4 py-2 text-sm font-medium">Remark</th>
-                </tr>
-              </thead>
-              <tbody>
-                {vehicleReturns.map(vehicleReturn => (
-                  <tr key={vehicleReturn._id}>
-                    <td className="px-4 py-2">{vehicleReturn.booking_id._id}</td>
+                return (
+                  <tr key={vehicleReturn._id} className="border-t">
+                    <td className="px-4 py-2">{missionName}</td>
                     <td className="px-4 py-2">{vehicleReturn.vehicle_id.license_plate}</td>
                     <td className="px-4 py-2">{vehicleReturn.user_id.name}</td>
                     <td className="px-4 py-2">{new Date(vehicleReturn.return_date).toLocaleDateString()}</td>
                     <td className="px-4 py-2">{vehicleReturn.condition}</td>
                     <td className="px-4 py-2">{vehicleReturn.fuel_level}</td>
                     <td className="px-4 py-2">{vehicleReturn.remark}</td>
+                    <td className="px-4 py-2">
+                      <button
+                        onClick={() => handlePrint(vehicleReturn)}
+                        className="w-full mt-4 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+                      >
+                        Print Report
+                      </button>
+                    </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-{/* 
-          <button onClick={handlePrint} className="w-full mt-4 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">
-            Print Report
-          </button> */}
+                );
+              })}
+            </tbody>
+          </table>
         </div>
+
       </div>
     </div>
   );

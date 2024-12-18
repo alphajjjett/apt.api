@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import '../styles/Dashboard.css';  // import CSS file ของ Dashboard
+import '../styles/Dashboard.css';  // Import CSS file for Dashboard
 
 // Register the chart.js components
 ChartJS.register(
@@ -24,53 +24,45 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/', { replace: true });  // ถ้าไม่มี token ให้นำผู้ใช้ไปยังหน้า login
+      navigate('/', { replace: true });  // Redirect to login if no token
     } else {
       const fetchData = async () => {
         try {
           const response = await axios.get('http://localhost:5000/api/dashboard', {
             headers: { Authorization: `Bearer ${token}` }
           });
-          setData(response.data);  // เก็บข้อมูลจาก API
+          setData(response.data);  // Store the fetched data
         } catch (error) {
-          setError('Failed to fetch dashboard data');  // แสดงข้อความผิดพลาด
+          setError('Failed to fetch dashboard data');  // Show error message
         } finally {
-          setLoading(false);  // หยุดการโหลด
+          setLoading(false);  // Stop loading
         }
       };
       fetchData();
     }
   }, [navigate]);
 
-  const handleLogout = () => {
-    // Clear the token from localStorage (or your auth state)
-    localStorage.removeItem('token');
-    
-    // Reload the page
-    window.location.reload();
-  };
-
   if (loading) return <div className="text-center py-6">Loading...</div>;
   if (error) return <div className="text-center text-red-500 py-6">{error}</div>;
   if (!data) return <div className="text-center py-6">No data available</div>;
 
-  // ข้อมูลที่จะแสดงในกราฟ
+  // Data for the chart
   const chartData = {
-    labels: ['Missions', 'Bookings', 'Vehicles'], // แท็กในแกน X
+    labels: ['Missions', 'Bookings', 'Vehicles'],  // X-axis labels
     datasets: [
       {
-        label: 'Total Count', // ชื่อกราฟ
-        data: [data.missionsCount, data.bookingCount, data.vehicleCount], // ข้อมูลที่ใช้สร้างกราฟ
-        backgroundColor: 'rgba(75, 192, 192, 0.2)', // สีพื้นหลังของบาร์
-        borderColor: 'rgba(75, 192, 192, 1)', // สีเส้นขอบ
-        borderWidth: 1, // ขนาดเส้นขอบ
+        label: 'Total Count',  // Graph label
+        data: [data.missionsCount, data.bookingCount, data.vehicleCount],  // Data to display in the graph
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Bar background color
+        borderColor: 'rgba(75, 192, 192, 1)',  // Border color
+        borderWidth: 1,  // Border width
       },
     ],
   };
 
-  // ตัวเลือกการแสดงผลของกราฟ
+  // Graph options
   const options = {
-    responsive: true, // ให้กราฟปรับขนาดตามหน้าจอ
+    responsive: true,  // Make the graph responsive
     plugins: {
       legend: {
         position: 'top',
@@ -83,7 +75,8 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
+      {/* Dashboard Card */}
+      <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto mb-8">
         <h2 className="text-3xl font-bold text-center mb-6">Dashboard</h2>
         <div className="mb-6">
           <h3 className="text-xl font-semibold">Total Missions: <span className="text-gray-600">{data.missionsCount}</span></h3>
@@ -91,42 +84,28 @@ const Dashboard = () => {
           <h3 className="text-xl font-semibold">Total Vehicles: <span className="text-gray-600">{data.vehicleCount}</span></h3>
         </div>
 
-        {/* กราฟ */}
+        {/* Graph Section */}
         <div className="mb-6">
           <Bar data={chartData} options={options} />
         </div>
+      </div>
 
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold">Quick Links:</h3>
-          <ul className="list-none p-0">
-            <li><Link to="/users" className="text-blue-500 hover:text-blue-700">Go to Users Page</Link></li>
-            <li><Link to="/missions" className="text-blue-500 hover:text-blue-700">Go to Missions Page</Link></li>
-            <li><Link to="/missionslist" className="text-blue-500 hover:text-blue-700">Go to Missions List</Link></li>
-            <li><Link to="/vehicle" className="text-blue-500 hover:text-blue-700">Go to Vehicle List</Link></li>
-            <li><Link to="/vehicle-status" className="text-blue-500 hover:text-blue-700">Go to Vehicle Status</Link></li>
-            <li><Link to="/booking" className="text-blue-500 hover:text-blue-700">Go to Booking</Link></li>
-            <li><Link to="/booking-status" className="text-blue-500 hover:text-blue-700">Go to Booking Status</Link></li>
-            <li><Link to="/return" className="text-blue-500 hover:text-blue-700">Go to Return</Link></li>
-          </ul>
-        </div>
-
-        <div className="text-center">
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white py-2 px-6 rounded-md hover:bg-red-600 focus:outline-none"
-          >
-            Logout
-          </button>
-        </div>
+      {/* Quick Links Card */}
+      <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
+        <h3 className="text-lg font-semibold mb-4">Quick Links:</h3>
+        <ul className="list-none p-0">
+          <li><Link to="/users" className="text-blue-500 hover:text-blue-700">Go to Users Page</Link></li>
+          <li><Link to="/missions" className="text-blue-500 hover:text-blue-700">Go to Missions Page</Link></li>
+          <li><Link to="/missionslist" className="text-blue-500 hover:text-blue-700">Go to Missions List</Link></li>
+          <li><Link to="/vehicle" className="text-blue-500 hover:text-blue-700">Go to Vehicle List</Link></li>
+          <li><Link to="/vehicle-status" className="text-blue-500 hover:text-blue-700">Go to Vehicle Status</Link></li>
+          <li><Link to="/booking" className="text-blue-500 hover:text-blue-700">Go to Booking</Link></li>
+          <li><Link to="/booking-status" className="text-blue-500 hover:text-blue-700">Go to Booking Status</Link></li>
+          <li><Link to="/return" className="text-blue-500 hover:text-blue-700">Go to Return</Link></li>
+        </ul>
       </div>
     </div>
   );
 };
 
-
-
 export default Dashboard;
-
-
-
- 

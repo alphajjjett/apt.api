@@ -3,9 +3,11 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import '../styles/Dashboard.css';  // Import CSS file for Dashboard
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import '../styles/Dashboard.css';  
 
-// Register the chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -46,23 +48,23 @@ const Dashboard = () => {
   if (error) return <div className="text-center text-red-500 py-6">{error}</div>;
   if (!data) return <div className="text-center py-6">No data available</div>;
 
-  // Data for the chart
+
   const chartData = {
-    labels: ['Missions', 'Bookings', 'Vehicles'],  // X-axis labels
+    labels: ['Missions', 'Bookings', 'Vehicles'], 
     datasets: [
       {
-        label: 'Total Count',  // Graph label
-        data: [data.missionsCount, data.bookingCount, data.vehicleCount],  // Data to display in the graph
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Bar background color
-        borderColor: 'rgba(75, 192, 192, 1)',  // Border color
-        borderWidth: 1,  // Border width
+        label: 'Total Count',  
+        data: [data.missionsCount, data.bookingCount, data.vehicleCount],  
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',  
+        borderColor: 'rgba(75, 192, 192, 1)',  
+        borderWidth: 1,  
       },
     ],
   };
 
-  // Graph options
+ 
   const options = {
-    responsive: true,  // Make the graph responsive
+    responsive: true,  
     plugins: {
       legend: {
         position: 'top',
@@ -74,24 +76,36 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      {/* Dashboard Card */}
-      <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto mb-8">
-        <h2 className="text-3xl font-bold text-center mb-6">Dashboard</h2>
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold">Total Missions: <span className="text-gray-600">{data.missionsCount}</span></h3>
-          <h3 className="text-xl font-semibold">Total Bookings: <span className="text-gray-600">{data.bookingCount}</span></h3>
-          <h3 className="text-xl font-semibold">Total Vehicles: <span className="text-gray-600">{data.vehicleCount}</span></h3>
+    <div className="min-h-screen bg-blue-200 p-6 flex flex-col justify-center items-center">
+      {/* Flex container for Dashboard and Calendar */}
+      <div className="flex flex-col lg:flex-row justify-between items-start gap-6 w-full max-w-6xl">
+        {/* Dashboard Card */}
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl w-full">
+          <h2 className="text-3xl font-bold text-center mb-6">Graph</h2>
+          <div className="flex flex-col lg:flex-row gap-4">
+            <h3 className="text-xl font-semibold">Total Missions: <span className="text-gray-600">{data.missionsCount}</span></h3>
+            <h3 className="text-xl font-semibold">Total Bookings: <span className="text-gray-600">{data.bookingCount}</span></h3>
+            <h3 className="text-xl font-semibold">Total Vehicles: <span className="text-gray-600">{data.vehicleCount}</span></h3>
+          </div>
+
+
+          {/* Graph Section */}
+          <div className="mb-6">
+            <Bar data={chartData} options={options} />
+          </div>
         </div>
 
-        {/* Graph Section */}
-        <div className="mb-6">
-          <Bar data={chartData} options={options} />
+        {/* Calendar Section */}
+        <div className="bg-white p-8 rounded-lg shadow-md w-full lg:max-w-md">
+          <h2 className="text-2xl font-bold text-center mb-6">Calendar</h2>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateCalendar/>
+          </LocalizationProvider>
         </div>
       </div>
 
       {/* Quick Links Card */}
-      <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
+      <div className="bg-white p-8 rounded-lg shadow-md max-w-6xl w-full mt-6">
         <h3 className="text-lg font-semibold mb-4">Quick Links:</h3>
         <ul className="list-none p-0">
           <li><Link to="/users" className="text-blue-500 hover:text-blue-700">Go to Users Page</Link></li>

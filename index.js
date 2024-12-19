@@ -24,9 +24,7 @@ const userRoutes = require('./routes/user.route.js');
 
 const adminRoutes = require('./routes/admin.route.js');
 
-const fuelRoutes = require('./routes/fuel.route.js');
 
-const maintenanceRoutes = require('./routes/maintenance.route.js');
 
 const dashboardRoute = require('./routes/dashboard.route');  // นำเข้า route ของ dashboard
 
@@ -55,10 +53,6 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/missions', missionRoutes);
 // middleware
 app.use('/api', dashboardRoute);  // กำหนด route dashboard ที่ /api/dashboard
-
-
-app.use('/api/fuel', fuelRoutes);
-app.use('/api/maintenance', maintenanceRoutes);
 
 // ใช้ route ของ admin ซึ่งมีการใช้ auth middleware ใน route นั้น ๆ
 app.use('/api/admin', adminRoutes);

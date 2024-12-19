@@ -258,6 +258,7 @@ const VehicleReturnPage = () => {
                 value={formData.condition}
                 onChange={handleInputChange}
                 className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+                required
               >
                 <option value="">Select Condition</option>
                 <option value="good">Good</option>
@@ -275,6 +276,7 @@ const VehicleReturnPage = () => {
                 value={formData.fuel_level}
                 onChange={handleInputChange}
                 className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+                required
               />
             </div>
 
@@ -287,7 +289,9 @@ const VehicleReturnPage = () => {
                 value={formData.remark}
                 onChange={handleInputChange}
                 className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+                required
               />
+              
             </div>
 
             <button type="submit" className="w-full bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Submit</button>

@@ -1,18 +1,20 @@
 import React from 'react';
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const NavigationBar = () => {
   // Check if the user is logged in, for example by checking if there's a token in localStorage
-  const isLoggedIn = localStorage.getItem('token');  // Modify this based on your authentication logic
-
+const isLoggedIn = localStorage.getItem('token');  // Modify this based on your authentication logic
+const navigate = useNavigate();
 const handleLogout = () => {
     // Clear the token from localStorage (or your auth state)
     localStorage.removeItem('token');
-    
+    navigate('/');
     // Reload the page
     window.location.reload();
   };
+  
 
 
   return (

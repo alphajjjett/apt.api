@@ -108,7 +108,6 @@ const Dashboard = () => {
       <div className="bg-white p-8 rounded-lg shadow-md max-w-6xl w-full mt-6">
         <h3 className="text-lg font-semibold mb-4">Quick Links:</h3>
         <ul className="list-none p-0">
-          <li><Link to="/users" className="text-blue-500 hover:text-blue-700">Go to Users Page</Link></li>
           <li><Link to="/missions" className="text-blue-500 hover:text-blue-700">Go to Missions Page</Link></li>
           <li><Link to="/missionslist" className="text-blue-500 hover:text-blue-700">Go to Missions List</Link></li>
           <li><Link to="/vehicle" className="text-blue-500 hover:text-blue-700">Go to Vehicle List</Link></li>

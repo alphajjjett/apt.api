@@ -59,3 +59,15 @@
     margin-bottom: 5px;
   }
   
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem; /* Adds space between the vehicle cards */
+  }
+  
+  li {
+    width: 100%; /* Full width on mobile */
+    max-width: 300px; /* Restrict the max width of the cards */
+  }
+  

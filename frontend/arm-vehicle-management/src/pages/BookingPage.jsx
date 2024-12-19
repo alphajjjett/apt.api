@@ -82,7 +82,6 @@ const BookingPage = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setBookings(bookings.filter(booking => booking._id !== bookingId));
-        console.log(setBookings);
         alert('Booking deleted successfully');
       } catch (error) {
         setError('Failed to delete booking');
@@ -98,88 +97,111 @@ const BookingPage = () => {
         Back to Dashboard
       </button>
       {error && <p className="text-red-500">{error}</p>}
-      {!isAdmin && (
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">Create New Booking</h3>
-          <div className="mb-4">
-            <label className="block mb-2 font-bold">Mission:</label>
-            <select
-              onChange={(e) => setSelectedMission(e.target.value)}
-              value={selectedMission}
-              className="w-full border border-gray-300 p-2 rounded"
-            >
-              <option value="">Select Mission</option>
-              {missions.length > 0 ? (
-                missions.map((mission) => (
-                  <option key={mission._id} value={mission._id}>
-                    {mission.mission_name}
-                  </option>
-                ))
-              ) : (
-                <option>No missions available</option>
-              )}
-            </select>
-          </div>
+      
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Create Booking Section */}
+        {!isAdmin && (
+          <div className="lg:w-1/3">
+            <h3 className="text-xl font-semibold mb-4">Create New Booking</h3>
+            <div className="border border-gray-300 p-6 rounded-lg shadow-md bg-white">
+              <div className="mb-4">
+                <label className="block mb-2 font-bold">Mission:</label>
+                <select
+                  onChange={(e) => setSelectedMission(e.target.value)}
+                  value={selectedMission}
+                  className="w-full border border-gray-300 p-2 rounded"
+                >
+                  <option value="">Select Mission</option>
+                  {missions.length > 0 ? (
+                    missions.map((mission) => (
+                      <option key={mission._id} value={mission._id}>
+                        {mission.mission_name}
+                      </option>
+                    ))
+                  ) : (
+                    <option>No missions available</option>
+                  )}
+                </select>
+              </div>
 
-          <div className="mb-4">
-            <label className="block mb-2 font-bold">Vehicle:</label>
-            <select
-              onChange={(e) => setSelectedVehicle(e.target.value)}
-              value={selectedVehicle}
-              className="w-full border border-gray-300 p-2 rounded"
-            >
-              <option value="">Select Vehicle</option>
-              {vehicles.map((vehicle) => (
-                <option key={vehicle._id} value={vehicle._id}>
-                  {vehicle.name} ({vehicle.license_plate})
-                </option>
-              ))}
-            </select>
-          </div>
+              <div className="mb-4">
+                <label className="block mb-2 font-bold">Vehicle:</label>
+                <select
+                  onChange={(e) => setSelectedVehicle(e.target.value)}
+                  value={selectedVehicle}
+                  className="w-full border border-gray-300 p-2 rounded"
+                >
+                  <option value="">Select Vehicle</option>
+                  {vehicles.map((vehicle) => (
+                    <option key={vehicle._id} value={vehicle._id}>
+                      {vehicle.name} ({vehicle.license_plate})
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          <div className="mb-4">
-            <label className="block mb-2 font-bold">Select Date</label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full border border-gray-300 p-2 rounded"
-              required
-            />
-          </div>
-          <button onClick={handleCreateBooking} className="bg-green-500 text-white py-2 px-4 rounded">
-            Create Booking
-          </button>
-        </div>
-      )}
-
-      <div>
-        <h3 className="text-xl font-semibold mb-4">Bookings</h3>
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bookings.map((booking) => (
-            <li key={booking._id} className="border border-gray-300 p-4 rounded shadow-md bg-white">
-              <p className="mb-2">
-                <span className="font-bold">Mission:</span> {booking.mission.mission_name}
-              </p>
-              <p className="mb-2">
-                <span className="font-bold">Vehicle:</span> {booking.vehicle.name}
-              </p>
-              <p className="mb-2">
-                <span className="font-bold">Status:</span> {booking.status}
-              </p>
-              <p className="mb-2">
-                <span className="font-bold">Booking Date:</span>{' '}
-                {new Date(booking.bookingDate).toLocaleDateString()}
-              </p>
-              <button
-                onClick={() => handleDeleteBooking(booking._id)} 
-                className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded"
-              >
-                Delete
+              <div className="mb-4">
+                <label className="block mb-2 font-bold">Select Date</label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                />
+              </div>
+              
+              <button onClick={handleCreateBooking} className="bg-green-500 text-white py-2 px-4 rounded w-full">
+                Create Booking
               </button>
-            </li>
-          ))}
-        </ul>
+            </div>
+          </div>
+        )}
+    {/* Bookings Section */}
+      <div className="lg:w-2/3">
+          <h3 className="text-xl font-semibold mb-4">Bookings</h3>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {bookings.map((booking) => (
+              <li
+                key={booking._id}
+                className="border border-gray-300 p-4 rounded-lg shadow-lg bg-white transition-transform transform hover:scale-105"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <p className="font-bold text-lg">{booking.mission.mission_name}</p>
+                  <span
+                    className={`py-1 px-2 rounded-full text-xs font-semibold ${
+                      booking.status === 'Pending'
+                        ? 'bg-yellow-500 text-white'
+                        : booking.status === 'Completed'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-blue-500 text-white'
+                    }`}
+                  >
+                    {booking.status}
+                  </span>
+                </div>
+
+                <p className="text-gray-600 mb-2">
+                  <span className="font-bold">Vehicle:</span> {booking.vehicle.name}
+                </p>
+
+                <p className="text-gray-600 mb-2">
+                  <span className="font-bold">Booking Date:</span>{' '}
+                  {new Date(booking.bookingDate).toLocaleDateString()}
+                </p>
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => handleDeleteBooking(booking._id)}
+                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-full transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

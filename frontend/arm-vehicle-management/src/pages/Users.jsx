@@ -3,6 +3,10 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';  // Admin role still uses jwtDecode
 import '../styles/Users.css';  // Import external CSS
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -50,16 +54,43 @@ const Users = () => {
   }, [navigate]);
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      try {
-        await axios.delete(`http://localhost:5000/api/users/${userId}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          });
+          setUsers(users.filter(user => user._id !== userId));
+  
+          MySwal.fire({
+            title: "Deleted!",
+            text: "The user has been deleted.",
+            icon: "success"
+          });
+        } catch (error) {
+          setError('Failed to delete user');
+          MySwal.fire({
+            title: "Error",
+            text: "There was an error deleting the user.",
+            icon: "error"
+          });
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        MySwal.fire({
+          title: "Cancelled",
+          text: "The user is safe :)",
+          icon: "error"
         });
-        setUsers(users.filter(user => user._id !== userId));
-      } catch (error) {
-        setError('Failed to delete user');
       }
-    }
+    });
   };
 
   if (loading) return <p>Loading users...</p>;

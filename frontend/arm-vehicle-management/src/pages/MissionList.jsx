@@ -9,6 +9,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const MissionList = () => {
   const [missions, setMissions] = useState([]);
@@ -43,18 +47,43 @@ const MissionList = () => {
   }, [navigate]);
 
   const handleDelete = async (missionId) => {
-    if (window.confirm('Are you sure you want to delete this mission?')) {
-      try {
-        const token = localStorage.getItem('token');
-        const config = { headers: { Authorization: `Bearer ${token}` } };
-
-        await axios.delete(`http://localhost:5000/api/missions/${missionId}`, config);
-        setMissions(missions.filter((mission) => mission._id !== missionId));
-        alert('Mission deleted successfully');
-      } catch (error) {
-        alert('Error deleting mission');
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem('token');
+          const config = { headers: { Authorization: `Bearer ${token}` } };
+  
+          await axios.delete(`http://localhost:5000/api/missions/${missionId}`, config);
+          setMissions(missions.filter((mission) => mission._id !== missionId));
+          
+          MySwal.fire({
+            title: "Deleted!",
+            text: "Your mission has been deleted.",
+            icon: "success"
+          });
+        } catch (error) {
+          MySwal.fire({
+            title: "Error",
+            text: "There was an error deleting the mission.",
+            icon: "error"
+          });
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        MySwal.fire({
+          title: "Cancelled",
+          text: "Your mission is safe :)",
+          icon: "error"
+        });
       }
-    }
+    });
   };
 
   if (loading) return <p>Loading missions...</p>;

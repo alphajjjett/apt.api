@@ -7,6 +7,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const VehiclePage = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -45,25 +49,56 @@ const VehiclePage = () => {
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
       await axios.post('http://localhost:5000/api/vehicles/create', vehicleData, config);
-      alert('Vehicle created successfully');
+      MySwal.fire({
+        icon: 'success',
+        title: 'Vehicle created successfully',
+        text: 'Your vehicle has been created successfully.',
+        confirmButtonText: 'OK'
+      });
+      // alert('Vehicle created successfully');
     } catch (error) {
       alert('Error creating vehicle');
     }
   };
 
   const handleDelete = async (vehicleId) => {
-    if (window.confirm('Are you sure you want to delete this vehicle?')) {
-      try {
-        const token = localStorage.getItem('token');
-        const config = { headers: { Authorization: `Bearer ${token}` } };
-        
-        await axios.delete(`http://localhost:5000/api/vehicles/${vehicleId}`, config);
-        setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));
-        alert('Vehicle deleted successfully');
-      } catch (error) {
-        alert('Error deleting vehicle');
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem('token');
+          const config = { headers: { Authorization: `Bearer ${token}` } };
+  
+          await axios.delete(`http://localhost:5000/api/vehicles/${vehicleId}`, config);
+          setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));
+          
+          MySwal.fire({
+            title: "Deleted!",
+            text: "The vehicle has been deleted.",
+            icon: "success"
+          });
+        } catch (error) {
+          MySwal.fire({
+            title: "Error",
+            text: "There was an error deleting the vehicle.",
+            icon: "error"
+          });
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        MySwal.fire({
+          title: "Cancelled",
+          text: "Your vehicle is safe :)",
+          icon: "error"
+        });
       }
-    }
+    });
   };
 
   return (

@@ -8,6 +8,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const BookingPage = () => {
   const [missions, setMissions] = useState([]);
@@ -75,19 +79,44 @@ const BookingPage = () => {
   };
 
   const handleDeleteBooking = async (bookingId) => {
-    if (window.confirm('Are you sure you want to delete this booking?')) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem('token');
+          await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setBookings(bookings.filter(booking => booking._id !== bookingId));
+  
+          MySwal.fire({
+            title: "Deleted!",
+            text: "The booking has been deleted.",
+            icon: "success"
+          });
+        } catch (error) {
+          setError('Failed to delete booking');
+          MySwal.fire({
+            title: "Error",
+            text: "There was an error deleting the booking.",
+            icon: "error"
+          });
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        MySwal.fire({
+          title: "Cancelled",
+          text: "Your booking is safe :)",
+          icon: "error"
         });
-        setBookings(bookings.filter(booking => booking._id !== bookingId));
-        alert('Booking deleted successfully');
-      } catch (error) {
-        setError('Failed to delete booking');
-        alert('Failed to delete booking');
       }
-    }
+    });
   };
 
   return (

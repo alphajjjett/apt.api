@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import '../styles/CreateMission.css';  // Import external CSS
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import '../styles/CreateMission.css'; 
+
+const MySwal = withReactContent(Swal);
 
 const CreateMission = () => {
   const [missionName, setMissionName] = useState('');
@@ -31,7 +35,6 @@ const CreateMission = () => {
     const fetchVehicles = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/vehicles');
-        // Filter out vehicles that are not 'Available'
         const availableVehicles = response.data.filter(vehicle => vehicle.status === 'available');
         setVehicles(availableVehicles);
       } catch (error) {
@@ -66,10 +69,20 @@ const CreateMission = () => {
       await axios.post('http://localhost:5000/api/missions', missionData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      alert('Mission created successfully');
+      MySwal.fire({
+        icon: 'success',
+        title: 'Mission created successfully',
+        text: 'Your mission has been created successfully.',
+        confirmButtonText: 'OK'
+      });
+      // alert('Mission created successfully');
     } catch (error) {
-      console.error('Error creating mission:', error);
+      MySwal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'There was an issue updating your profile.',
+        confirmButtonText: 'Try Again'
+      });
       setError('Failed to create mission');
     }
   };

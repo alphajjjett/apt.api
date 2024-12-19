@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
-import '../styles/VehicleStatus.css';  // Import the external CSS
+import {jwtDecode} from 'jwt-decode'; 
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 const VehicleStatusPage = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const navigate = useNavigate();
-
-  const handleBackClick = () => {
-    navigate('/dashboard');
-  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -33,7 +35,7 @@ const VehicleStatusPage = () => {
     const fetchVehicles = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/vehicles', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         setVehicles(response.data);
       } catch (error) {
@@ -50,7 +52,7 @@ const VehicleStatusPage = () => {
     const token = localStorage.getItem('token');
     try {
       await axios.put(
-        `http://localhost:5000/api/vehicles/${vehicleId}`, 
+        `http://localhost:5000/api/vehicles/${vehicleId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,40 +73,47 @@ const VehicleStatusPage = () => {
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold text-center mb-6">Vehicle Status</h2>
-
-      <div className="vehicle-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {vehicles.map((vehicle) => (
-          <div key={vehicle._id} className="vehicle-card p-4 bg-white border border-gray-300 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold">{vehicle.name}</h3>
-            <p className="vehicle-info"><strong>Model:</strong> {vehicle.model}</p>
-            <p className="vehicle-info"><strong>License Plate:</strong> {vehicle.license_plate}</p>
-            <p className="vehicle-info"><strong>Status:</strong> {vehicle.status}</p>
-            <p className="vehicle-info"><strong>Last Updated:</strong> {new Date(vehicle.updatedAt).toLocaleDateString()}</p>
-
-            {isAdmin && (
-              <div className="mt-4">
-                <label className="block mb-2 font-medium">Update Status</label>
-                <select
-                  value={vehicle.status}
-                  onChange={(e) => handleStatusChange(vehicle._id, e.target.value)}
-                  className="block w-full p-2 border border-gray-300 rounded-md"
-                >
-                  <option value="available">Available</option>
-                  <option value="in-use">In Use</option>
-                  <option value="maintenance">Maintenance</option>
-                </select>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <button 
-        onClick={handleBackClick} 
-        className="mt-6 py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700"
-      >
-        Back to Dashboard
-      </button>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="vehicle status table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Vehicle Name</TableCell>
+              <TableCell align="right">Model</TableCell>
+              <TableCell align="right">License Plate</TableCell>
+              <TableCell align="right">Status</TableCell>
+              <TableCell align="right">Last Updated</TableCell>
+              {isAdmin && <TableCell align="right">Update Status</TableCell>}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {vehicles.map((vehicle) => (
+              <TableRow key={vehicle._id}>
+                <TableCell component="th" scope="row">
+                  {vehicle.name}
+                </TableCell>
+                <TableCell align="right">{vehicle.model}</TableCell>
+                <TableCell align="right">{vehicle.license_plate}</TableCell>
+                <TableCell align="right">{vehicle.status}</TableCell>
+                <TableCell align="right">
+                  {new Date(vehicle.updatedAt).toLocaleDateString()}
+                </TableCell>
+                {isAdmin && (
+                  <TableCell align="right">
+                    <Select
+                      value={vehicle.status}
+                      onChange={(e) => handleStatusChange(vehicle._id, e.target.value)}
+                    >
+                      <MenuItem value="available">Available</MenuItem>
+                      <MenuItem value="in-use">In Use</MenuItem>
+                      <MenuItem value="maintenance">Maintenance</MenuItem>
+                    </Select>
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };

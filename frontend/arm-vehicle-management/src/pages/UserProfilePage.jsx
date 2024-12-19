@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';  // jwtDecode without destructuring
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import axios from 'axios';
 import '../styles/UserProfilePage.css'; // นำเข้าไฟล์ CSS ที่สร้างขึ้น
+
+const MySwal = withReactContent(Swal);
 
 const UserProfilePage = () => {
   const { id } = useParams();
@@ -15,11 +18,7 @@ const UserProfilePage = () => {
   const [editableEmail, setEditableEmail] = useState("");
   const [editableDescription, setEditableDescription] = useState("");
 
-  const navigate = useNavigate();
-
-  const handleBackClick = () => {
-    navigate('/dashboard');
-  };
+  
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -45,8 +44,20 @@ const UserProfilePage = () => {
       setUser(response.data);
       setIsEditing(false);
       fetchUserData();
+      MySwal.fire({
+        icon: 'success',
+        title: 'Profile Updated!',
+        text: 'Your profile has been successfully updated.',
+        confirmButtonText: 'OK'
+      });
     } catch (error) {
       setError('Error updating user data');
+      MySwal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'There was an issue updating your profile.',
+        confirmButtonText: 'Try Again'
+      });
     }
   };
 
@@ -167,10 +178,6 @@ const UserProfilePage = () => {
           </div>
         </div>
       )}
-  
-      <button className="user-profile-button" onClick={handleBackClick}>
-        Back to Dashboard
-      </button>
   
       {isEditing ? (
         <button className="user-profile-button" onClick={handleSaveClick}>

@@ -1,39 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import '../styles/Vehicle.css'; // Import external CSS
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
 const VehiclePage = () => {
   const [vehicles, setVehicles] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
-  const navigate = useNavigate();
   const [vehicleData, setVehicleData] = useState({
     name: '',
     license_plate: '',
     model: '',
     fuel_type: '',
-    fuel_capacity: 80 // Default to 80 liters
+    fuel_capacity: 80
   });
 
   useEffect(() => {
-    // Fetch vehicles
     const fetchVehicles = async () => {
       const response = await axios.get('http://localhost:5000/api/vehicles');
       setVehicles(response.data);
     };
     fetchVehicles();
 
-    // Check if the user is an admin (you should get this info from token)
     const token = localStorage.getItem('token');
     if (token) {
-      const { role } = JSON.parse(atob(token.split('.')[1])); // decode JWT
+      const { role } = JSON.parse(atob(token.split('.')[1]));
       setIsAdmin(role === 'admin');
     }
   }, []);
-
-  const handleBackClick = () => {
-    navigate('/dashboard');  // Navigate back to Dashboard
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -60,7 +58,7 @@ const VehiclePage = () => {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         
         await axios.delete(`http://localhost:5000/api/vehicles/${vehicleId}`, config);
-        setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));  // Remove vehicle from state
+        setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));
         alert('Vehicle deleted successfully');
       } catch (error) {
         alert('Error deleting vehicle');
@@ -70,35 +68,46 @@ const VehiclePage = () => {
 
   return (
     <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
-      {/* Vehicle Information Card */}
-      <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-        <h1 className="text-2xl font-bold text-center mb-6">Vehicle Information</h1>
-        <ul className="list-none p-0 flex flex-wrap justify-center gap-4">
-          {vehicles.map((vehicle) => (
-            <li key={vehicle._id} className="w-full md:w-1/3 lg:w-1/4 p-4 bg-white border border-gray-300 rounded-lg shadow-md">
-              <div className="flex justify-between">
-                <div>
-                  <p className="text-xl font-semibold">Name: {vehicle.name}</p>
-                  <p className="text-sm text-gray-500">Model: {vehicle.model}</p>
-                  <p className="text-sm text-gray-500">License Plate: {vehicle.license_plate}</p>
-                  <p className="text-sm text-gray-500">Fuel Type: {vehicle.fuel_type}</p>
-                  <p className="text-sm text-gray-500">Fuel Capacity: {vehicle.fuel_capacity} liters</p>
-                </div>
+      {/* Vehicle Information Table */}
+      <TableContainer component={Paper} className="mb-6">
+        <Table sx={{ minWidth: 650 }} aria-label="vehicle table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Vehicle Name</TableCell>
+              <TableCell>License Plate</TableCell>
+              <TableCell>Model</TableCell>
+              <TableCell>Fuel Type</TableCell>
+              <TableCell>Fuel Capacity (liters)</TableCell>
+              {isAdmin && <TableCell>Actions</TableCell>}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {vehicles.map((vehicle) => (
+              <TableRow key={vehicle._id}>
+                <TableCell component="th" scope="row">
+                  {vehicle.name}
+                </TableCell>
+                <TableCell>{vehicle.license_plate}</TableCell>
+                <TableCell>{vehicle.model}</TableCell>
+                <TableCell>{vehicle.fuel_type}</TableCell>
+                <TableCell>{vehicle.fuel_capacity} liters</TableCell>
                 {isAdmin && (
-                  <button 
-                    onClick={() => handleDelete(vehicle._id)} 
-                    className="ml-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
+                  <TableCell>
+                    <button
+                      onClick={() => handleDelete(vehicle._id)}
+                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  </TableCell>
                 )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      {/* Create New Vehicle Card */}
+      {/* Create New Vehicle Form */}
       {isAdmin && (
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <h2 className="text-xl font-bold mb-4">Create New Vehicle</h2>
@@ -166,16 +175,6 @@ const VehiclePage = () => {
           </form>
         </div>
       )}
-
-      {/* Back to Dashboard Button */}
-      <div className="text-center">
-        <button 
-          onClick={handleBackClick} 
-          className="mt-6 py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700"
-        >
-          Back to Dashboard
-        </button>
-      </div>
     </div>
   );
 };

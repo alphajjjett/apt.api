@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Login.css'; // นำเข้าไฟล์ CSS ที่ถูกต้อง
+import '../styles/Login.css'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');

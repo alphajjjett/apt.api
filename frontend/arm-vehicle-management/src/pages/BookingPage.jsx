@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import '../styles/Booking.css'
+import {jwtDecode} from 'jwt-decode';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
 const BookingPage = () => {
   const [missions, setMissions] = useState([]);
@@ -13,7 +18,6 @@ const BookingPage = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [error, setError] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,10 +42,6 @@ const BookingPage = () => {
 
     fetchData();
   }, []);
-
-  const handleBackClick = () => {
-    navigate('/dashboard');
-  };
 
   const handleCreateBooking = async () => {
     const token = localStorage.getItem('token');
@@ -91,14 +91,11 @@ const BookingPage = () => {
   };
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-6">Booking Page</h2>
-      <button onClick={handleBackClick} className="bg-blue-500 text-white py-2 px-4 rounded mb-6">
-        Back to Dashboard
-      </button>
+    <div className="container mx-auto min-h-screen bg-white shadow-lg rounded-lg p-6 mb-6">
+      <h2 className="text-2xl font-bold text-center mb-6">Booking Page</h2>
       {error && <p className="text-red-500">{error}</p>}
       
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-wrap justify-center lg:flex-row gap-8">
         {/* Create Booking Section */}
         {!isAdmin && (
           <div className="lg:w-1/3">
@@ -157,50 +154,43 @@ const BookingPage = () => {
             </div>
           </div>
         )}
-    {/* Bookings Section */}
-      <div className="lg:w-2/3">
+    
+        {/* Bookings Section */}
+        <div className="lg:w-2/3">
           <h3 className="text-xl font-semibold mb-4">Bookings</h3>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {bookings.map((booking) => (
-              <li
-                key={booking._id}
-                className="border border-gray-300 p-4 rounded-lg shadow-lg bg-white transition-transform transform hover:scale-105"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <p className="font-bold text-lg">{booking.mission.mission_name}</p>
-                  <span
-                    className={`py-1 px-2 rounded-full text-xs font-semibold ${
-                      booking.status === 'Pending'
-                        ? 'bg-yellow-500 text-white'
-                        : booking.status === 'Completed'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-blue-500 text-white'
-                    }`}
-                  >
-                    {booking.status}
-                  </span>
-                </div>
-
-                <p className="text-gray-600 mb-2">
-                  <span className="font-bold">Vehicle:</span> {booking.vehicle.name}
-                </p>
-
-                <p className="text-gray-600 mb-2">
-                  <span className="font-bold">Booking Date:</span>{' '}
-                  {new Date(booking.bookingDate).toLocaleDateString()}
-                </p>
-
-                <div className="flex justify-end">
-                  <button
-                    onClick={() => handleDeleteBooking(booking._id)}
-                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-full transition-colors"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="bookings table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Mission Name</TableCell>
+                  <TableCell align="right">Vehicle</TableCell>
+                  <TableCell align="right">Booking Date</TableCell>
+                  <TableCell align="right">Status</TableCell>
+                  <TableCell align="right">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {bookings.map((booking) => (
+                  <TableRow key={booking._id}>
+                    <TableCell component="th" scope="row">
+                      {booking.mission.mission_name}
+                    </TableCell>
+                    <TableCell align="right">{booking.vehicle.name}</TableCell>
+                    <TableCell align="right">{new Date(booking.bookingDate).toLocaleDateString()}</TableCell>
+                    <TableCell align="right">{booking.status}</TableCell>
+                    <TableCell align="right">
+                      <button
+                        onClick={() => handleDeleteBooking(booking._id)}
+                        className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-full transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
     </div>

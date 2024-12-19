@@ -15,9 +15,7 @@ const CreateMission = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleBackClick = () => {
-    navigate('/dashboard');
-  };
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -140,9 +138,6 @@ const CreateMission = () => {
           Create Mission
         </button>
       </form>
-      <button onClick={handleBackClick} className="create-mission-back-button">
-        Back to Dashboard
-      </button>
     </div>
   );
 };

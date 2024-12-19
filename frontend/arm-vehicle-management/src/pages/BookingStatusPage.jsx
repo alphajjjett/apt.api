@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
-import '../styles/BookingStatus.css'
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import MenuItem from '@mui/material/MenuItem';
+import { Select } from '@mui/material';
 
 const BookingStatusPage = () => {
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);  // To check if the user is an admin
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch bookings and check if the user is an admin
@@ -29,10 +35,6 @@ const BookingStatusPage = () => {
 
     fetchData();
   }, []);
-
-  const handleBackClick = () => {
-    navigate('/dashboard');
-  };
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
@@ -55,48 +57,45 @@ const BookingStatusPage = () => {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-semibold mb-6">Booking Status Page</h2>
-      <button 
-        onClick={handleBackClick} 
-        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-      >
-        Back to Dashboard
-      </button>
-
       {error && <p className="text-red-500 mt-4">{error}</p>}  {/* Show error message if any */}
 
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold mb-4">Bookings List</h3>
-        <ul className="space-y-4">
-          {bookings.map((booking) => (
-            <li key={booking._id} className="border-b border-gray-300 pb-4">
-              <div className="flex justify-between items-center mb-2">
-                <div>
-                  <p className="text-lg font-medium">Mission: {booking.mission.mission_name}</p>
-                  <p className="text-sm text-gray-500">Vehicle: {booking.vehicle.name}</p>
-                  <p className="text-sm text-gray-500">Status: {booking.status}</p>
-                  <p className="text-sm text-gray-500">Booking Date: {new Date(booking.bookingDate).toLocaleDateString()}</p>
-                </div>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="booking status table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Mission Name</TableCell>
+              <TableCell>Vehicle Name</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Booking Date</TableCell>
+              {isAdmin && <TableCell align="right">Update Status</TableCell>}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {bookings.map((booking) => (
+              <TableRow key={booking._id}>
+                <TableCell component="th" scope="row">{booking.mission.mission_name}</TableCell>
+                <TableCell>{booking.vehicle.name}</TableCell>
+                <TableCell>{booking.status}</TableCell>
+                <TableCell>{new Date(booking.bookingDate).toLocaleDateString()}</TableCell>
 
-                {/* Only admins can update the status */}
                 {isAdmin && (
-                  <div className="ml-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Update Status:</label>
-                    <select 
+                  <TableCell align="right">
+                    <Select 
                       value={booking.status} 
                       onChange={(e) => handleStatusChange(booking._id, e.target.value)}
                       className="p-2 border border-gray-300 rounded-md"
                     >
-                      <option value="pending">Pending</option>
-                      <option value="approved">Approved</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </div>
+                      <MenuItem value="pending">Pending</MenuItem>
+                      <MenuItem value="approved">Approved</MenuItem>
+                      <MenuItem value="rejected">Rejected</MenuItem>
+                    </Select>
+                  </TableCell>
                 )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };

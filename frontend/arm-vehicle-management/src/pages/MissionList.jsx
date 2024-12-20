@@ -97,6 +97,8 @@ const MissionList = () => {
   }
 
   return (
+    <div className="container">
+    <h2>Mission List</h2>
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="mission table">
         <TableHead>
@@ -153,6 +155,7 @@ const MissionList = () => {
         </TableBody>
       </Table>
     </TableContainer>
+    </div>
   );
 };
 

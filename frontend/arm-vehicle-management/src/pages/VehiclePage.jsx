@@ -102,7 +102,8 @@ const VehiclePage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
+    <div className="container">
+      <h2>Vehicle Detail</h2>
       {/* Vehicle Information Table */}
       <TableContainer component={Paper} className="mb-6">
         <Table sx={{ minWidth: 650 }} aria-label="vehicle table">

@@ -8,7 +8,6 @@ const { getAllUsers,
         deleteUser,
         } = require('../controllers/user.controller');
 const router = express.Router();
-const multer = require('multer');
 const auth = require('../middleware/auth.middleware');
 
 
@@ -37,7 +36,6 @@ router.put('/:id',auth, updateUser);
 
 // Route สำหรับลบผู้ใช้
 router.delete('/:id', auth, deleteUser);
-
 
 
 module.exports = router;

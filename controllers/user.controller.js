@@ -104,31 +104,30 @@ const getCurrentUser = async (req, res) => {
 
 
 const updateUser = async (req, res) => {
-    const { id } = req.params;  // ดึง id ของผู้ใช้จาก URL
-    const { name, email, description } = req.body;  // ดึงข้อมูลที่ต้องการอัปเดตจาก body ของ request
-  
+    const { id } = req.params;
+    const { name, email, description, profileImage } = req.body;  
+
     try {
-      // ค้นหาผู้ใช้จาก MongoDB ตาม id
-      const user = await User.findById(id);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });  // ถ้าหาผู้ใช้ไม่เจอ ให้ตอบกลับ 404
-      }
-  
-      // อัปเดตข้อมูลของผู้ใช้
-      user.name = name || user.name;  // ถ้ามีการส่ง name มาให้แก้ไข ถ้าไม่ส่งก็ใช้ค่าเดิม
-      user.email = email || user.email;  // ถ้ามีการส่ง email มาให้แก้ไข ถ้าไม่ส่งก็ใช้ค่าเดิม
-      user.description = description || user.description;  // ถ้ามีการส่ง description มาให้แก้ไข ถ้าไม่ส่งก็ใช้ค่าเดิม
-  
-      // บันทึกการอัปเดตข้อมูลในฐานข้อมูล
-      const updatedUser = await user.save();
-  
-      // ส่งข้อมูลผู้ใช้ที่อัปเดตกลับไป
-      res.json(updatedUser);
+        const user = await User.findById(id);
+        console.log('User Profile Image:', user.profileImage);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.name = name || user.name;
+        user.email = email || user.email;
+        user.description = description || user.description;
+        user.profileImage = profileImage || user.profileImage;  
+
+        const updatedUser = await user.save();
+
+        res.json(updatedUser);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });  // ถ้ามีข้อผิดพลาดใน server
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
     }
-  };
+};
+
   
   
 

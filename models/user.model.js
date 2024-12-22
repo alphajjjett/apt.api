@@ -20,9 +20,13 @@ const UserSchema = mongoose.Schema(
             type: String,
             required: true
         },
-        description: {  // New field added
+        description: {  
             type: String,
-            default: ''  // Optional, defaults to an empty string if not provided
+            default: ''  
+        },
+        profileImage: {  
+            type: String,
+            default: ''  
         }
     },
     {

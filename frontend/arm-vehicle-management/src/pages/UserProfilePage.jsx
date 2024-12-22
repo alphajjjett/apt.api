@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';  // jwtDecode without destructuring
+import { jwtDecode } from 'jwt-decode';  // jwtDecode without destructuring
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import axios from 'axios';
@@ -17,8 +17,7 @@ const UserProfilePage = () => {
   const [editableName, setEditableName] = useState("");
   const [editableEmail, setEditableEmail] = useState("");
   const [editableDescription, setEditableDescription] = useState("");
-
-  
+  const [profileImage, setProfileImage] = useState(null); // สร้าง state สำหรับจัดการภาพโปรไฟล์
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -32,6 +31,7 @@ const UserProfilePage = () => {
       name: editableName,
       email: editableEmail,
       description: editableDescription,
+      profileImage: user.profileImage, // ใช้ URL ของภาพโปรไฟล์
     };
 
     try {
@@ -61,6 +61,73 @@ const UserProfilePage = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    const formData = new FormData();
+    formData.append("file", profileImage);
+  
+    try {
+      const response = await axios.post("http://localhost:5000/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+  
+      // หลังจากอัพโหลด, เอา URL ของภาพที่อัพโหลด
+      const imageUrl = response.data.path; // สมมุติว่า backend ส่ง URL กลับมา
+      await handleSaveProfileImage(imageUrl);
+    } catch (error) {
+      MySwal.fire({
+        icon: "error",
+        title: "Upload Failed!",
+        text: "There was an issue uploading your profile image.",
+        confirmButtonText: "Try Again",
+      });
+    }
+  };
+  
+
+  const handleSaveProfileImage = async (imageUrl) => {
+    const updatedUser = {
+      name: editableName,
+      email: editableEmail,
+      description: editableDescription,
+      profileImage: imageUrl, // บันทึก URL ของภาพโปรไฟล์
+    };
+
+    try {
+      const response = await axios.put(`http://localhost:5000/api/users/${id}`, updatedUser, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setUser(response.data);
+      setIsEditing(false);
+      MySwal.fire({
+        icon: "success",
+        title: "Profile Updated!",
+        text: "Your profile has been successfully updated.",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      setError("Error updating user data");
+      MySwal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "There was an issue updating your profile.",
+        confirmButtonText: "Try Again",
+      });
+    }
+  };
+
   const fetchUserData = async () => {
     try {
       const response = await axios.get(`/api/users/${id}`, {
@@ -68,13 +135,14 @@ const UserProfilePage = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      setUser(response.data);
+      setUser(response.data);  // รวมถึง profileImage ด้วย
     } catch (error) {
       console.error('Error fetching user data', error);
     } finally {
       setLoading(false);
     }
-  };
+};
+
 
   useEffect(() => {
     let isMounted = true;
@@ -90,6 +158,7 @@ const UserProfilePage = () => {
 
       try {
         const decodedToken = jwtDecode(token);
+        console.log('Decoded Token:', decodedToken);
 
         if (decodedToken.exp < Date.now() / 1000) {
           setError('Token has expired, please login again');
@@ -104,12 +173,15 @@ const UserProfilePage = () => {
         }
 
         if (isMounted) {
-          setUser({
+          const userData = {
             name: decodedToken.name,
             email: decodedToken.email,
             role: decodedToken.role,
             description: decodedToken.description || "",
-          });
+            profileImage: decodedToken.profileImage || "", // เพิ่มการโหลดภาพโปรไฟล์
+          };
+          setUser(userData);
+          console.log('User data:', userData); // ตรวจสอบข้อมูล user
         }
       } catch (error) {
         setError('Error decoding token or fetching user data');
@@ -174,6 +246,35 @@ const UserProfilePage = () => {
               />
             ) : (
               <span>{user.description}</span>
+            )}
+          </div>
+          <div className="user-profile-info">
+            <label>Profile Image:</label>
+            {isEditing ? (
+              <>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                {profileImage && (
+                  <button className="user-profile-button" onClick={handleImageUpload}>
+                    Upload Image
+                  </button>
+                )}
+              </>
+            ) : (
+              <div> 
+              {user.profileImage ? (
+                <img
+                  src={`http://localhost:5000${user.profileImage}`} 
+                  alt="Profile"
+                  className="user-profile-image"
+                />
+              ) : (
+                <span>No profile image</span>
+              )}
+            </div>
             )}
           </div>
         </div>

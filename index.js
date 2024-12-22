@@ -2,32 +2,37 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const authRoutes = require('./routes/auth.route');
-const jwt = require('jsonwebtoken'); // ต้องเพิ่มบรรทัดนี้
+const jwt = require('jsonwebtoken'); 
+const path = require('path');
+const multer = require('multer');
+
+
+// ตั้งค่า multer สำหรับการอัพโหลดไฟล์
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '../apt.api/uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
+
+app.use('/uploads', express.static(path.join(__dirname, '../apt.api/uploads')));
+
+
 
 const cors = require('cors');
-
 const Vehicle = require ('./models/vehicle.model.js');
-const vehicleRoute = require('./routes/vehicle.route.js'); //ข้อมูลรถ
-
+const vehicleRoute = require('./routes/vehicle.route.js'); 
 const VehicleReturn = require ('./models/vehiclereturn.model.js');
-const vehicleReturnRoute = require('./routes/vehiclereturn.route.js'); //คืนรถ
-
-
-
+const vehicleReturnRoute = require('./routes/vehiclereturn.route.js'); 
 const bookingRoutes = require('./routes/booking.route.js');
-
-
-
 const missionRoutes = require('./routes/mission.route.js');
-
 const userRoutes = require('./routes/user.route.js');
-
 const adminRoutes = require('./routes/admin.route.js');
-
-
-
-const dashboardRoute = require('./routes/dashboard.route');  // นำเข้า route ของ dashboard
-
+const dashboardRoute = require('./routes/dashboard.route');  
 const vehicleRoutes = require('./routes/vehicle.route'); 
 
 
@@ -47,11 +52,8 @@ app.use(cors());
 
 app.use("/api/vehicles", vehicleRoute);
 app.use("/api/vehicle-returns", vehicleReturnRoute);
-
 app.use('/api/bookings', bookingRoutes);
-
 app.use('/api/missions', missionRoutes);
-// middleware
 app.use('/api', dashboardRoute);  // กำหนด route dashboard ที่ /api/dashboard
 
 // ใช้ route ของ admin ซึ่งมีการใช้ auth middleware ใน route นั้น ๆ
@@ -84,18 +86,18 @@ app.post('/api/missions', async (req, res) => {
     const mission = new Mission({
       mission_name,
       description,
-      status: status || 'pending',  // กำหนดค่า default เป็น 'pending'
+      status: status || 'pending', 
       assigned_vehicle_id,
       assigned_user_id,
-      start_date: new Date(start_date),  // แปลงเป็น Date object
-      end_date: new Date(end_date),      // แปลงเป็น Date object
+      start_date: new Date(start_date),  
+      end_date: new Date(end_date),      
     });
 
     await mission.save();
 
     res.status(201).json({ message: 'Mission created successfully', mission });
   } catch (error) {
-    console.error('Error creating mission:', error);  // แสดงข้อผิดพลาดใน server log
+    console.error('Error creating mission:', error);  
     res.status(500).json({ message: 'Failed to create mission', error: error.message });
   }
 });
@@ -106,15 +108,12 @@ app.post('/api/vehicle-returns', (req, res) => {
     return res.status(400).send('Missing required fields');
   }
 
-  // Process and save the return
+
 });
 
 
 
 
-app.get('/', (req, res) => {
-    res.send("Hello form APT API");
-});
 
 // Route สำหรับการ login
 app.post('/login', async (req, res) => {
@@ -162,8 +161,22 @@ app.get('/api/vehicle-returns/:id', async (req, res) => {
 
 
 
+// API สำหรับอัพโหลดรูปภาพ
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded');
+  }
+
+  // ส่ง URL กลับไปให้ frontend
+  const imageUrl = `/uploads/${req.file.filename}`;
+  res.json({ path: imageUrl });
+});
 
 
+
+app.get('/', (req, res) => {
+  res.send("Hello form APT API");
+});
 
 
 mongoose.connect(uri)

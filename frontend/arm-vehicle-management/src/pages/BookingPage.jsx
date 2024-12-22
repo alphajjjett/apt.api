@@ -78,7 +78,25 @@ const BookingPage = () => {
     }
   };
 
-  const handleDeleteBooking = async (bookingId) => {
+  const handleDeleteBooking = async (bookingId, bookingUserId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return setError('Please login to delete a booking');
+    }
+  
+    const decodedToken = jwtDecode(token);
+    const currentUserId = decodedToken.id;
+  
+    // Check if the logged-in user is the creator of the booking or an admin
+    if (currentUserId !== bookingUserId && !isAdmin) {
+      return MySwal.fire({
+        title: "Unauthorized",
+        text: "You can only delete your own bookings.",
+        icon: "error"
+      });
+    }
+  
+    // Proceed with deletion
     MySwal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -90,10 +108,10 @@ const BookingPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const token = localStorage.getItem('token');
           await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
+  
           setBookings(bookings.filter(booking => booking._id !== bookingId));
   
           MySwal.fire({
@@ -118,6 +136,7 @@ const BookingPage = () => {
       }
     });
   };
+  
 
   return (
     <div className="container mx-auto min-h-screen bg-white shadow-lg rounded-lg p-6 mb-6">
@@ -194,30 +213,32 @@ const BookingPage = () => {
                   <TableCell>Mission Name</TableCell>
                   <TableCell align="right">Vehicle</TableCell>
                   <TableCell align="right">Booking Date</TableCell>
+                  <TableCell align="right">User</TableCell>
                   <TableCell align="right">Status</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {bookings.map((booking) => (
-                  <TableRow key={booking._id}>
-                    <TableCell component="th" scope="row">
-                      {booking.mission.mission_name}
-                    </TableCell>
-                    <TableCell align="right">{booking.vehicle.name}</TableCell>
-                    <TableCell align="right">{new Date(booking.bookingDate).toLocaleDateString()}</TableCell>
-                    <TableCell align="right">{booking.status}</TableCell>
-                    <TableCell align="right">
-                      <button
-                        onClick={() => handleDeleteBooking(booking._id)}
-                        className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-full transition-colors"
-                      >
-                        Delete
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+                  {bookings.map((booking) => (
+                    <TableRow key={booking._id}>
+                      <TableCell component="th" scope="row">
+                        {booking.mission.mission_name}
+                      </TableCell>
+                      <TableCell align="right">{booking.vehicle.name}</TableCell>
+                      <TableCell align="right">{new Date(booking.bookingDate).toLocaleDateString()}</TableCell>
+                      <TableCell align="right">{booking.user.name}</TableCell>
+                      <TableCell align="right">{booking.status}</TableCell>
+                      <TableCell align="right">
+                        <button
+                          onClick={() => handleDeleteBooking(booking._id, booking.userId)} // Pass the userId
+                          className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-full transition-colors"
+                        >
+                          Delete
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
             </Table>
           </TableContainer>
         </div>

@@ -32,7 +32,7 @@ router.get('/login', loginUser);
 router.get('/me',  getCurrentUser);
 
 // Route สำหรับแก้ไขข้อมูล user ที่ล็อกอินอยู่
-router.put('/:id', updateUser);
+router.put('/:id',auth, updateUser);
 
 
 // Route สำหรับลบผู้ใช้

@@ -13,7 +13,6 @@ import VehicleStatusPage from './pages/VehicleStatusPage';
 import BookingPage from './pages/BookingPage';
 import BookingStatusPage from './pages/BookingStatusPage';
 import VehicleReturnPage from './pages/VehicleReturnPage';
-
 import NavigationBar from './components/Navbar';
 
 
@@ -36,7 +35,7 @@ function App() {
             <Route path='/missionslist' element={<MissionList />} />
             <Route path='/mission_request' element={<MissionRequest />} />
             <Route path='/vehicle' element={<VehiclePage />} />
-            <Route path="/userprofile/:id" element={<UserProfilePage />} />
+            <Route path="/profile/:id" element={<UserProfilePage />} />
             <Route path="/vehicle-status" element={<VehicleStatusPage />} />
             <Route path="/booking" element={<BookingPage />} />
             <Route path="/booking-status" element={<BookingStatusPage />} />

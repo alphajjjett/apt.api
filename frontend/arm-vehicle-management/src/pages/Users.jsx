@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';  // Admin role still uses jwtDecode
-import '../styles/Users.css';  // Import external CSS
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -12,6 +11,8 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingUserId, setEditingUserId] = useState(null);  // Track which user is being edited
+  const [updatedUser, setUpdatedUser] = useState({});  // Store the updated user data
   const navigate = useNavigate();
 
   const handleBackClick = () => {
@@ -28,7 +29,7 @@ const Users = () => {
         console.log(decodedToken);
 
         if (decodedToken.role === 'user') {
-          navigate(`/userprofile/${decodedToken.id}`, { replace: true });
+          navigate(`/profile/${decodedToken.id}`, { replace: true });
         } else if (decodedToken.role === 'admin') {
           const fetchUsers = async () => {
             try {
@@ -93,6 +94,37 @@ const Users = () => {
     });
   };
 
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedUser((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveEdit = async (userId) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/users/${userId}`,
+        updatedUser,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      );
+      setUsers(users.map((user) => (user._id === userId ? { ...user, ...updatedUser } : user)));
+      setEditingUserId(null);
+      MySwal.fire({
+        title: "Updated!",
+        text: "User details have been updated.",
+        icon: "success"
+      });
+    } catch (error) {
+      setError('Failed to update user');
+      MySwal.fire({
+        title: "Error",
+        text: "There was an error updating the user.",
+        icon: "error"
+      });
+    }
+  };
+
   if (loading) return <p>Loading users...</p>;
   if (error) return <p>{error}</p>;
   if (users.length === 0) return <p>No users found</p>;
@@ -106,35 +138,98 @@ const Users = () => {
             <th className="py-2 px-4 bg-gray-200 text-gray-600">Name</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">Email</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">Role</th>
+            <th className="py-2 px-4 bg-gray-200 text-gray-600">Description</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user) => (
             <tr key={user._id} className="border-t">
-              <td className="py-2 px-4">{user.name}</td>
-              <td className="py-2 px-4">{user.email}</td>
-              <td className="py-2 px-4">{user.role}</td>
               <td className="py-2 px-4">
-                <button
-                  onClick={() => navigate(`/users/${user._id}`)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded"
-                >
-                  View Profile
-                </button>
-                <button
-                  onClick={() => navigate(`/users/edit/${user._id}`)}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded ml-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteUser(user._id)}
-                  className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded ml-2"
-                >
-                  Delete
-                </button>
+                {editingUserId === user._id ? (
+                  <>
+                    <input
+                      type="text"
+                      name="name"
+                      value={updatedUser.name || user.name}
+                      onChange={handleEditChange}
+                      className="border px-2 py-1 rounded"
+                    />
+                  </>
+                ) : (
+                  user.name
+                )}
               </td>
+              <td className="py-2 px-4">
+                {editingUserId === user._id ? (
+                  <>
+                    <input
+                      type="email"
+                      name="email"
+                      value={updatedUser.email || user.email}
+                      onChange={handleEditChange}
+                      className="border px-2 py-1 rounded"
+                    />
+                  </>
+                ) : (
+                  user.email
+                )}
+              </td>
+              <td className="py-2 px-4">
+                  {user.role} 
+              </td>
+              <td className="py-2 px-4">
+                {editingUserId === user._id ? (
+                  <>
+                    <input
+                      type="text"
+                      name="description"
+                      value={updatedUser.description || user.description}
+                      onChange={handleEditChange}
+                      className="border px-2 py-1 rounded"
+                    />
+                  </>
+                ) : (
+                  user.description
+                )}
+              </td>
+              <td className="py-2 px-4">
+                {editingUserId === user._id ? (
+                  <>
+                    <button
+                      onClick={() => handleSaveEdit(user._id)}
+                      className="bg-green-500 hover:bg-green-600 text-white py-1 px-2 rounded ml-2"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingUserId(null); // Cancel editing
+                        setUpdatedUser({}); // Reset updated user data
+                      }}
+                      className="bg-gray-500 hover:bg-gray-600 text-white py-1 px-2 rounded ml-2"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setEditingUserId(user._id)}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded ml-2"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(user._id)}
+                      className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded ml-2"
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+              </td>
+
             </tr>
           ))}
         </tbody>

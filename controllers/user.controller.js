@@ -107,20 +107,7 @@ const updateUser = async (req, res) => {
     const { id } = req.params;  // ดึง id ของผู้ใช้จาก URL
     const { name, email, description } = req.body;  // ดึงข้อมูลที่ต้องการอัปเดตจาก body ของ request
   
-    // ตรวจสอบ token จาก header (Authorization)
-    const token = req.headers['authorization']?.split(' ')[1];  // ดึง token จาก header
-  
-    if (!token) {
-      return res.status(401).json({ message: 'No token provided' });  // ถ้าไม่มี token ให้ตอบกลับ 401
-    }
-  
     try {
-      // ตรวจสอบและถอดรหัส token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);  // ใช้ JWT_SECRET จาก .env file
-      if (decoded.id !== id) {
-        return res.status(403).json({ message: 'User not authorized' });  // ตรวจสอบว่า id ใน token ตรงกับ id ที่ต้องการอัปเดตหรือไม่
-      }
-  
       // ค้นหาผู้ใช้จาก MongoDB ตาม id
       const user = await User.findById(id);
       if (!user) {
@@ -142,6 +129,7 @@ const updateUser = async (req, res) => {
       res.status(500).json({ message: 'Server error' });  // ถ้ามีข้อผิดพลาดใน server
     }
   };
+  
   
 
 

@@ -8,6 +8,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const VehicleReturnPage = () => {
   const [bookings, setBookings] = useState([]);
@@ -26,30 +30,39 @@ const VehicleReturnPage = () => {
   const [userDisplay, setUserDisplay] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
 
 
   useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/bookings');
-        setBookings(response.data);
-      } catch (error) {
-        setError('Error fetching bookings');
-      }
-    };
+  const fetchBookings = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/bookings');
+      setBookings(response.data);
+    } catch (error) {
+      setError('Error fetching bookings');
+    }
+  };
 
-    const fetchVehicleReturns = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/vehicle-returns');
-        setVehicleReturns(response.data);
-      } catch (error) {
-        setError('Error fetching vehicle returns');
-      }
-    };
+  const fetchVehicleReturns = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/vehicle-returns');
+      setVehicleReturns(response.data);
+    } catch (error) {
+      setError('Error fetching vehicle returns');
+    }
+  };
 
-    fetchBookings();
-    fetchVehicleReturns();
-  }, []);
+  // Check if the user is an admin
+  const token = localStorage.getItem('token');
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    setIsAdmin(decodedToken.role === 'admin');
+  }
+
+  fetchBookings();
+  fetchVehicleReturns();
+}, []);
+
 
   const getUserIdFromToken = () => {
     const token = localStorage.getItem('token');
@@ -123,6 +136,70 @@ const VehicleReturnPage = () => {
       setSuccess('');
     }
   };
+
+
+  const handleDeleteVehicleReturn = async (vehicleReturnId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return setError('Please login to delete a vehicle return');
+    }
+
+    const decodedToken = jwtDecode(token);
+    const isAdmin = decodedToken.role === 'admin'; // Check if the logged-in user is an admin
+
+    // Check if the logged-in user is an admin
+    if (!isAdmin) {
+      return MySwal.fire({
+        title: "Unauthorized",
+        text: "You must be an admin to delete a vehicle return.",
+        icon: "error"
+      });
+    }
+
+    // Proceed with deletion
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          // Change the API endpoint to delete a vehicle return
+          await axios.delete(`http://localhost:5000/api/vehicle-returns/${vehicleReturnId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          // Remove the deleted vehicle return from the list (update state accordingly)
+          setVehicleReturns(vehicleReturns.filter(returnItem => returnItem._id !== vehicleReturnId));
+
+          MySwal.fire({
+            title: "Deleted!",
+            text: "The vehicle return has been deleted.",
+            icon: "success"
+          });
+        } catch (error) {
+          setError('Failed to delete vehicle return');
+          MySwal.fire({
+            title: "Error",
+            text: "There was an error deleting the vehicle return.",
+            icon: "error"
+          });
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        MySwal.fire({
+          title: "Cancelled",
+          text: "Your vehicle return is safe :)",
+          icon: "error"
+        });
+      }
+    });
+};
+
+  
 
   const handlePrint = (vehicleReturn) => {
     const booking = bookings.find(booking => booking._id === vehicleReturn.booking_id._id);
@@ -316,6 +393,7 @@ const VehicleReturnPage = () => {
               <TableCell>Fuel Level</TableCell>
               <TableCell>Remark</TableCell>
               <TableCell>Actions</TableCell>
+              {isAdmin && <TableCell align="right">Delete</TableCell>} 
             </TableRow>
           </TableHead>
           <TableBody>
@@ -340,7 +418,17 @@ const VehicleReturnPage = () => {
                       Print Report
                     </button>
                   </TableCell>
-                </TableRow>
+                  {isAdmin && (  
+                    <TableCell align="right">
+                      <button
+                        onClick={() => handleDeleteVehicleReturn(vehicleReturn._id)}
+                        className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </TableCell>
+                  )}
+                    </TableRow>
               );
             })}
           </TableBody>

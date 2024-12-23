@@ -37,4 +37,14 @@
   }
 }
 
+/* CSS สำหรับทำให้ spinner อยู่กลางหน้าจอ */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2); /* พื้นหลังโปร่งแสง */
+}
+
+
 

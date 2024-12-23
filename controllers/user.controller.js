@@ -21,7 +21,7 @@ const loginUser = async (req, res) => {
 
      
         const token = jwt.sign(
-            { id: user._id, role: user.role, email: user.email, name: user.name, description: user.description }, 
+            { id: user._id, role: user.role, email: user.email, name: user.name, description: user.description , profileImage: user.profileImage}, 
             process.env.JWT_SECRET, 
             { expiresIn: '1h' }
         );
@@ -78,11 +78,11 @@ const getUserById = async (req, res) => {
             return res.status(403).json({ message: 'You are not authorized to access this data.' });
         }
 
-        
         const user = await User.findById(id, '-password');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
 
         res.json(user);
     } catch (error) {
@@ -105,11 +105,12 @@ const getCurrentUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { id } = req.params;
+
+
     const { name, email, description, profileImage } = req.body;  
 
     try {
         const user = await User.findById(id);
-        console.log('User Profile Image:', user.profileImage);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

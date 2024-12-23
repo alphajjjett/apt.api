@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';  // jwtDecode without destructuring
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import axios from 'axios';
-import '../styles/UserProfilePage.css'; // นำเข้าไฟล์ CSS ที่สร้างขึ้น
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode"; // jwtDecode without destructuring
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import axios from "axios";
+import "../styles/UserProfilePage.css"; // นำเข้าไฟล์ CSS ที่สร้างขึ้น
 
 const MySwal = withReactContent(Swal);
 
@@ -35,28 +35,32 @@ const UserProfilePage = () => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:5000/api/users/${id}`, updatedUser, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      const response = await axios.put(
+        `http://localhost:5000/api/users/${id}`,
+        updatedUser,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
-      });
+      );
 
       setUser(response.data);
       setIsEditing(false);
       fetchUserData();
       MySwal.fire({
-        icon: 'success',
-        title: 'Profile Updated!',
-        text: 'Your profile has been successfully updated.',
-        confirmButtonText: 'OK'
+        icon: "success",
+        title: "Profile Updated!",
+        text: "Your profile has been successfully updated.",
+        confirmButtonText: "OK",
       });
     } catch (error) {
-      setError('Error updating user data');
+      setError("Error updating user data");
       MySwal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: 'There was an issue updating your profile.',
-        confirmButtonText: 'Try Again'
+        icon: "error",
+        title: "Error!",
+        text: "There was an issue updating your profile.",
+        confirmButtonText: "Try Again",
       });
     }
   };
@@ -71,15 +75,20 @@ const UserProfilePage = () => {
   const handleImageUpload = async () => {
     const formData = new FormData();
     formData.append("file", profileImage);
-  
+    formData.append("id" , id)
+
     try {
-      const response = await axios.post("http://localhost:5000/api/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-  
+      const response = await axios.post(
+        "http://localhost:5000/api/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
       // หลังจากอัพโหลด, เอา URL ของภาพที่อัพโหลด
       const imageUrl = response.data.path; // สมมุติว่า backend ส่ง URL กลับมา
       await handleSaveProfileImage(imageUrl);
@@ -92,7 +101,6 @@ const UserProfilePage = () => {
       });
     }
   };
-  
 
   const handleSaveProfileImage = async (imageUrl) => {
     const updatedUser = {
@@ -103,11 +111,15 @@ const UserProfilePage = () => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:5000/api/users/${id}`, updatedUser, {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.put(
+        `http://localhost:5000/api/users/${id}`,
+        updatedUser,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       setUser(response.data);
       setIsEditing(false);
@@ -132,42 +144,41 @@ const UserProfilePage = () => {
     try {
       const response = await axios.get(`/api/users/${id}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
-      setUser(response.data);  // รวมถึง profileImage ด้วย
+      setUser(response.data); // รวมถึง profileImage ด้วย
     } catch (error) {
-      console.error('Error fetching user data', error);
+      console.error("Error fetching user data", error);
     } finally {
       setLoading(false);
     }
-};
-
+  };
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchUser = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
       if (!token) {
-        setError('No token found, please login again');
+        setError("No token found, please login again");
         setLoading(false);
         return;
       }
 
       try {
         const decodedToken = jwtDecode(token);
-        console.log('Decoded Token:', decodedToken);
+        console.log("Decoded Token:", decodedToken);
 
         if (decodedToken.exp < Date.now() / 1000) {
-          setError('Token has expired, please login again');
+          setError("Token has expired, please login again");
           setLoading(false);
           return;
         }
 
         if (decodedToken.id !== id) {
-          setError('User not authorized to view this profile');
+          setError("User not authorized to view this profile");
           setLoading(false);
           return;
         }
@@ -181,10 +192,10 @@ const UserProfilePage = () => {
             profileImage: decodedToken.profileImage || "", // เพิ่มการโหลดภาพโปรไฟล์
           };
           setUser(userData);
-          console.log('User data:', userData); // ตรวจสอบข้อมูล user
+          console.log("User data:", userData); // ตรวจสอบข้อมูล user
         }
       } catch (error) {
-        setError('Error decoding token or fetching user data');
+        setError("Error decoding token or fetching user data");
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -198,6 +209,8 @@ const UserProfilePage = () => {
       isMounted = false;
     };
   }, [id]);
+
+  console.log("user detail is ===========>" , user)
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -258,28 +271,31 @@ const UserProfilePage = () => {
                   onChange={handleImageChange}
                 />
                 {profileImage && (
-                  <button className="user-profile-button" onClick={handleImageUpload}>
+                  <button
+                    className="user-profile-button"
+                    onClick={handleImageUpload}
+                  >
                     Upload Image
                   </button>
                 )}
               </>
             ) : (
-              <div> 
-              {user.profileImage ? (
-                <img
-                  src={`http://localhost:5000${user.profileImage}`} 
-                  alt="Profile"
-                  className="user-profile-image"
-                />
-              ) : (
-                <span>No profile image</span>
-              )}
-            </div>
+              <div>
+                {user.profileImage ? (
+                  <img
+                    src={`${user.profileImage}`}
+                    alt="Profile"
+                    className="user-profile-image"
+                  />
+                ) : (
+                  <span>No profile image</span>
+                )}
+              </div>
             )}
           </div>
         </div>
       )}
-  
+
       {isEditing ? (
         <button className="user-profile-button" onClick={handleSaveClick}>
           Save Changes

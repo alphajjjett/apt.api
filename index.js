@@ -196,8 +196,10 @@ app.post("/api/upload", upload.single("file"),async (req, res) => {
     const blobStream = blob.createWriteStream();
 
     blobStream.on("error", (err) => {
+      console.log(err);
       res.status(500).json({message: "upload image failed"})
     })
+    console.log();
     
     blobStream.on('finish', async () => {
       await blob.makePublic();

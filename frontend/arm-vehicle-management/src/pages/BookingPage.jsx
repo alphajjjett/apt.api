@@ -137,11 +137,18 @@ const BookingPage = () => {
   };
 
   return (
-    <div className="container mx-auto min-h-screen bg-white shadow-lg rounded-lg p-6 mb-6">
-      <h2 className="text-2xl font-bold text-center mb-6">Booking Page</h2>
+    <div className="container">
+    {/* <div className=" mx-auto min-h-screen bg-white shadow-lg rounded-lg p-6 mb-6"> */}
+      <h2>Booking Page</h2>
       {error && <p className="text-red-500">{error}</p>}
+      <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
+        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
+            <h3 className="text-xl font-semibold">Total Booking</h3>
+            <p className="text-gray-600 text-2xl">{bookings.length}</p>
+        </div>
+      </div>
       
-      <div className="flex flex-wrap justify-center lg:flex-row gap-8">
+      <div className="flex flex-wrap lg:flex-row gap-8">
         {/* Create Booking Section */}
         {!isAdmin && (
           <div className="lg:w-1/3">
@@ -200,11 +207,10 @@ const BookingPage = () => {
             </div>
           </div>
         )}
-    
-        {/* Bookings Section */}
-        <div className="lg:w-2/3">
-          <h3 className="text-xl font-semibold mb-4">Bookings</h3>
-          <TableContainer component={Paper}>
+      </div>
+      {/* Bookings Section */}
+      <h3 className="text-xl font-semibold mb-4 mt-4">Bookings</h3>
+      <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="bookings table">
               <TableHead>
                 <TableRow>
@@ -243,9 +249,7 @@ const BookingPage = () => {
               </TableBody>
             </Table>
           </TableContainer>
-        </div>
-      </div>
-    </div>
+  </div>
   );
 };
 

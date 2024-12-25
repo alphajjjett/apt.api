@@ -99,6 +99,13 @@ const MissionList = () => {
   return (
     <div className="container">
     <h2>Mission List</h2>
+    <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
+        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
+            <h3 className="text-xl font-semibold">Total Mission</h3>
+            <p className="text-gray-600 text-2xl">{missions.length}</p>
+        </div>
+    </div>
+
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="mission table">
         <TableHead>

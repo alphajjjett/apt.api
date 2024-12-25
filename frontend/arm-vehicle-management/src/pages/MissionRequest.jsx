@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import MenuItem from '@mui/material/MenuItem';
 import { Select } from '@mui/material';
 
+
 const MissionRequest = () => {
   const [missions, setMissions] = useState([]);
   const [error, setError] = useState(null);
@@ -47,7 +48,6 @@ const MissionRequest = () => {
     <div className="container">
       <h2>Mission Requests</h2>
       {error && <p className="error-message">{error}</p>}
-
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="missions table">
           <TableHead>

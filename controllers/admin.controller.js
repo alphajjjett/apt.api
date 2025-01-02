@@ -76,12 +76,12 @@ const registerAdmin = async (req, res) => {
 
 const getAllAdmins = async (req, res) => {
   try {
-    const admin = req.user; // Admin from the JWT token
-    if (admin.role !== "admin") {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
+    // const admin = req.user;
+    // if (admin.role !== "admin") {
+    //   return res.status(403).json({ message: "Unauthorized" });
+    // }
 
-    const users = await Admin.find({}, "-password"); // Fetching all users (excluding passwords)
+    const users = await Admin.find({}, "-password"); 
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });
@@ -90,7 +90,7 @@ const getAllAdmins = async (req, res) => {
 
 const getAdminById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; 
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 

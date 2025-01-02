@@ -19,6 +19,14 @@ const AdminSchema = mongoose.Schema(
             type: String,
             enum: ['user', 'admin'],
             default: 'admin'
+        },
+        description: {  
+            type: String,
+            default: ''  
+        },
+        profileImage: {  
+            type: String,
+            default: ''  
         }
     },
     {

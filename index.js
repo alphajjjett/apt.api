@@ -63,7 +63,7 @@ app.use("/api/missions", missionRoutes);
 app.use("/api", dashboardRoute); // กำหนด route dashboard ที่ /api/dashboard
 
 // ใช้ route ของ admin ซึ่งมีการใช้ auth middleware ใน route นั้น ๆ
-app.use("/api/admin", adminRoutes);
+app.use("/api/admins", adminRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api", vehicleRoutes); // รวม route เข้า API path

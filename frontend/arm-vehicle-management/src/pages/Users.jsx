@@ -9,6 +9,7 @@ const MySwal = withReactContent(Swal);
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  const [admins, setAdmins] = useState([]);  // Add state for admins
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingUserId, setEditingUserId] = useState(null);  // Track which user is being edited
@@ -31,19 +32,23 @@ const Users = () => {
         if (decodedToken.role === 'user') {
           navigate(`/profile/${decodedToken.id}`, { replace: true });
         } else if (decodedToken.role === 'admin') {
-          const fetchUsers = async () => {
+          const fetchUsersAndAdmins = async () => {
             try {
-              const response = await axios.get('http://localhost:5000/api/users', {
+              const responseUsers = await axios.get('http://localhost:5000/api/users', {
                 headers: { Authorization: `Bearer ${token}` }
               });
-              setUsers(response.data);
+              const responseAdmins = await axios.get('http://localhost:5000/api/admins', {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              setUsers(responseUsers.data);
+              setAdmins(responseAdmins.data);  // Set admins data
             } catch (error) {
-              setError('Failed to fetch users');
+              setError('Failed to fetch users and admins');
             } finally {
               setLoading(false);
             }
           };
-          fetchUsers();
+          fetchUsersAndAdmins();
         } else {
           navigate('/', { replace: true });
         }
@@ -127,11 +132,11 @@ const Users = () => {
 
   if (loading) return <p>Loading users...</p>;
   if (error) return <p>{error}</p>;
-  if (users.length === 0) return <p>No users found</p>;
+  if (users.length === 0 && admins.length === 0) return <p>No users or admins found</p>;
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Users</h2>
+      <h2 className="text-2xl font-bold mb-4">Users and Admins</h2>
       <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
         <thead>
           <tr>
@@ -143,52 +148,46 @@ const Users = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {[...users, ...admins].map((user) => (
             <tr key={user._id} className="border-t">
               <td className="py-2 px-4">
                 {editingUserId === user._id ? (
-                  <>
-                    <input
-                      type="text"
-                      name="name"
-                      value={updatedUser.name || user.name}
-                      onChange={handleEditChange}
-                      className="border px-2 py-1 rounded"
-                    />
-                  </>
+                  <input
+                    type="text"
+                    name="name"
+                    value={updatedUser.name || user.name}
+                    onChange={handleEditChange}
+                    className="border px-2 py-1 rounded"
+                  />
                 ) : (
                   user.name
                 )}
               </td>
               <td className="py-2 px-4">
                 {editingUserId === user._id ? (
-                  <>
-                    <input
-                      type="email"
-                      name="email"
-                      value={updatedUser.email || user.email}
-                      onChange={handleEditChange}
-                      className="border px-2 py-1 rounded"
-                    />
-                  </>
+                  <input
+                    type="email"
+                    name="email"
+                    value={updatedUser.email || user.email}
+                    onChange={handleEditChange}
+                    className="border px-2 py-1 rounded"
+                  />
                 ) : (
                   user.email
                 )}
               </td>
               <td className="py-2 px-4">
-                  {user.role} 
+                {user.role}
               </td>
               <td className="py-2 px-4">
                 {editingUserId === user._id ? (
-                  <>
-                    <input
-                      type="text"
-                      name="description"
-                      value={updatedUser.description || user.description}
-                      onChange={handleEditChange}
-                      className="border px-2 py-1 rounded"
-                    />
-                  </>
+                  <input
+                    type="text"
+                    name="description"
+                    value={updatedUser.description || user.description}
+                    onChange={handleEditChange}
+                    className="border px-2 py-1 rounded"
+                  />
                 ) : (
                   user.description
                 )}
@@ -214,22 +213,25 @@ const Users = () => {
                   </>
                 ) : (
                   <>
-                    <button
-                      onClick={() => setEditingUserId(user._id)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded ml-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUser(user._id)}
-                      className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded ml-2"
-                    >
-                      Delete
-                    </button>
+                    {user.role !== 'admin' && (
+                      <>
+                        <button
+                          onClick={() => setEditingUserId(user._id)}
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded ml-2"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user._id)}
+                          className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded ml-2"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </>
                 )}
               </td>
-
             </tr>
           ))}
         </tbody>

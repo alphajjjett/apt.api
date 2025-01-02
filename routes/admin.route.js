@@ -1,22 +1,27 @@
 const express = require('express');
-const router = express.Router();
 const { 
+    getAllAdmins, 
     registerAdmin, 
+    getAdminById, 
     loginAdmin, 
-    createAdmin, 
-    getAllAdmins 
-} = require('../controllers/admin.controller');
+    updateAdmin, 
+    deleteAdmin 
+} = require('../controllers/admin.controller'); 
+const router = express.Router();
+const auth = require('../middleware/auth.middleware');
 
-// สมัครผู้ดูแลระบบ
-router.post('/register', registerAdmin);
 
-// เข้าสู่ระบบผู้ดูแลระบบ
 router.post('/login', loginAdmin);
 
-// สร้างผู้ดูแลระบบใหม่ (โดยผู้ดูแลระบบที่มีสิทธิ์)
-router.post('/create', createAdmin);
+router.post('/register', registerAdmin); 
 
-// ดึงข้อมูลผู้ดูแลระบบทั้งหมด
-router.get('/admins', getAllAdmins);
+// Route to get all users (admin only)
+router.get('/', auth, getAllAdmins);  // Only admin can get all users
+
+router.get('/:id', auth, getAdminById);
+
+router.put('/:id',updateAdmin); 
+
+router.delete('/:id', auth, deleteAdmin); 
 
 module.exports = router;

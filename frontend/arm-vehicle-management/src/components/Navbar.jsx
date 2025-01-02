@@ -3,11 +3,13 @@ import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
+import axios from 'axios';
 
 const NavigationBar = () => {
   const [userRole, setUserRole] = useState(null);
   const isLoggedIn = localStorage.getItem('token');
   const navigate = useNavigate();
+  const [profileImage, setProfileImage] = useState(null);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -20,7 +22,27 @@ const NavigationBar = () => {
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
-        setUserRole(decodedToken.role);  // Set the role based on the token
+        setUserRole(decodedToken.role); 
+
+        // ดึงรูปโปรไฟล์จาก token หรือ backend ถ้า token ไม่มีข้อมูลรูปภาพ
+        const fetchProfileImage = async () => {
+          try {
+            const response = await axios.get(`/api/users/${decodedToken.id}`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+            });
+            setProfileImage(response.data.profileImage); // สมมุติว่ามี field 'profileImage' ที่เก็บ URL ของรูปโปรไฟล์
+          } catch (error) {
+            console.error('Error fetching profile image:', error);
+          }
+        };
+
+        if (decodedToken.profileImage) {
+          setProfileImage(decodedToken.profileImage); // ถ้า token มีข้อมูลรูปโปรไฟล์
+        } else {
+          fetchProfileImage(); // ถ้าไม่มีรูปใน token, ไปดึงจาก backend
+        }
       } catch (error) {
         console.error('Invalid token:', error);
       }
@@ -62,19 +84,19 @@ const NavigationBar = () => {
               </NavDropdown>
 
               <NavDropdown
-                title={
-                  <span>
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                      alt="User"
-                      className="rounded-full w-8 h-8 inline-block mr-2"
-                    />
-                  </span>
-                }
-                id="profile-dropdown"
-                className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-              >
-                {/* Conditional rendering of profile text based on role */}
+                  title={
+                    <span>
+                      <img
+                        src={profileImage ? profileImage : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+                        alt="User"
+                        className="rounded-full w-8 h-8 inline-block mr-2"
+                      />
+                    </span>
+                  }
+                  id="profile-dropdown"
+                  className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+                >
+                {/* ถ้า role เป็น user จะแสดงเป็นอีกแบบนึง*/}
                 <NavDropdown.Item as={Link} to={userRole === 'admin' ? '/users' : '/users'} className="text-black hover:bg-gray-200">
                   {userRole === 'admin' ? 'ข้อมูลผู้ใช้' : 'โปรไฟล์'}
                 </NavDropdown.Item>

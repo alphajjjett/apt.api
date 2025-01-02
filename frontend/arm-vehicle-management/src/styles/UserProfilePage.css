@@ -58,4 +58,19 @@
     border-radius: 50%;
     object-fit: cover;
   }
+
+  .cancel-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
+  }
+  
+  .cancel-button:hover {
+    background-color: darkred;
+  }
+  
   

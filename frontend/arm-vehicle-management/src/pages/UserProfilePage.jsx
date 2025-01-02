@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // jwtDecode without destructuring
+import { jwtDecode } from "jwt-decode"; 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "axios";
-import "../styles/UserProfilePage.css"; // นำเข้าไฟล์ CSS ที่สร้างขึ้น
+import "../styles/UserProfilePage.css"; 
 
 const MySwal = withReactContent(Swal);
 
@@ -17,7 +17,7 @@ const UserProfilePage = () => {
   const [editableName, setEditableName] = useState("");
   const [editableEmail, setEditableEmail] = useState("");
   const [editableDescription, setEditableDescription] = useState("");
-  const [profileImage, setProfileImage] = useState(null); // สร้าง state สำหรับจัดการภาพโปรไฟล์
+  const [profileImage, setProfileImage] = useState(null); 
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -31,7 +31,7 @@ const UserProfilePage = () => {
       name: editableName,
       email: editableEmail,
       description: editableDescription,
-      profileImage: user.profileImage, // ใช้ URL ของภาพโปรไฟล์
+      profileImage: user.profileImage, 
     };
 
     try {
@@ -65,6 +65,14 @@ const UserProfilePage = () => {
     }
   };
 
+  const handleCancelClick = () => {
+    setEditableName(user.name);
+    setEditableEmail(user.email);
+    setEditableDescription(user.description || "");
+    setIsEditing(false);
+  };
+  
+  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -89,8 +97,8 @@ const UserProfilePage = () => {
         }
       );
 
-      // หลังจากอัพโหลด, เอา URL ของภาพที่อัพโหลด
-      const imageUrl = response.data.path; // สมมุติว่า backend ส่ง URL กลับมา
+
+      const imageUrl = response.data.path; 
       await handleSaveProfileImage(imageUrl);
     } catch (error) {
       MySwal.fire({
@@ -107,7 +115,7 @@ const UserProfilePage = () => {
       name: editableName,
       email: editableEmail,
       description: editableDescription,
-      profileImage: imageUrl, // บันทึก URL ของภาพโปรไฟล์
+      profileImage: imageUrl, 
     };
 
     try {
@@ -147,7 +155,7 @@ const UserProfilePage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      setUser(response.data); // รวมถึง profileImage ด้วย
+      setUser(response.data); 
     } catch (error) {
       console.error("Error fetching user data", error);
     } finally {
@@ -297,14 +305,20 @@ const UserProfilePage = () => {
       )}
 
       {isEditing ? (
-        <button className="user-profile-button" onClick={handleSaveClick}>
-          Save Changes
-        </button>
+        <>
+          <button className="user-profile-button" onClick={handleSaveClick}>
+            Save Changes
+          </button>
+          <button className="user-profile-button cancel-button" onClick={handleCancelClick}>
+            Cancel
+          </button>
+        </>
       ) : (
         <button className="user-profile-button" onClick={handleEditClick}>
           Edit Profile
         </button>
       )}
+
     </div>
   );
 };

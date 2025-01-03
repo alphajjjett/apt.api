@@ -163,10 +163,9 @@ const AdminProfilePage = () => {
 
   useEffect(() => {
     let isMounted = true;
-
     const fetchAdmin = async () => {
       const token = localStorage.getItem("token");
-
+      fetchAdminData();
       if (!token) {
         setError("No token found, please login again");
         setLoading(false);
@@ -176,8 +175,6 @@ const AdminProfilePage = () => {
       try {
         const decodedToken = jwtDecode(token);
         console.log("Decoded Token:", decodedToken);  
-
-        console.log("Token ID: ", decodedToken.id);  
         console.log("Profile ID: ", id);  
 
         if (decodedToken.exp < Date.now() / 1000) {

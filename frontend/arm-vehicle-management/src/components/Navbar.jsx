@@ -84,23 +84,32 @@ const NavigationBar = () => {
               </NavDropdown>
 
               <NavDropdown
-                  title={
-                    <span>
-                      <img
-                        src={profileImage ? profileImage : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
-                        alt="User"
-                        className="rounded-full w-8 h-8 inline-block mr-2"
-                      />
-                    </span>
-                  }
-                  id="profile-dropdown"
-                  className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-                >
-                {/* ถ้า role เป็น user จะแสดงเป็นอีกแบบนึง*/}
-                <NavDropdown.Item as={Link} to={userRole === 'admin' ? '/users' : '/users'} className="text-black hover:bg-gray-200">
-                  {userRole === 'admin' ? 'ข้อมูลผู้ใช้' : 'โปรไฟล์'}
+                title={
+                  <span>
+                    <img
+                      src={profileImage ? profileImage : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+                      alt="User"
+                      className="rounded-full w-8 h-8 inline-block mr-2"
+                    />
+                  </span>
+                }
+                id="profile-dropdown"
+                className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+              >
+                {userRole === 'admin' ? (
+                  <>
+                    <NavDropdown.Item as={Link} to="/users" className="text-black hover:bg-gray-200">
+                      ข้อมูลผู้ใช้
+                    </NavDropdown.Item>
+                  </>
+                ) : (
+                  <NavDropdown.Item as={Link} to="/users" className="text-black hover:bg-gray-200">
+                    โปรไฟล์
+                  </NavDropdown.Item>
+                )}
+                <NavDropdown.Item as={Link} to="/dashboard" className="text-black hover:bg-gray-200">
+                  แดชบอร์ด
                 </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/dashboard" className="text-black hover:bg-gray-200">แดชบอร์ด</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout} className="text-black hover:bg-gray-200">
                   ออกจากระบบ

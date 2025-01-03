@@ -137,6 +137,19 @@ app.post("/api/vehicle-returns", (req, res) => {
   }
 });
 
+app.get('/api/admins/:id', async (req, res) => {
+  try {
+    const admin = await Admin.findById(req.params.id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    res.json(admin);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 // Route สำหรับการ login
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;

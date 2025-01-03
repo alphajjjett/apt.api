@@ -9,6 +9,7 @@ import MissionList from './pages/MissionList';
 import MissionRequest from './pages/MissionRequest';
 import VehiclePage from './pages/VehiclePage';
 import UserProfilePage from './pages/UserProfilePage';
+import AdminProfilePage from './pages/AdminProfilePapge';
 import VehicleStatusPage from './pages/VehicleStatusPage';
 import BookingPage from './pages/BookingPage';
 import BookingStatusPage from './pages/BookingStatusPage';
@@ -41,6 +42,7 @@ function App() {
             <Route path="/booking" element={<BookingPage />} />
             <Route path="/booking-status" element={<BookingStatusPage />} />
             <Route path="/return" element={<VehicleReturnPage />} />
+            <Route path="/admins/:id" element={<AdminProfilePage />} />
           </Routes>
         </div>
       </div>

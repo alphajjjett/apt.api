@@ -20,6 +20,31 @@ const Users = () => {
     navigate('/dashboard');  // Back to dashboard button
   };
 
+  const handleProfileClick = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/', { replace: true });
+      return;
+    }
+  
+    try {
+      const decodedToken = jwtDecode(token);
+      if (decodedToken.role === 'admin') {
+        navigate(`/admins/${decodedToken.id}`, { replace: true });
+      } else {
+        MySwal.fire({
+          title: "Access Denied",
+          text: "You do not have admin access to view this page.",
+          icon: "error"
+        });
+      }
+    } catch (error) {
+      console.error('Invalid token:', error);
+      navigate('/', { replace: true });
+    }
+  };
+  
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -137,7 +162,16 @@ const Users = () => {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Users and Admins</h2>
-      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+      
+      {/* Admin Profile Button */}
+      <button
+        onClick={handleProfileClick}
+        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 mt-4 rounded"
+      >
+        Admin Profile
+      </button>
+
+      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-4">
         <thead>
           <tr>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">Name</th>

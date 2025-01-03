@@ -16,9 +16,9 @@ router.post('/login', loginAdmin);
 router.post('/register', registerAdmin); 
 
 // Route to get all users (admin only)
-router.get('/', auth, getAllAdmins);  // Only admin can get all users
+router.get('/', getAllAdmins);  // Only admin can get all users
 
-router.get('/:id', auth, getAdminById);
+router.get('/:id',getAdminById);
 
 router.put('/:id',updateAdmin); 
 

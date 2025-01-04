@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import '../styles/CreateMission.css'; 
+// import '../styles/CreateMission.css'; 
 
 const MySwal = withReactContent(Swal);
 
@@ -110,86 +110,70 @@ const CreateMission = () => {
   };
 
   return (
-    <div className="create-mission-container">
-      <h2 className="create-mission-heading">Create Mission</h2>
-      {error && <p className="create-mission-error">{error}</p>}
-      <form onSubmit={handleSubmit} className="create-mission-form">
-        <div>
-          <label className="create-mission-label">Mission Name:</label>
-          <input
-            type="text"
-            value={missionName}
-            onChange={(e) => setMissionName(e.target.value)}
-            required
-            className="create-mission-input"
-          />
-        </div>
-        <div>
-          <label className="create-mission-label">Description:</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            className="create-mission-textarea"
-          />
-        </div>
-        {loggedUser && (
-          <div>
-            <label className="create-mission-label">Assigned User:</label>
-            <input
-              type="text"
-              value={loggedUser.name} // แสดงชื่อผู้ใช้จาก token
-              readOnly
-              className="create-mission-input"
-            />
-          </div>
-        )}
-
-        {/* <div>
-          <label className="create-mission-label">Assigned Vehicle:</label>
-          <select
-            value={selectedVehicle}
-            onChange={(e) => setSelectedVehicle(e.target.value)}
-            required
-            className="create-mission-select"
-          >
-            <option value="">Select a vehicle</option>
-            {vehicles.map((vehicle) => (
-              <option key={vehicle._id} value={vehicle._id}>
-                {vehicle.name} ({vehicle.license_plate})
-              </option>
-            ))}
-          </select>
-        </div> */}
-
-
-
-
-        <div>
-          <label className="create-mission-label">Start Date:</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            required
-            className="create-mission-input"
-          />
-        </div>
-        <div>
-          <label className="create-mission-label">End Date:</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            required
-            className="create-mission-input"
-          />
-        </div>
-        <button type="submit" className="create-mission-button">
-          Create Mission
-        </button>
-      </form>
+    <div className="container">
+  <h2>Create Mission</h2>
+  {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+  <form onSubmit={handleSubmit} className="space-y-6">
+    <div>
+      <label className="block text-lg font-medium text-gray-700">Mission Name:</label>
+      <input
+        type="text"
+        value={missionName}
+        onChange={(e) => setMissionName(e.target.value)}
+        required
+        className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
     </div>
+    <div>
+      <label className="block text-lg font-medium text-gray-700">Description:</label>
+      <textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        required
+        className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+    {loggedUser && (
+      <div>
+        <label className="block text-lg font-medium text-gray-700">Assigned User:</label>
+        <input
+          type="text"
+          value={loggedUser.name} // แสดงชื่อผู้ใช้จาก token
+          readOnly
+          className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+    )}
+
+    <div>
+      <label className="block text-lg font-medium text-gray-700">Start Date:</label>
+      <input
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        required
+        className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+    <div>
+      <label className="block text-lg font-medium text-gray-700">End Date:</label>
+      <input
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        required
+        className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+    <button
+      type="submit"
+      className="w-full mt-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+      Create Mission
+    </button>
+  </form>
+</div>
+
   );
 };
 

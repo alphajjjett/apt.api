@@ -82,66 +82,6 @@ const BookingPage = () => {
       });
     }
   };
-
-  // const handleDeleteBooking = async (bookingId) => {
-  //   const token = localStorage.getItem('token');
-  //   if (!token) {
-  //     return setError('Please login to delete a booking');
-  //   }
-
-  //   const decodedToken = jwtDecode(token);
-  //   const isAdmin = decodedToken.role === 'admin'; // Check if the logged-in user is an admin
-
-  //   // Check if the logged-in user is an admin
-  //   if (!isAdmin) {
-  //     return MySwal.fire({
-  //       title: "Unauthorized",
-  //       text: "You must be an admin to delete a booking.",
-  //       icon: "error"
-  //     });
-  //   }
-
-  //   // Proceed with deletion
-  //   MySwal.fire({
-  //     title: "Are you sure?",
-  //     text: "You won't be able to revert this!",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Yes, delete it!",
-  //     cancelButtonText: "No, cancel!",
-  //     reverseButtons: true
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       try {
-  //         await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
-  //           headers: { Authorization: `Bearer ${token}` }
-  //         });
-
-  //         setBookings(bookings.filter(booking => booking._id !== bookingId));
-
-  //         MySwal.fire({
-  //           title: "Deleted!",
-  //           text: "The booking has been deleted.",
-  //           icon: "success"
-  //         });
-  //       } catch (error) {
-  //         setError('Failed to delete booking');
-  //         MySwal.fire({
-  //           title: "Error",
-  //           text: "There was an error deleting the booking.",
-  //           icon: "error"
-  //         });
-  //       }
-  //     } else if (result.dismiss === Swal.DismissReason.cancel) {
-  //       MySwal.fire({
-  //         title: "Cancelled",
-  //         text: "Your booking is safe :)",
-  //         icon: "error"
-  //       });
-  //     }
-  //   });
-  // };
-
   return (
     <div className="container">
     {/* <div className=" mx-auto min-h-screen bg-white shadow-lg rounded-lg p-6 mb-6"> */}
@@ -151,7 +91,7 @@ const BookingPage = () => {
         {!isAdmin && (
           <div className="lg:w-1/3">
             <h2>Booking Page</h2>
-            <h3 className="text-xl font-semibold mb-4">Create New Booking</h3>
+            {/* <h3 className="text-xl font-semibold mb-4">Create New Booking</h3> */}
             <div className="border border-gray-300 p-6 rounded-lg shadow-md bg-white">
               <div className="mb-4">
                 <label className="block mb-2 font-bold">Mission:</label>

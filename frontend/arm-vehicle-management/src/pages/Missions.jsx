@@ -12,11 +12,13 @@ const CreateMission = () => {
   const [missionName, setMissionName] = useState('');
   const [description, setDescription] = useState('');
   const [status] = useState('pending');
-  const [vehicles, setVehicles] = useState([]);
-  const [selectedVehicle, setSelectedVehicle] = useState('');
+  // const [vehicles, setVehicles] = useState([]);
+  // const [users, setUsers] = useState([]);
+  // const [selectedVehicle, setSelectedVehicle] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState(null);
+  const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
 
 
@@ -25,29 +27,48 @@ const CreateMission = () => {
     const token = localStorage.getItem('token');
     if (token) {
       const decodedToken = jwtDecode(token);
+      setLoggedUser(decodedToken);
       if (decodedToken.role === 'admin') {
         navigate('/mission_request');
       }
     }
   }, [navigate]);
 
-  useEffect(() => {
-    const fetchVehicles = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/vehicles');
-        const availableVehicles = response.data.filter(vehicle => vehicle.status === 'available');
-        setVehicles(availableVehicles);
-      } catch (error) {
-        setError('Failed to fetch vehicles');
-      }
-    };
-    fetchVehicles();
-  }, []);
+  // useEffect(() => {
+  //   const fetchVehicles = async () => {
+  //     try {
+  //       const response = await axios.get('http://localhost:5000/api/vehicles');
+  //       const availableVehicles = response.data.filter(vehicle => vehicle.status === 'available');
+  //       setVehicles(availableVehicles);
+  //     } catch (error) {
+  //       setError('Failed to fetch vehicles');
+  //     }
+  //   };
+  //   fetchVehicles();
+    
+  // }, []);
+
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const response = await axios.get('http://localhost:5000/api/users');
+  //       const allUsers = response.data;  
+  //       setUsers(allUsers);
+  //     } catch (error) {
+  //       setError('Failed to fetch users');
+  //     }
+  //   };
+  //   fetchUsers();
+  // }, []); 
+  
+
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+      
       if (!token) {
         setError('No token found, please log in.');
         return;
@@ -60,7 +81,7 @@ const CreateMission = () => {
         mission_name: missionName,
         description,
         status,
-        assigned_vehicle_id: selectedVehicle,
+        // assigned_vehicle_id: selectedVehicle,
         assigned_user_id: userId,
         start_date: startDate,
         end_date: endDate,
@@ -69,13 +90,14 @@ const CreateMission = () => {
       await axios.post('http://localhost:5000/api/missions', missionData, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      navigate(`/booking`, { replace: true });
       MySwal.fire({
         icon: 'success',
         title: 'Mission created successfully',
         text: 'Your mission has been created successfully.',
         confirmButtonText: 'OK'
       });
-      // alert('Mission created successfully');
+      
     } catch (error) {
       MySwal.fire({
         icon: 'error',
@@ -111,7 +133,19 @@ const CreateMission = () => {
             className="create-mission-textarea"
           />
         </div>
-        <div>
+        {loggedUser && (
+          <div>
+            <label className="create-mission-label">Assigned User:</label>
+            <input
+              type="text"
+              value={loggedUser.name} // แสดงชื่อผู้ใช้จาก token
+              readOnly
+              className="create-mission-input"
+            />
+          </div>
+        )}
+
+        {/* <div>
           <label className="create-mission-label">Assigned Vehicle:</label>
           <select
             value={selectedVehicle}
@@ -126,7 +160,11 @@ const CreateMission = () => {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
+
+
+
+
         <div>
           <label className="create-mission-label">Start Date:</label>
           <input

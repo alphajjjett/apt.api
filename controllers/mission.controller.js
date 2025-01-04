@@ -4,15 +4,15 @@ const User = require('../models/user.model'); // สมมติว่าคุ�
 
 // เพิ่มภารกิจใหม่
 const createMission = async (req, res) => {
-    const { mission_name, description, status, assigned_vehicle_id, assigned_user_id, start_date, end_date } = req.body;
+    const { mission_name, description, status, assigned_user_id, start_date, end_date } = req.body;
 
     // ตรวจสอบว่า vehicle และ user ที่ถูกอ้างอิงนั้นมีอยู่ในระบบจริง
     try {
-        const vehicle = await Vehicle.findById(assigned_vehicle_id);
+        // const vehicle = await Vehicle.findById(assigned_vehicle_id);
         const user = await User.findById(assigned_user_id);
 
-        if (!vehicle || !user) {
-            return res.status(400).json({ message: 'Vehicle or User not found' });
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
         }
 
         // ตรวจสอบว่า start_date และ end_date มีค่าหรือไม่
@@ -34,7 +34,6 @@ const createMission = async (req, res) => {
             mission_name,
             description,
             status: status || 'pending', // กำหนดค่า default สำหรับ status
-            assigned_vehicle_id,
             assigned_user_id,
             start_date: startDate,
             end_date: endDate,
@@ -53,7 +52,7 @@ const createMission = async (req, res) => {
 const getAllMissions = async (req, res) => {
     try {
         const missions = await Mission.find()
-            .populate('assigned_vehicle_id') // ดึงข้อมูลยานพาหนะที่เชื่อมโยง
+            // .populate('assigned_vehicle_id') // ดึงข้อมูลยานพาหนะที่เชื่อมโยง
             .populate('assigned_user_id'); // ดึงข้อมูลผู้ใช้ที่เชื่อมโยง
 
         res.status(200).json(missions);

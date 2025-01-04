@@ -113,7 +113,7 @@ const MissionList = () => {
             <TableCell>Mission Name</TableCell>
             <TableCell align="left">Description</TableCell>
             <TableCell align="left">Status</TableCell>
-            <TableCell align="left">Vehicle</TableCell>
+            <TableCell align="left">Self ID</TableCell>
             <TableCell align="left">Assigned User</TableCell>
             <TableCell align="left">Start Date</TableCell>
             <TableCell align="left">End Date</TableCell>
@@ -130,8 +130,8 @@ const MissionList = () => {
               <TableCell align="left">{mission.description}</TableCell>
               <TableCell align="left">{mission.status}</TableCell>
               <TableCell align="left">
-                {mission.assigned_vehicle_id
-                  ? mission.assigned_vehicle_id.license_plate
+                {mission.assigned_user_id
+                  ? mission.assigned_user_id.selfid
                   : 'N/A'}
               </TableCell>
               <TableCell align="left">

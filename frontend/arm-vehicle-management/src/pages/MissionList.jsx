@@ -92,9 +92,9 @@ const MissionList = () => {
     return <p>{error}</p>;
   }
 
-  if (missions.length === 0) {
-    return <p>No missions available</p>;
-  }
+  // if (missions.length === 0) {
+  //   return <p>No missions available</p>;
+  // }
 
   return (
     <div className="container">

@@ -33,12 +33,12 @@ const MissionSchema = new Schema(
             
             type: Date, required: true 
 
-        }, // เพิ่มฟิลด์ start_date
+        }, 
          end_date: { 
             
             type: Date, required: true 
 
-         },// เพิ่มฟิลด์ end_date
+         },
     },
     {
         timestamps : true

@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -45,16 +38,16 @@ const BookingPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [bookings]);
 
   const handleCreateBooking = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       return setError('Please login to create a booking');
     }
-
+  
     const userId = jwtDecode(token).id;
-
+  
     try {
       const newBooking = {
         missionId: selectedMission,
@@ -62,96 +55,102 @@ const BookingPage = () => {
         vehicleId: selectedVehicle,
         bookingDate: selectedDate,
       };
-
+  
       await axios.post('http://localhost:5000/api/bookings', newBooking, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       const bookingsRes = await axios.get('http://localhost:5000/api/bookings');
       setBookings(bookingsRes.data);
-
+  
       setError('');
-      alert('Booking Completed');
+      // Using SweetAlert2 for success notification
+      MySwal.fire({
+        title: 'Booking Completed!',
+        text: 'Your booking has been successfully created.',
+        icon: 'success',
+        confirmButtonText: 'Okay',
+      });
     } catch (error) {
       setError('Failed to create Booking!');
-    }
-  };
-
-  const handleDeleteBooking = async (bookingId) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return setError('Please login to delete a booking');
-    }
-
-    const decodedToken = jwtDecode(token);
-    const isAdmin = decodedToken.role === 'admin'; // Check if the logged-in user is an admin
-
-    // Check if the logged-in user is an admin
-    if (!isAdmin) {
-      return MySwal.fire({
-        title: "Unauthorized",
-        text: "You must be an admin to delete a booking.",
-        icon: "error"
+      // Using SweetAlert2 for error notification
+      MySwal.fire({
+        title: 'Error!',
+        text: 'Failed to create booking. Please try again later.',
+        icon: 'error',
+        confirmButtonText: 'Okay',
       });
     }
-
-    // Proceed with deletion
-    MySwal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
-      reverseButtons: true
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-
-          setBookings(bookings.filter(booking => booking._id !== bookingId));
-
-          MySwal.fire({
-            title: "Deleted!",
-            text: "The booking has been deleted.",
-            icon: "success"
-          });
-        } catch (error) {
-          setError('Failed to delete booking');
-          MySwal.fire({
-            title: "Error",
-            text: "There was an error deleting the booking.",
-            icon: "error"
-          });
-        }
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        MySwal.fire({
-          title: "Cancelled",
-          text: "Your booking is safe :)",
-          icon: "error"
-        });
-      }
-    });
   };
+
+  // const handleDeleteBooking = async (bookingId) => {
+  //   const token = localStorage.getItem('token');
+  //   if (!token) {
+  //     return setError('Please login to delete a booking');
+  //   }
+
+  //   const decodedToken = jwtDecode(token);
+  //   const isAdmin = decodedToken.role === 'admin'; // Check if the logged-in user is an admin
+
+  //   // Check if the logged-in user is an admin
+  //   if (!isAdmin) {
+  //     return MySwal.fire({
+  //       title: "Unauthorized",
+  //       text: "You must be an admin to delete a booking.",
+  //       icon: "error"
+  //     });
+  //   }
+
+  //   // Proceed with deletion
+  //   MySwal.fire({
+  //     title: "Are you sure?",
+  //     text: "You won't be able to revert this!",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonText: "Yes, delete it!",
+  //     cancelButtonText: "No, cancel!",
+  //     reverseButtons: true
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
+  //           headers: { Authorization: `Bearer ${token}` }
+  //         });
+
+  //         setBookings(bookings.filter(booking => booking._id !== bookingId));
+
+  //         MySwal.fire({
+  //           title: "Deleted!",
+  //           text: "The booking has been deleted.",
+  //           icon: "success"
+  //         });
+  //       } catch (error) {
+  //         setError('Failed to delete booking');
+  //         MySwal.fire({
+  //           title: "Error",
+  //           text: "There was an error deleting the booking.",
+  //           icon: "error"
+  //         });
+  //       }
+  //     } else if (result.dismiss === Swal.DismissReason.cancel) {
+  //       MySwal.fire({
+  //         title: "Cancelled",
+  //         text: "Your booking is safe :)",
+  //         icon: "error"
+  //       });
+  //     }
+  //   });
+  // };
 
   return (
     <div className="container">
     {/* <div className=" mx-auto min-h-screen bg-white shadow-lg rounded-lg p-6 mb-6"> */}
-      <h2>Booking Page</h2>
       {error && <p className="text-red-500">{error}</p>}
-      <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
-        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
-            <h3 className="text-xl font-semibold">Total Booking</h3>
-            <p className="text-gray-600 text-2xl">{bookings.length}</p>
-        </div>
-      </div>
-      
       <div className="flex flex-wrap lg:flex-row gap-8">
         {/* Create Booking Section */}
         {!isAdmin && (
           <div className="lg:w-1/3">
+            <h2>Booking Page</h2>
             <h3 className="text-xl font-semibold mb-4">Create New Booking</h3>
             <div className="border border-gray-300 p-6 rounded-lg shadow-md bg-white">
               <div className="mb-4">
@@ -208,47 +207,6 @@ const BookingPage = () => {
           </div>
         )}
       </div>
-      {/* Bookings Section */}
-      <h3 className="text-xl font-semibold mb-4 mt-4">Bookings</h3>
-      <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="bookings table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Mission Name</TableCell>
-                  <TableCell align="right">Vehicle</TableCell>
-                  <TableCell align="right">License Plate</TableCell>
-                  <TableCell align="right">Booking Date</TableCell>
-                  <TableCell align="right">User</TableCell>
-                  <TableCell align="right">Status</TableCell>
-                  {isAdmin && <TableCell align="right">Actions</TableCell>} {/* Only show Actions for admins */}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {bookings.map((booking) => (
-                  <TableRow key={booking._id}>
-                    <TableCell component="th" scope="row">
-                      {booking.mission.mission_name}
-                    </TableCell>
-                    <TableCell align="right">{booking.vehicle.name}</TableCell>
-                    <TableCell align="right">{booking.vehicle.license_plate}</TableCell>
-                    <TableCell align="right">{new Date(booking.bookingDate).toLocaleDateString()}</TableCell>
-                    <TableCell align="right">{booking.user.name}</TableCell>
-                    <TableCell align="right">{booking.status}</TableCell>
-                    {isAdmin && (  // Show the delete button only for admins
-                      <TableCell align="right">
-                        <button
-                          onClick={() => handleDeleteBooking(booking._id)}
-                          className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-full transition-colors"
-                        >
-                          Delete
-                        </button>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
   </div>
   );
 };

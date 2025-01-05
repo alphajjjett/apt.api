@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Register.css';  // Import your external CSS file
 
 const Register = () => {
+  const [selfid, setSelfId] = useState('');
+  const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,7 +16,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
   
-    if (!name || !email || !password || !description) {
+    if (!name || !email || !password || !description  || !selfid || !phone ){
       setError('Please fill in all fields.');
       return;
     }
@@ -25,6 +27,8 @@ const Register = () => {
         email,
         password,
         description,
+        phone,
+        selfid,
         role: 'user',
       });
       localStorage.setItem('token', response.data.token);
@@ -56,6 +60,16 @@ const Register = () => {
             />
           </div>
           <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Self ID:</label>
+            <input
+              type="text"
+              value={selfid}
+              onChange={(e) => setSelfId(e.target.value)}
+              required
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Email:</label>
             <input
               type="email"
@@ -71,6 +85,16 @@ const Register = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Phone:</label>
+            <input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               required
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />

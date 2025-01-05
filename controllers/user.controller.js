@@ -19,9 +19,11 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
+        selfid : user.selfid,
         role: user.role,
         email: user.email,
         name: user.name,
+        phone: user.phone,
         description: user.description,
         profileImage: user.profileImage,
       },
@@ -36,7 +38,7 @@ const loginUser = async (req, res) => {
 };
 
 const registerUser = async (req, res) => {
-  const { name, email, password, description } = req.body;
+  const { name, email, password, description,selfid,phone } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -49,6 +51,8 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      phone,
+      selfid,
       description,
     });
 
@@ -57,8 +61,10 @@ const registerUser = async (req, res) => {
     const token = jwt.sign(
       {
         id: newUser._id,
+        selfid: newUser.selfid,
         name: newUser.name,
         email: newUser.email,
+        phone : newUser.phone,
         role: newUser.role,
         description: newUser.description,
       },
@@ -120,16 +126,16 @@ const getCurrentUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
 
-  const { name, email, description, profileImage } = req.body;
+  const { name, email, description, profileImage,phone } = req.body;
 
   try {
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
     user.name = name || user.name;
     user.email = email || user.email;
+    user.phone = phone || user.phone;
     user.description = description || user.description;
     user.profileImage = profileImage || user.profileImage;
 

@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 const UserSchema = mongoose.Schema(
     {
+        selfid: {
+            type: String,
+            required: true
+        },
         name: {
             type: String,
             required: true
@@ -10,6 +14,10 @@ const UserSchema = mongoose.Schema(
             type: String,
             required: true,
             unique: true
+        },
+        phone: {
+            type: String,
+            required: true
         },
         role: {
             type: String,

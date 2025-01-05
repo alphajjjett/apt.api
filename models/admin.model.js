@@ -7,7 +7,7 @@ const AdminSchema = mongoose.Schema(
             required: true
         },
         password: {
-            type: String,  // ใช้ type ที่ถูกต้อง
+            type: String,  
             required: true
         },
         email: {

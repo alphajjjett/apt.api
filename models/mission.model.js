@@ -18,12 +18,12 @@ const MissionSchema = new Schema(
             deafault : 'pending'
 
         },
-        assigned_vehicle_id : {
-            type : Schema.Types.ObjectID,
-            ref : 'Vehicle',            
-            required : true
+        // assigned_vehicle_id : {
+        //     type : Schema.Types.ObjectID,
+        //     ref : 'Vehicle',            
+        //     required : true
 
-        },
+        // },
         assigned_user_id : {
             type : Schema.Types.ObjectID,
             ref : 'User',
@@ -33,12 +33,12 @@ const MissionSchema = new Schema(
             
             type: Date, required: true 
 
-        }, // เพิ่มฟิลด์ start_date
+        }, 
          end_date: { 
             
             type: Date, required: true 
 
-         },// เพิ่มฟิลด์ end_date
+         },
     },
     {
         timestamps : true

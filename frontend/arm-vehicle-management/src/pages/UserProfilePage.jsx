@@ -17,6 +17,7 @@ const UserProfilePage = () => {
   const [editableName, setEditableName] = useState("");
   const [editableEmail, setEditableEmail] = useState("");
   const [editableDescription, setEditableDescription] = useState("");
+  const [editablePhone, setEditablePhone] = useState("");
   const [profileImage, setProfileImage] = useState(null); 
 
   const handleEditClick = () => {
@@ -24,6 +25,7 @@ const UserProfilePage = () => {
     setEditableName(user.name);
     setEditableEmail(user.email);
     setEditableDescription(user.description || "");
+    setEditablePhone(user.phone);
   };
 
   const handleSaveClick = async () => {
@@ -31,6 +33,7 @@ const UserProfilePage = () => {
       name: editableName,
       email: editableEmail,
       description: editableDescription,
+      phone: editablePhone,
       profileImage: user.profileImage, 
     };
 
@@ -69,6 +72,7 @@ const UserProfilePage = () => {
     setEditableName(user.name);
     setEditableEmail(user.email);
     setEditableDescription(user.description || "");
+    setEditablePhone(user.phone);
     setIsEditing(false);
   };
   
@@ -195,9 +199,11 @@ const UserProfilePage = () => {
           const userData = {
             name: decodedToken.name,
             email: decodedToken.email,
+            selfid: decodedToken.selfid,
+            phone: decodedToken.phone,
             role: decodedToken.role,
             description: decodedToken.description || "",
-            profileImage: decodedToken.profileImage || "", // เพิ่มการโหลดภาพโปรไฟล์
+            profileImage: decodedToken.profileImage || "", 
           };
           setUser(userData);
           console.log("User data:", userData); // ตรวจสอบข้อมูล user
@@ -228,6 +234,11 @@ const UserProfilePage = () => {
       <h2 className="user-profile-title">User Profile</h2>
       {user && (
         <div>
+          <div className="user-profile-info">
+            <label>Self ID:</label>
+              <span>{user.selfid}</span>
+          </div>
+
           <div className="user-profile-info">
             <label>Name:</label>
             {isEditing ? (
@@ -269,6 +280,20 @@ const UserProfilePage = () => {
               <span>{user.description}</span>
             )}
           </div>
+
+          <div className="user-profile-info">
+            <label>Phone:</label>
+            {isEditing ? (
+              <textarea
+                className="user-profile-textarea"
+                value={editablePhone}
+                onChange={(e) => setEditablePhone(e.target.value)}
+              />
+            ) : (
+              <span>{user.phone}</span>
+            )}
+          </div>
+
           <div className="user-profile-info">
             <label>Profile Image:</label>
             {isEditing ? (

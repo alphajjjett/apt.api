@@ -146,44 +146,55 @@ const BookingStatusPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {bookings.map((booking) => (
-              <TableRow key={booking._id}>
-                <TableCell component="th" scope="row">{booking.mission.mission_name}</TableCell>
-                <TableCell>{booking.vehicle.name}</TableCell>
-                <TableCell >{booking.vehicle.license_plate}</TableCell>
-                <TableCell >{new Date(booking.bookingDate).toLocaleDateString()}</TableCell>
-                <TableCell >{booking.user.selfid}</TableCell>
-                <TableCell >{booking.user.name}</TableCell>
-                <TableCell >{booking.status}</TableCell>
-                <TableCell>{new Date(booking.bookingDate).toLocaleDateString()}</TableCell>
+          {bookings.map((booking) => (
+            <TableRow key={booking._id}>
+              <TableCell component="th" scope="row">
+                {booking.mission ? booking.mission.mission_name : 'N/A'}
+              </TableCell>
+              <TableCell>{booking.vehicle.name}</TableCell>
+              <TableCell>{booking.vehicle.license_plate}</TableCell>
+              <TableCell>
+                {/* แปลงค่า booking.bookingDate เป็นวันที่ที่ถูกต้อง */}
+                {booking.bookingDate
+                  ? new Date(booking.bookingDate).toLocaleDateString()
+                  : 'No date available'}
+              </TableCell>
+              <TableCell>{booking.user.selfid}</TableCell>
+              <TableCell>{booking.user.name}</TableCell>
+              <TableCell>{booking.status}</TableCell>
+              <TableCell>
+                {booking.bookingDate
+                  ? new Date(booking.bookingDate).toLocaleDateString()
+                  : 'No date available'}
+              </TableCell>
+              {isAdmin && (
+                <TableCell>
+                  <Select
+                    value={booking.status}
+                    onChange={(e) => handleStatusChange(booking._id, e.target.value)}
+                    className="p-2 border border-gray-300 rounded-md"
+                  >
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="approved">Approved</MenuItem>
+                    <MenuItem value="rejected">Rejected</MenuItem>
+                  </Select>
+                </TableCell>
+              )}
+              {isAdmin && (
+                <TableCell>
+                  <button
+                    onClick={() => handleDeleteBooking(booking._id)}
+                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-full transition-colors"
+                  >
+                    Delete
+                  </button>
+                </TableCell>
+              )}
+            </TableRow>
+          ))}
+        </TableBody>
 
-                {isAdmin && (
-                  <TableCell >
-                    <Select 
-                      value={booking.status} 
-                      onChange={(e) => handleStatusChange(booking._id, e.target.value)}
-                      className="p-2 border border-gray-300 rounded-md"
-                    >
-                      <MenuItem value="pending">Pending</MenuItem>
-                      <MenuItem value="approved">Approved</MenuItem>
-                      <MenuItem value="rejected">Rejected</MenuItem>
-                    </Select>
-                  </TableCell>
-                )}
 
-                 {isAdmin && ( 
-                    <TableCell>
-                      <button
-                        onClick={() => handleDeleteBooking(booking._id)}
-                        className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-full transition-colors"
-                      >
-                          Delete
-                      </button>
-                    </TableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
         </Table>
       </TableContainer>
     </div>

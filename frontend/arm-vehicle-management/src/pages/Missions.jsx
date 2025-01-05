@@ -4,7 +4,8 @@ import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-// import '../styles/CreateMission.css'; 
+import Modal from 'react-bootstrap/Modal'; // import Modal from react-bootstrap
+import 'bootstrap/dist/css/bootstrap.min.css'; // อย่าลืมติดตั้ง bootstrap
 
 const MySwal = withReactContent(Swal);
 
@@ -12,16 +13,14 @@ const CreateMission = () => {
   const [missionName, setMissionName] = useState('');
   const [description, setDescription] = useState('');
   const [status] = useState('pending');
-  // const [vehicles, setVehicles] = useState([]);
-  // const [users, setUsers] = useState([]);
-  // const [selectedVehicle, setSelectedVehicle] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [vehicles, setVehicles] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(null);
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
-
-
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -34,35 +33,23 @@ const CreateMission = () => {
     }
   }, [navigate]);
 
-  // useEffect(() => {
-  //   const fetchVehicles = async () => {
-  //     try {
-  //       const response = await axios.get('http://localhost:5000/api/vehicles');
-  //       const availableVehicles = response.data.filter(vehicle => vehicle.status === 'available');
-  //       setVehicles(availableVehicles);
-  //     } catch (error) {
-  //       setError('Failed to fetch vehicles');
-  //     }
-  //   };
-  //   fetchVehicles();
-    
-  // }, []);
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/vehicles');
+        const availableVehicles = response.data.filter(vehicle => vehicle.status === 'available');
+        setVehicles(availableVehicles);
+      } catch (error) {
+        setError('Failed to fetch vehicles');
+      }
+    };
+    fetchVehicles();
+  }, []);
 
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const response = await axios.get('http://localhost:5000/api/users');
-  //       const allUsers = response.data;  
-  //       setUsers(allUsers);
-  //     } catch (error) {
-  //       setError('Failed to fetch users');
-  //     }
-  //   };
-  //   fetchUsers();
-  // }, []); 
-  
-
- 
+  const handleVehicleSelect = (vehicleId) => {
+    setSelectedVehicle(vehicleId);
+    setShowModal(false); // Close the modal after selecting the vehicle
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,8 +68,8 @@ const CreateMission = () => {
         mission_name: missionName,
         description,
         status,
-        // assigned_vehicle_id: selectedVehicle,
         assigned_user_id: userId,
+        assigned_vehicle_id: selectedVehicle,
         start_date: startDate,
         end_date: endDate,
       };
@@ -90,7 +77,6 @@ const CreateMission = () => {
       await axios.post('http://localhost:5000/api/missions', missionData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      navigate(`/booking`, { replace: true });
       MySwal.fire({
         icon: 'success',
         title: 'Mission created successfully',
@@ -102,7 +88,7 @@ const CreateMission = () => {
       MySwal.fire({
         icon: 'error',
         title: 'Error!',
-        text: 'There was an issue updating your profile.',
+        text: 'There was an issue creating your mission.',
         confirmButtonText: 'Try Again'
       });
       setError('Failed to create mission');
@@ -111,69 +97,113 @@ const CreateMission = () => {
 
   return (
     <div className="container">
-  <h2>Create Mission</h2>
-  {error && <p className="text-red-600 text-center mb-4">{error}</p>}
-  <form onSubmit={handleSubmit} className="space-y-6">
-    <div>
-      <label className="block text-lg font-medium text-gray-700">Mission Name:</label>
-      <input
-        type="text"
-        value={missionName}
-        onChange={(e) => setMissionName(e.target.value)}
-        required
-        className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
-    </div>
-    <div>
-      <label className="block text-lg font-medium text-gray-700">Description:</label>
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        required
-        className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
-    </div>
-    {loggedUser && (
-      <div>
-        <label className="block text-lg font-medium text-gray-700">Assigned User:</label>
-        <input
-          type="text"
-          value={loggedUser.name} // แสดงชื่อผู้ใช้จาก token
-          readOnly
-          className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-      </div>
-    )}
+      <h2>Create Mission</h2>
+      {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-lg font-medium text-gray-700">Mission Name:</label>
+          <input
+            type="text"
+            value={missionName}
+            onChange={(e) => setMissionName(e.target.value)}
+            required
+            className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700">Description:</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+        {loggedUser && (
+          <div>
+            <label className="block text-lg font-medium text-gray-700">Assigned User:</label>
+            <input
+              type="text"
+              value={loggedUser.name} // แสดงชื่อผู้ใช้จาก token
+              readOnly
+              className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+        )}
 
-    <div>
-      <label className="block text-lg font-medium text-gray-700">Start Date:</label>
-      <input
-        type="date"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-        required
-        className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
-    </div>
-    <div>
-      <label className="block text-lg font-medium text-gray-700">End Date:</label>
-      <input
-        type="date"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-        required
-        className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
-    </div>
-    <button
-      type="submit"
-      className="w-full mt-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-    >
-      Create Mission
-    </button>
-  </form>
-</div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700">Start Date:</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            required
+            className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700">End Date:</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            required
+            className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
 
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">Vehicle:</label>
+          <button
+            onClick={() => setShowModal(true)}
+            className="w-full border border-gray-300 p-2 rounded"
+          >
+            {selectedVehicle
+              ? `${vehicles.find((vehicle) => vehicle._id === selectedVehicle).name} 
+                (${vehicles.find((vehicle) => vehicle._id === selectedVehicle).license_plate})`
+              : 'เลือกรถ'}
+          </button>
+        </div>
+
+        {/* Modal for vehicle selection */}
+        <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>Select a Vehicle</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {vehicles.map((vehicle) => (
+                <div
+                  key={vehicle._id}
+                  className="border border-gray-300 p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg"
+                  onClick={() => handleVehicleSelect(vehicle._id)}
+                >
+                  <div className="font-bold text-lg">{vehicle.name}</div>
+                  <div className="text-sm text-gray-500">รุ่น: {vehicle.model}</div>
+                  <div className="text-sm text-gray-500">ทะเบียน: {vehicle.license_plate}</div>
+                  <div className="text-sm text-gray-500">เชื้อเพลิง: {vehicle.fuel_type}</div>
+                </div>
+              ))}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              onClick={() => setShowModal(false)}
+              className="bg-gray-500 text-white py-2 px-4 rounded"
+            >
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
+
+        <button
+          type="submit"
+          className="w-full mt-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          Create Mission
+        </button>
+      </form>
+    </div>
   );
 };
 

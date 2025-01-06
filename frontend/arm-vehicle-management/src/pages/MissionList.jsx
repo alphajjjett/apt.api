@@ -16,6 +16,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Modal from 'react-bootstrap/Modal';
 
 const MySwal = withReactContent(Swal);
 
@@ -28,6 +29,10 @@ const MissionList = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
   const [updatedMission, setUpdatedMission] = useState({});
+
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [vehicles, setVehicles] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,6 +59,28 @@ const MissionList = () => {
     setIsAdmin(role === 'admin');
     fetchMissions();
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/vehicles');
+        const availableVehicles = response.data.filter(vehicle => vehicle.status === 'available');
+        setVehicles(availableVehicles);
+      } catch (error) {
+        setError('Failed to fetch vehicles');
+      }
+    };
+    fetchVehicles();
+  }, []);
+
+  const handleVehicleSelect = (vehicleId) => {
+    const vehicle = vehicles.find(v => v._id === vehicleId);
+    setSelectedVehicle(vehicle);  
+    setShowModal(false); 
+  };
+  
+
+
 
   const handleDelete = async (missionId) => {
     const token = localStorage.getItem('token');
@@ -263,7 +290,7 @@ const MissionList = () => {
                         variant="contained"
                         color="primary"
                         onClick={() => handleEditClick(mission)}
-                        disabled={mission.status !== 'pending'} // Disable if status is not 'pending'
+                        disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
                       >
                         Edit
                       </Button>
@@ -271,7 +298,7 @@ const MissionList = () => {
                         variant="contained"
                         color="error"
                         onClick={() => handleDelete(mission._id)}
-                        disabled={mission.status !== 'pending'} // Disable if status is not 'pending'
+                        disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
                       >
                         Delete
                       </Button>
@@ -286,6 +313,22 @@ const MissionList = () => {
 
       {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
+      <DialogTitle>Mission Details</DialogTitle>
+        <DialogContent>
+          {selectedMission && (
+            <div>
+              <p><strong>Mission Name:</strong> {selectedMission.mission_name}</p>
+              <p><strong>Description:</strong> {selectedMission.description}</p>
+              <p><strong>Assigned User:</strong> {selectedMission.assigned_user_id?.name || 'N/A'}</p>
+              <p><strong>Start Date:</strong> {new Date(selectedMission.start_date).toLocaleDateString()}</p>
+              <p><strong>End Date:</strong> {new Date(selectedMission.end_date).toLocaleDateString()}</p>
+              <p><strong>Vehicle:</strong> {selectedMission.assigned_vehicle_id?.name || 'N/A'} ({selectedMission.assigned_vehicle_id?.license_plate || 'N/A'})</p>
+              <p><strong>Status:</strong> {selectedMission.status}</p>
+              {/* <p><strong>Last Updated:</strong> {new Date(selectedMission.updatedAt).toLocaleDateString()}</p> */}
+            </div>
+          )}
+        </DialogContent>
+
         <DialogTitle>Edit Mission</DialogTitle>
         <DialogContent>
           <TextField
@@ -306,6 +349,16 @@ const MissionList = () => {
             onChange={handleEditChange}
             style={{ marginBottom: '10px', marginTop:'5px' }}
           />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setShowModal(true)}
+            style={{ marginTop: '10px' }}
+          >
+            {selectedVehicle
+              ? `${selectedVehicle.name} (${selectedVehicle.license_plate})`
+              : 'Select Vehicle'}
+          </Button>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditDialogOpen(false)} color="secondary">
@@ -316,6 +369,38 @@ const MissionList = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      
+        {/* Modal for vehicle selection */}
+        <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg" style={{ zIndex: 3000 }} >
+          <Modal.Header closeButton>
+            <Modal.Title>Select a Vehicle</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {vehicles.map((vehicle) => (
+                <div
+                  key={vehicle._id}
+                  className="border border-gray-300 p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg"
+                  onClick={() => handleVehicleSelect(vehicle._id)}
+                >
+                  <div className="font-bold text-lg">{vehicle.name}</div>
+                  <div className="text-sm text-gray-500">รุ่น: {vehicle.model}</div>
+                  <div className="text-sm text-gray-500">ทะเบียน: {vehicle.license_plate}</div>
+                  <div className="text-sm text-gray-500">เชื้อเพลิง: {vehicle.fuel_type}</div>
+                </div>
+              ))}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              onClick={() => setShowModal(false)}
+              className="bg-gray-500 text-white py-2 px-4 rounded"
+            >
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
     </div>
   );
 };

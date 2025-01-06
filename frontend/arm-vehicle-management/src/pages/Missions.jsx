@@ -48,7 +48,7 @@ const CreateMission = () => {
 
   const handleVehicleSelect = (vehicleId) => {
     setSelectedVehicle(vehicleId);
-    setShowModal(false); // Close the modal after selecting the vehicle
+    setShowModal(false); 
   };
 
   const handleSubmit = async (e) => {

@@ -16,6 +16,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import MenuItem from '@mui/material/MenuItem';
+import { Select } from '@mui/material';
 import Modal from 'react-bootstrap/Modal';
 
 const MySwal = withReactContent(Swal);
@@ -78,9 +80,39 @@ const MissionList = () => {
     setSelectedVehicle(vehicle);  
     setShowModal(false); 
   };
+
+  const handleStatusChange = async (missionId, newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/missions/${missionId}/status`, {
+        status: newStatus,
+      });
   
-
-
+      setMissions((prevMissions) =>
+        prevMissions.map((mission) =>
+          mission._id === missionId ? { ...mission, status: newStatus } : mission
+        )
+      );
+  
+      // ใช้ Swal.fire เพื่อแสดงการแจ้งเตือนเมื่อการอัปเดตสำเร็จ
+      Swal.fire({
+        title: 'Success!',
+        text: 'Mission status updated successfully',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
+    } catch (error) {
+      setError('Failed to update mission status');
+  
+      // ใช้ Swal.fire เพื่อแสดงการแจ้งเตือนเมื่อเกิดข้อผิดพลาด
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update mission status',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  };
+  
 
   const handleDelete = async (missionId) => {
     const token = localStorage.getItem('token');
@@ -178,22 +210,34 @@ const MissionList = () => {
     const { name, value } = event.target;
     setUpdatedMission({ ...updatedMission, [name]: value });
   };
+  
 
   const handleSubmitEdit = async () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-
-      await axios.put(`http://localhost:5000/api/missions/${selectedMission._id}`, updatedMission, config);
+      const updatedMissionWithVehicle = {
+        ...updatedMission,
+        assigned_vehicle_id: selectedVehicle ? selectedVehicle._id : selectedMission.assigned_vehicle_id._id, 
+      };
+  
+      // ส่งข้อมูลที่อัปเดตไปยังเซิร์ฟเวอร์
+      await axios.put(`http://localhost:5000/api/missions/${selectedMission._id}`, updatedMissionWithVehicle, config);
+  
+      // อัปเดตสถานะของ mission ใน state พร้อมกับ assigned_vehicle_id ใหม่
       setMissions(missions.map((mission) =>
-        mission._id === selectedMission._id ? { ...mission, ...updatedMission } : mission
+        mission._id === selectedMission._id
+          ? { ...mission, ...updatedMissionWithVehicle, assigned_vehicle_id: selectedVehicle } // อัปเดตข้อมูลรถด้วย
+          : mission
       ));
-
+  
+      // แสดงการแจ้งเตือนการอัปเดตสำเร็จ
       MySwal.fire({
         title: "Updated!",
         text: "Your mission has been updated.",
         icon: "success"
       });
+  
       setEditDialogOpen(false);
     } catch (error) {
       MySwal.fire({
@@ -203,6 +247,7 @@ const MissionList = () => {
       });
     }
   };
+  
 
   if (loading) return <p>Loading missions...</p>;
 
@@ -236,7 +281,7 @@ const MissionList = () => {
         <TableHead>
         <TableRow>
           <TableCell>Mission Name</TableCell>
-          <TableCell align="left">Description</TableCell>
+          {/* <TableCell align="left">Description</TableCell> */}
           <TableCell align="left">Self ID</TableCell>
           <TableCell align="left">Assigned User</TableCell>
           <TableCell align="left">Start Date</TableCell>
@@ -244,6 +289,11 @@ const MissionList = () => {
           <TableCell align="left">Vehicle</TableCell>
           <TableCell align="left">Status</TableCell>
           <TableCell align="left">Last Updated</TableCell>
+          {(isAdmin) && (
+            <TableCell align="left">
+              เปลี่ยนสถานะ
+            </TableCell>
+          )}
           {/* เพิ่มการตรวจสอบเงื่อนไข assigned_user_id.selfid ด้วย */}
           {(isAdmin || filteredMissions.some(mission => mission.assigned_user_id?.selfid === JSON.parse(atob(localStorage.getItem('token')?.split('.')[1])).selfid)) && (
             <TableCell align="left">
@@ -258,7 +308,7 @@ const MissionList = () => {
                 <TableCell component="th" scope="row">
                   {mission.mission_name}
                 </TableCell>
-                <TableCell align="left">{mission.description}</TableCell>
+                {/* <TableCell align="left">{mission.description}</TableCell> */}
                 <TableCell align="left">
                   {mission.assigned_user_id
                     ? mission.assigned_user_id.selfid
@@ -276,12 +326,32 @@ const MissionList = () => {
                   {new Date(mission.end_date).toLocaleDateString()}
                 </TableCell>
                 <TableCell align="left">
-                  {mission.assigned_vehicle_id.name} ({mission.assigned_vehicle_id.license_plate})
+                  {mission.assigned_vehicle_id?.name || 'N/A'} 
+                  ({mission.assigned_vehicle_id?.license_plate || 'N/A'})
                 </TableCell>
                 <TableCell align="left">{mission.status}</TableCell>
                 <TableCell align="left">
                   {new Date(mission.updatedAt).toLocaleDateString()}
                 </TableCell>
+                {(isAdmin)&&(
+                  <TableBody>
+                    {missions.map((mission) => (
+                      <TableRow key={mission._id}>
+                        {/* <TableCell>{mission.status}</TableCell> */}
+                        <TableCell >
+                          <Select
+                            value={mission.status}
+                            onChange={(e) => handleStatusChange(mission._id, e.target.value)}
+                          >
+                            <MenuItem value="pending">Pending</MenuItem>
+                            <MenuItem value="in progress">In Progress</MenuItem>
+                            <MenuItem value="completed">Completed</MenuItem>
+                          </Select>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  )}
                 <TableCell align="left">
                   {/* ตรวจสอบว่า user เป็น admin หรือ assigned_user_id.selfid ตรงกับ selfid ของ user ที่ล็อกอิน */}
                   {(isAdmin || mission.assigned_user_id?.selfid === JSON.parse(atob(localStorage.getItem('token').split('.')[1])).selfid) && (
@@ -352,13 +422,14 @@ const MissionList = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => setShowModal(true)}
+            onClick={() => setShowModal(true)} // เปิด modal สำหรับเลือก vehicle
             style={{ marginTop: '10px' }}
           >
             {selectedVehicle
-              ? `${selectedVehicle.name} (${selectedVehicle.license_plate})`
+              ? `${selectedVehicle.name} (${selectedVehicle.license_plate})`  // แสดงรถที่ถูกเลือก
               : 'Select Vehicle'}
           </Button>
+
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditDialogOpen(false)} color="secondary">
@@ -368,6 +439,7 @@ const MissionList = () => {
             Save Changes
           </Button>
         </DialogActions>
+
       </Dialog>
 
       

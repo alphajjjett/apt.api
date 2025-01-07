@@ -11,10 +11,11 @@ import VehiclePage from './pages/VehiclePage';
 import UserProfilePage from './pages/UserProfilePage';
 import AdminProfilePage from './pages/AdminProfilePapge';
 import VehicleStatusPage from './pages/VehicleStatusPage';
-import BookingPage from './pages/BookingPage';
-import BookingStatusPage from './pages/BookingStatusPage';
 import VehicleReturnPage from './pages/VehicleReturnPage';
+import CreateVehicle from './pages/CreateVehicle';
+
 import NavigationBar from './components/Navbar';
+
 
 
 
@@ -36,11 +37,10 @@ function App() {
             <Route path="/missions" element={<Missions />} />
             <Route path='/missionslist' element={<MissionList />} />
             <Route path='/mission_request' element={<MissionRequest />} />
+            <Route path="/create-vehicle" element={<CreateVehicle />} />
             <Route path='/vehicle' element={<VehiclePage />} />
             <Route path="/profile/:id" element={<UserProfilePage />} />
             <Route path="/vehicle-status" element={<VehicleStatusPage />} />
-            <Route path="/booking" element={<BookingPage />} />
-            <Route path="/booking-status" element={<BookingStatusPage />} />
             <Route path="/return" element={<VehicleReturnPage />} />
             <Route path="/admins/:id" element={<AdminProfilePage />} />
           </Routes>

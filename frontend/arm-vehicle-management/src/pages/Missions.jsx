@@ -27,9 +27,9 @@ const CreateMission = () => {
     if (token) {
       const decodedToken = jwtDecode(token);
       setLoggedUser(decodedToken);
-      if (decodedToken.role === 'admin') {
-        navigate('/mission_request');
-      }
+      // if (decodedToken.role === 'admin') {
+      //   navigate('/mission_request');
+      // }
     }
   }, [navigate]);
 

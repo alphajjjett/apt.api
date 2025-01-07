@@ -70,19 +70,11 @@ const NavigationBar = () => {
               </NavDropdown>
 
               <NavDropdown title="รถ" id="vehicle-dropdown" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
+              <NavDropdown.Item as={Link} to="/create-vehicle" className="text-black hover:bg-gray-200">เพิ่มข้อมูลรถ</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/vehicle" className="text-black hover:bg-gray-200">ข้อมูลรถ</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/vehicle-status" className="text-black hover:bg-gray-200">สถานะรถ</NavDropdown.Item>
               </NavDropdown>
 
-              <NavDropdown title="จองรถ" id="booking-dropdown" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
-              {userRole !== 'admin' && (
-                  <NavDropdown.Item as={Link} to="/booking" className="text-black hover:bg-gray-200">
-                    จองรถ
-                  </NavDropdown.Item>
-                )}
-
-                <NavDropdown.Item as={Link} to="/booking-status" className="text-black hover:bg-gray-200">สถานะการจองรถ</NavDropdown.Item>
-              </NavDropdown>
 
               <NavDropdown title="คืนรถ" id="return-dropdown" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
                 <NavDropdown.Item as={Link} to="/return" className="text-black hover:bg-gray-200">คืนรถที่จอง</NavDropdown.Item>

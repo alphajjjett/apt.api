@@ -112,13 +112,13 @@ const updateMissionStatus = async (req, res) => {
   // Update mission controller
 const updateMission = async (req, res) => {
   const { missionId } = req.params;
-  const { mission_name, description} = req.body;
+  const { mission_name, description, assigned_vehicle_id} = req.body;
 
   try {
       const mission = await Mission.findByIdAndUpdate(
           missionId,
-          { mission_name, description },
-          { new: true }  // Return the updated document
+          { mission_name, description, assigned_vehicle_id },
+          { new: true } 
       );
 
       if (!mission) {

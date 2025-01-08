@@ -81,50 +81,63 @@ const MissionList = () => {
     setShowModal(false); 
   };
 
+
   const handleStatusChange = async (missionId, newStatus) => {
-  const token = localStorage.getItem('token');
-  const { selfid } = JSON.parse(atob(token.split('.')[1])); // decode token to get selfid of the logged-in user
+    const token = localStorage.getItem('token');
+    const { selfid } = JSON.parse(atob(token.split('.')[1])); // decode token to get selfid of the logged-in user
+  
+    const missionToUpdate = missions.find(mission => mission._id === missionId);
+  
+    // Check if the current user is the assigned user or an admin
+    if (missionToUpdate.assigned_user_id?.selfid !== selfid && !isAdmin) {
+      MySwal.fire({
+        title: "Not Authorized",
+        text: "You are not authorized to change the status of this mission.",
+        icon: "error"
+      });
+      return;
+    }
+  
+    try {
+      // Update mission status
+      await axios.put(`http://localhost:5000/api/missions/${missionId}/status`, {
+        status: newStatus,
+      });
+  
+      // If status is completed or in-progress, update the vehicle status to in-use
+      if ((newStatus === 'completed' || newStatus === 'in-progress') && missionToUpdate.assigned_vehicle_id) {
+        const vehicleId = missionToUpdate.assigned_vehicle_id._id;
+        await axios.put(`http://localhost:5000/api/vehicles/${vehicleId}`, {
+          status: 'in-use',
+        });
+      }
+  
+      // Update the missions state
+      setMissions((prevMissions) =>
+        prevMissions.map((mission) =>
+          mission._id === missionId ? { ...mission, status: newStatus } : mission
+        )
+      );
+  
+      Swal.fire({
+        title: 'Success!',
+        text: 'Mission status and vehicle status updated successfully',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
+    } catch (error) {
+      setError('Failed to update mission status');
+  
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update mission or vehicle status',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  };
 
-  const missionToUpdate = missions.find(mission => mission._id === missionId);
-
-  // Check if the current user is the assigned user or an admin
-  if (missionToUpdate.assigned_user_id?.selfid !== selfid && !isAdmin) {
-    MySwal.fire({
-      title: "Not Authorized",
-      text: "You are not authorized to change the status of this mission.",
-      icon: "error"
-    });
-    return;
-  }
-
-  try {
-    await axios.put(`http://localhost:5000/api/missions/${missionId}/status`, {
-      status: newStatus,
-    });
-
-    setMissions((prevMissions) =>
-      prevMissions.map((mission) =>
-        mission._id === missionId ? { ...mission, status: newStatus } : mission
-      )
-    );
-
-    Swal.fire({
-      title: 'Success!',
-      text: 'Mission status updated successfully',
-      icon: 'success',
-      confirmButtonText: 'OK',
-    });
-  } catch (error) {
-    setError('Failed to update mission status');
-
-    Swal.fire({
-      title: 'Error!',
-      text: 'Failed to update mission status',
-      icon: 'error',
-      confirmButtonText: 'OK',
-    });
-  }
-};
+  
 
   
 
@@ -357,7 +370,7 @@ const MissionList = () => {
                     onChange={(e) => handleStatusChange(mission._id, e.target.value)}
                   >
                     <MenuItem value="pending">Pending</MenuItem>
-                    <MenuItem value="in progress">In Progress</MenuItem>
+                    <MenuItem value="in-progress">In Progress</MenuItem>
                     <MenuItem value="completed">Completed</MenuItem>
                   </Select>
                 </TableCell>

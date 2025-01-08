@@ -88,26 +88,36 @@ const getAllMissions = async (req, res) => {
 
 // Update mission status controller
 const updateMissionStatus = async (req, res) => {
-    const { missionId } = req.params;
-    const { status } = req.body;
-  
-    try {
-      // Find the mission by ID and update the status
-      const mission = await Mission.findByIdAndUpdate(
-        missionId,
-        { status: status },
-        { new: true }  // Return the updated document
-      );
-  
-      if (!mission) {
-        return res.status(404).json({ message: 'Mission not found' });
-      }
-  
-      res.json({ message: 'Mission status updated successfully', mission });
-    } catch (error) {
-      res.status(500).json({ message: 'Error updating mission status', error });
+  const { missionId } = req.params;
+  const { status } = req.body;
+
+  try {
+    // Find the mission by ID
+    const mission = await Mission.findById(missionId);
+
+    if (!mission) {
+      return res.status(404).json({ message: 'Mission not found' });
     }
-  };
+
+    // Update the mission's status
+    mission.status = status;
+    await mission.save();
+
+    // If the mission is completed, update the status of the assigned vehicle
+    if ((status === 'completed'|| status === 'in-progress' )&& mission.assigned_vehicle_id) {
+      const vehicle = await Vehicle.findById(mission.assigned_vehicle_id);
+      if (vehicle) {
+        vehicle.status = 'in-use'; // or any other status you prefer
+        await vehicle.save();
+      }
+    }
+
+    res.json({ message: 'Mission status updated successfully', mission });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating mission status', error });
+  }
+};
+
 
   // Update mission controller
 const updateMission = async (req, res) => {

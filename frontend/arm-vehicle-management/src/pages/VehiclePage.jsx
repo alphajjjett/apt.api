@@ -8,6 +8,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Swal from 'sweetalert2';
@@ -93,6 +95,8 @@ const VehicleList = () => {
       name: vehicle.name,
       model: vehicle.model,
       license_plate: vehicle.license_plate,
+      fuel_type: vehicle.fuel_type,
+      description: vehicle.description,
     });
     setEditDialogOpen(true);
   };
@@ -118,12 +122,37 @@ const VehicleList = () => {
     }
   };
 
+  const handleStatusChange = async (vehicleId, newStatus) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.put(
+        `http://localhost:5000/api/vehicles/${vehicleId}`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setVehicles((prevVehicles) =>
+        prevVehicles.map((vehicle) =>
+          vehicle._id === vehicleId ? { ...vehicle, status: newStatus } : vehicle
+        )
+      );
+    } catch (error) {
+      setError('Failed to update vehicle status');
+    }
+  };
+
   if (loading) return <p>Loading vehicles...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="container">
       <h2>Vehicle List</h2>
+      <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
+        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
+          <h3 className="text-xl font-semibold">Total Vehicle</h3>
+          <p className="text-gray-600 text-2xl">{filteredVehicles.length}</p>
+        </div>
+      </div>
+
       {/* Search box */}
       <TextField
         label="Search by ทะเบียนรถ"
@@ -145,6 +174,9 @@ const VehicleList = () => {
               <TableCell align="left">Status</TableCell>
               <TableCell align="left">Description</TableCell>
               {(isAdmin) && (
+              <TableCell align="left">เปลี่ยนสถานะ</TableCell>
+              )}
+              {(isAdmin) && (
               <TableCell align="left">Actions</TableCell>
               )}
             </TableRow>
@@ -161,22 +193,35 @@ const VehicleList = () => {
                 <TableCell align="left">{vehicle.status}</TableCell>
                 <TableCell align="left">{vehicle.description}</TableCell>
                 {(isAdmin) && (
-                <TableCell align="left">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleEditClick(vehicle)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => handleDelete(vehicle._id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
+                  <>
+                    <TableCell align="left">
+                      <Select
+                        value={vehicle.status}
+                        onChange={(e) => handleStatusChange(vehicle._id, e.target.value)}
+                      >
+                        <MenuItem value="available">Available</MenuItem>
+                        <MenuItem value="in-use">In Use</MenuItem>
+                        <MenuItem value="maintenance">Maintenance</MenuItem>
+                      </Select>
+                    </TableCell>
+                    <TableCell align="left">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleEditClick(vehicle)}
+                        style={{ marginRight: '10px' }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleDelete(vehicle._id)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </>
                 )}
               </TableRow>
             ))}
@@ -191,39 +236,44 @@ const VehicleList = () => {
         <DialogContent>
           <TextField
             label="Vehicle Name"
-            variant="outlined"
-            fullWidth
             name="name"
-            value={updatedVehicle.name || ''}
+            value={updatedVehicle.name}
             onChange={handleEditChange}
+            fullWidth
             style={{ marginBottom: '10px' }}
           />
           <TextField
             label="Model"
-            variant="outlined"
-            fullWidth
             name="model"
-            value={updatedVehicle.model || ''}
+            value={updatedVehicle.model}
             onChange={handleEditChange}
+            fullWidth
             style={{ marginBottom: '10px' }}
           />
-          {/* <TextField
+          <TextField
             label="License Plate"
-            variant="outlined"
-            fullWidth
             name="license_plate"
-            value={updatedVehicle.license_plate || ''}
+            value={updatedVehicle.license_plate}
             onChange={handleEditChange}
+            fullWidth
             style={{ marginBottom: '10px' }}
-          /> */}
+          />
+          <TextField
+            label="Fuel Type"
+            name="fuel_type"
+            value={updatedVehicle.fuel_type}
+            onChange={handleEditChange}
+            fullWidth
+            style={{ marginBottom: '10px' }}
+          />
           <TextField
             label="Description"
-            variant="outlined"
-            fullWidth
             name="description"
-            value={updatedVehicle.description || ''}
+            value={updatedVehicle.description}
             onChange={handleEditChange}
-            style={{ marginBottom: '10px' }}
+            fullWidth
+            multiline
+            rows={3}
           />
         </DialogContent>
         <DialogActions>
@@ -231,7 +281,7 @@ const VehicleList = () => {
             Cancel
           </Button>
           <Button onClick={handleSubmitEdit} color="primary">
-            Save Changes
+            Save
           </Button>
         </DialogActions>
       </Dialog>

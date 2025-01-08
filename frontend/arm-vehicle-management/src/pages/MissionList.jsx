@@ -82,36 +82,50 @@ const MissionList = () => {
   };
 
   const handleStatusChange = async (missionId, newStatus) => {
-    try {
-      await axios.put(`http://localhost:5000/api/missions/${missionId}/status`, {
-        status: newStatus,
-      });
-  
-      setMissions((prevMissions) =>
-        prevMissions.map((mission) =>
-          mission._id === missionId ? { ...mission, status: newStatus } : mission
-        )
-      );
-  
-      // ใช้ Swal.fire เพื่อแสดงการแจ้งเตือนเมื่อการอัปเดตสำเร็จ
-      Swal.fire({
-        title: 'Success!',
-        text: 'Mission status updated successfully',
-        icon: 'success',
-        confirmButtonText: 'OK',
-      });
-    } catch (error) {
-      setError('Failed to update mission status');
-  
-      // ใช้ Swal.fire เพื่อแสดงการแจ้งเตือนเมื่อเกิดข้อผิดพลาด
-      Swal.fire({
-        title: 'Error!',
-        text: 'Failed to update mission status',
-        icon: 'error',
-        confirmButtonText: 'OK',
-      });
-    }
-  };
+  const token = localStorage.getItem('token');
+  const { selfid } = JSON.parse(atob(token.split('.')[1])); // decode token to get selfid of the logged-in user
+
+  const missionToUpdate = missions.find(mission => mission._id === missionId);
+
+  // Check if the current user is the assigned user or an admin
+  if (missionToUpdate.assigned_user_id?.selfid !== selfid && !isAdmin) {
+    MySwal.fire({
+      title: "Not Authorized",
+      text: "You are not authorized to change the status of this mission.",
+      icon: "error"
+    });
+    return;
+  }
+
+  try {
+    await axios.put(`http://localhost:5000/api/missions/${missionId}/status`, {
+      status: newStatus,
+    });
+
+    setMissions((prevMissions) =>
+      prevMissions.map((mission) =>
+        mission._id === missionId ? { ...mission, status: newStatus } : mission
+      )
+    );
+
+    Swal.fire({
+      title: 'Success!',
+      text: 'Mission status updated successfully',
+      icon: 'success',
+      confirmButtonText: 'OK',
+    });
+  } catch (error) {
+    setError('Failed to update mission status');
+
+    Swal.fire({
+      title: 'Error!',
+      text: 'Failed to update mission status',
+      icon: 'error',
+      confirmButtonText: 'OK',
+    });
+  }
+};
+
   
 
   const handleDelete = async (missionId) => {
@@ -302,82 +316,77 @@ const MissionList = () => {
           )}
         </TableRow>
       </TableHead>
-          <TableBody>
-            {filteredMissions.map((mission) => (
-              <TableRow key={mission._id}>
-                <TableCell component="th" scope="row">
-                  {mission.mission_name}
-                </TableCell>
-                {/* <TableCell align="left">{mission.description}</TableCell> */}
+      <TableBody>
+          {filteredMissions.map((mission) => (
+            <TableRow key={mission._id}>
+              <TableCell component="th" scope="row">
+                {mission.mission_name}
+              </TableCell>
+              <TableCell align="left">
+                {mission.assigned_user_id
+                  ? mission.assigned_user_id.selfid
+                  : 'N/A'}
+              </TableCell>
+              <TableCell align="left">
+                {mission.assigned_user_id
+                  ? mission.assigned_user_id.name
+                  : 'N/A'}
+              </TableCell>
+              <TableCell align="left">
+                {new Date(mission.start_date).toLocaleDateString()}
+              </TableCell>
+              <TableCell align="left">
+                {new Date(mission.end_date).toLocaleDateString()}
+              </TableCell>
+              <TableCell align="left">
+                {mission.assigned_vehicle_id?.name || 'N/A'} 
+                ({mission.assigned_vehicle_id?.license_plate || 'N/A'})
+              </TableCell>
+              <TableCell align="left">
+                {mission.status}
+              </TableCell>
+              <TableCell align="left">
+                {new Date(mission.updatedAt).toLocaleDateString()}
+              </TableCell>
+              
+              {/* Show the status dropdown if the user is an admin */}
+              {isAdmin && (
                 <TableCell align="left">
-                  {mission.assigned_user_id
-                    ? mission.assigned_user_id.selfid
-                    : 'N/A'}
+                  <Select
+                    value={mission.status}
+                    onChange={(e) => handleStatusChange(mission._id, e.target.value)}
+                  >
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="in progress">In Progress</MenuItem>
+                    <MenuItem value="completed">Completed</MenuItem>
+                  </Select>
                 </TableCell>
+              )}
+              
+              {/* Show edit/delete actions based on admin or assigned user permissions */}
+              {(isAdmin || mission.assigned_user_id?.selfid === JSON.parse(atob(localStorage.getItem('token').split('.')[1])).selfid) && (
                 <TableCell align="left">
-                  {mission.assigned_user_id
-                    ? mission.assigned_user_id.name
-                    : 'N/A'}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleEditClick(mission)}
+                    disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleDelete(mission._id)}
+                    disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
+                  >
+                    Delete
+                  </Button>
                 </TableCell>
-                <TableCell align="left">
-                  {new Date(mission.start_date).toLocaleDateString()}
-                </TableCell>
-                <TableCell align="left">
-                  {new Date(mission.end_date).toLocaleDateString()}
-                </TableCell>
-                <TableCell align="left">
-                  {mission.assigned_vehicle_id?.name || 'N/A'} 
-                  ({mission.assigned_vehicle_id?.license_plate || 'N/A'})
-                </TableCell>
-                <TableCell align="left">{mission.status}</TableCell>
-                <TableCell align="left">
-                  {new Date(mission.updatedAt).toLocaleDateString()}
-                </TableCell>
-                {(isAdmin)&&(
-                  <TableBody>
-                    {missions.map((mission) => (
-                      <TableRow key={mission._id}>
-                        {/* <TableCell>{mission.status}</TableCell> */}
-                        <TableCell >
-                          <Select
-                            value={mission.status}
-                            onChange={(e) => handleStatusChange(mission._id, e.target.value)}
-                          >
-                            <MenuItem value="pending">Pending</MenuItem>
-                            <MenuItem value="in progress">In Progress</MenuItem>
-                            <MenuItem value="completed">Completed</MenuItem>
-                          </Select>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                  )}
-                <TableCell align="left">
-                  {/* ตรวจสอบว่า user เป็น admin หรือ assigned_user_id.selfid ตรงกับ selfid ของ user ที่ล็อกอิน */}
-                  {(isAdmin || mission.assigned_user_id?.selfid === JSON.parse(atob(localStorage.getItem('token').split('.')[1])).selfid) && (
-                    <div>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleEditClick(mission)}
-                        disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        onClick={() => handleDelete(mission._id)}
-                        disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+              )}
+            </TableRow>
+          ))}
+        </TableBody>
         </Table>
       </TableContainer>
 

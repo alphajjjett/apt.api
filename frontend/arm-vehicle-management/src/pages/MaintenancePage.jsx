@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode'; 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 
-const VehicleStatusPage = () => {
+const MaintenancePage = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -48,65 +48,73 @@ const VehicleStatusPage = () => {
     fetchVehicles();
   }, []);
 
-  const handleStatusChange = async (vehicleId, newStatus) => {
-    const token = localStorage.getItem('token');
-    try {
-      await axios.put(
-        `http://localhost:5000/api/vehicles/${vehicleId}`,
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setVehicles((prevVehicles) =>
-        prevVehicles.map((vehicle) =>
-          vehicle._id === vehicleId ? { ...vehicle, status: newStatus } : vehicle
-        )
-      );
-    } catch (error) {
-      setError('Failed to update vehicle status');
-    }
+   // ฟังก์ชันสำหรับจัดการการค้นหา
+   const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
   };
 
-  if (loading) return <p>Loading vehicles...</p>;
+  // ฟิลเตอร์ข้อมูลจากสถานะที่เป็น 'maintenance'
+  const filteredVehicles = vehicles.filter((vehicle) => {
+    return vehicle.status.toLowerCase().includes('maintenance') &&
+           vehicle.name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  if (loading) return <p>Loading maintenance data...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">Vehicle Status</h2>
+      <h2 className="text-2xl font-bold text-center mb-6">Maintenance Records</h2>
+
+      <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
+        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
+          <h3 className="text-xl font-semibold">Total Maintenace</h3>
+          <p className="text-gray-600 text-2xl">{filteredVehicles.length}</p>
+        </div>
+      </div>
+
+
+      <TextField
+        label="ค้นหาโดยเลขทะเบียน"
+        variant="outlined"
+        fullWidth
+        // type="text"
+        value={searchQuery}
+        onChange={handleSearch}
+        // placeholder="ค้นหารถยนต์..."
+        style={{ marginBottom: '20px' }}
+      />
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="vehicle status table">
+        <Table sx={{ minWidth: 650 }} aria-label="maintenance table">
           <TableHead>
             <TableRow>
               <TableCell>Vehicle Name</TableCell>
               <TableCell align="right">Model</TableCell>
               <TableCell align="right">License Plate</TableCell>
-              <TableCell align="right">Status</TableCell>
-              <TableCell align="right">Last Updated</TableCell>
-              {isAdmin && <TableCell align="right">Update Status</TableCell>}
+              <TableCell align="right">Maintenance Description</TableCell>
+              <TableCell align="right">สถานะของรถ</TableCell>
+              <TableCell align="right">วันที่ / เวลา</TableCell>
+              {/* {isAdmin && <TableCell align="right">Actions</TableCell>} */}
             </TableRow>
           </TableHead>
           <TableBody>
-            {vehicles.map((vehicle) => (
+            {filteredVehicles.map((vehicle) => (
               <TableRow key={vehicle._id}>
                 <TableCell component="th" scope="row">
                   {vehicle.name}
                 </TableCell>
                 <TableCell align="right">{vehicle.model}</TableCell>
                 <TableCell align="right">{vehicle.license_plate}</TableCell>
+                <TableCell align="right">{vehicle.description || 'N/A'}</TableCell>
                 <TableCell align="right">{vehicle.status}</TableCell>
                 <TableCell align="right">
-                  {new Date(vehicle.updatedAt).toLocaleDateString()}
+                  {vehicle.updatedAt
+                    ? new Date(vehicle.updatedAt).toLocaleString()
+                    : 'N/A'}
                 </TableCell>
                 {isAdmin && (
                   <TableCell align="right">
-                    <Select
-                      value={vehicle.status}
-                      onChange={(e) => handleStatusChange(vehicle._id, e.target.value)}
-                    >
-                      <MenuItem value="available">Available</MenuItem>
-                      <MenuItem value="in-use">In Use</MenuItem>
-                      <MenuItem value="maintenance">Maintenance</MenuItem>
-                    </Select>
+                    {/* ไม่รู้จะเพิ่มอะไร */}
                   </TableCell>
                 )}
               </TableRow>
@@ -118,4 +126,4 @@ const VehicleStatusPage = () => {
   );
 };
 
-export default VehicleStatusPage;
+export default MaintenancePage;

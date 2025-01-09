@@ -10,7 +10,7 @@ import MissionRequest from './pages/MissionRequest';
 import VehiclePage from './pages/VehiclePage';
 import UserProfilePage from './pages/UserProfilePage';
 import AdminProfilePage from './pages/AdminProfilePapge';
-import VehicleStatusPage from './pages/VehicleStatusPage';
+import MaintenancePage from './pages/MaintenancePage';
 import VehicleReturnPage from './pages/VehicleReturnPage';
 import CreateVehicle from './pages/CreateVehicle';
 
@@ -40,7 +40,7 @@ function App() {
             <Route path="/create-vehicle" element={<CreateVehicle />} />
             <Route path='/vehicle' element={<VehiclePage />} />
             <Route path="/profile/:id" element={<UserProfilePage />} />
-            <Route path="/vehicle-status" element={<VehicleStatusPage />} />
+            <Route path="/maintenance" element={<MaintenancePage />} />
             <Route path="/return" element={<VehicleReturnPage />} />
             <Route path="/admins/:id" element={<AdminProfilePage />} />
           </Routes>

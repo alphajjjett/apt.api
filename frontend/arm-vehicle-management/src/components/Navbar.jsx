@@ -6,10 +6,10 @@ import {jwtDecode} from 'jwt-decode';
 import axios from 'axios';
 
 const NavigationBar = () => {
-  const [userRole, setUserRole] = useState(null);
   const isLoggedIn = localStorage.getItem('token');
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false); // เพิ่มตัวแปร isAdmin
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -22,7 +22,9 @@ const NavigationBar = () => {
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
-        setUserRole(decodedToken.role); 
+
+        // ตั้งค่า isAdmin ถ้า role เป็น admin
+        setIsAdmin(decodedToken.role === 'admin'); 
 
         // ดึงรูปโปรไฟล์จาก token หรือ backend ถ้า token ไม่มีข้อมูลรูปภาพ
         const fetchProfileImage = async () => {
@@ -70,11 +72,12 @@ const NavigationBar = () => {
               </NavDropdown>
 
               <NavDropdown title="รถ" id="vehicle-dropdown" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
-              <NavDropdown.Item as={Link} to="/create-vehicle" className="text-black hover:bg-gray-200">เพิ่มข้อมูลรถ</NavDropdown.Item>
+                {isAdmin && (
+                <NavDropdown.Item as={Link} to="/create-vehicle" className="text-black hover:bg-gray-200">เพิ่มข้อมูลรถ</NavDropdown.Item>
+                )}
                 <NavDropdown.Item as={Link} to="/vehicle" className="text-black hover:bg-gray-200">ข้อมูลรถ</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/vehicle-status" className="text-black hover:bg-gray-200">สถานะรถ</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/maintenance" className="text-black hover:bg-gray-200">ข้อมูลซ่อมบำรุง</NavDropdown.Item>
               </NavDropdown>
-
 
               <NavDropdown title="คืนรถ" id="return-dropdown" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
                 <NavDropdown.Item as={Link} to="/return" className="text-black hover:bg-gray-200">คืนรถที่จอง</NavDropdown.Item>
@@ -93,12 +96,10 @@ const NavigationBar = () => {
                 id="profile-dropdown"
                 className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
               >
-                {userRole === 'admin' ? (
-                  <>
-                    <NavDropdown.Item as={Link} to="/users" className="text-black hover:bg-gray-200">
-                      ข้อมูลผู้ใช้
-                    </NavDropdown.Item>
-                  </>
+                {isAdmin ? (
+                  <NavDropdown.Item as={Link} to="/users" className="text-black hover:bg-gray-200">
+                    ข้อมูลผู้ใช้
+                  </NavDropdown.Item>
                 ) : (
                   <NavDropdown.Item as={Link} to="/users" className="text-black hover:bg-gray-200">
                     โปรไฟล์
@@ -112,7 +113,6 @@ const NavigationBar = () => {
                   ออกจากระบบ
                 </NavDropdown.Item>
               </NavDropdown>
-
             </Nav>
           )}
         </Navbar.Collapse>

@@ -103,58 +103,11 @@ const VehiclePage = () => {
   // };
 
   return (
-    <div className="container">
-      <h2>Vehicle Create</h2>
-      {/* <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
-        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
-            <h3 className="text-xl font-semibold">Total Vehicle</h3>
-            <p className="text-gray-600 text-2xl">{vehicles.length}</p>
-        </div>
-      </div> */}
-
-      {/* Vehicle Information Table
-      <TableContainer component={Paper} className="mb-6">
-        <Table sx={{ minWidth: 650 }} aria-label="vehicle table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Vehicle Name</TableCell>
-              <TableCell>License Plate</TableCell>
-              <TableCell>Model</TableCell>
-              <TableCell>Fuel Type</TableCell>
-              <TableCell>Fuel Capacity (liters)</TableCell>
-              {isAdmin && <TableCell>Actions</TableCell>}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {vehicles.map((vehicle) => (
-              <TableRow key={vehicle._id}>
-                <TableCell component="th" scope="row">
-                  {vehicle.name}
-                </TableCell>
-                <TableCell>{vehicle.license_plate}</TableCell>
-                <TableCell>{vehicle.model}</TableCell>
-                <TableCell>{vehicle.fuel_type}</TableCell>
-                <TableCell>{vehicle.fuel_capacity} liters</TableCell>
-                {isAdmin && (
-                  <TableCell>
-                    <button
-                      onClick={() => handleDelete(vehicle._id)}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer> */}
-
+    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
       {/* Create New Vehicle Form */}
       {isAdmin && (
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4">Create New Vehicle</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-center mb-6">Create New Vehicle</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">Name:</label>

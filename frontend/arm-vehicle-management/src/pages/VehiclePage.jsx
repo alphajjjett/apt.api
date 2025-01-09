@@ -144,8 +144,8 @@ const VehicleList = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="container">
-      <h2>Vehicle List</h2>
+    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <h2 className="text-2xl font-bold text-center mb-6">Vehicle List</h2>
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
           <h3 className="text-xl font-semibold">Total Vehicle</h3>
@@ -172,7 +172,7 @@ const VehicleList = () => {
               <TableCell align="left">License Plate</TableCell>
               <TableCell align="left">Fuel Type</TableCell>
               <TableCell align="left">Status</TableCell>
-              <TableCell align="left">Description</TableCell>
+              {/* <TableCell align="left">Description</TableCell> */}
               {(isAdmin) && (
               <TableCell align="left">เปลี่ยนสถานะ</TableCell>
               )}
@@ -191,7 +191,7 @@ const VehicleList = () => {
                 <TableCell align="left">{vehicle.license_plate}</TableCell>
                 <TableCell align="left">{vehicle.fuel_type}</TableCell>
                 <TableCell align="left">{vehicle.status}</TableCell>
-                <TableCell align="left">{vehicle.description}</TableCell>
+                {/* <TableCell align="left">{vehicle.description}</TableCell> */}
                 {(isAdmin) && (
                   <>
                     <TableCell align="left">

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // นำเข้า useNavigate
 import { jwtDecode } from "jwt-decode"; 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "axios";
-// import "../styles/AdminProfilePage.css"; 
 
 const MySwal = withReactContent(Swal);
 
 const AdminProfilePage = () => {
   const { id } = useParams();
+  const navigate = useNavigate(); // สร้างตัวแปร navigate
   const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,7 +71,7 @@ const AdminProfilePage = () => {
     setEditableDescription(admin.description || "");
     setIsEditing(false);
   };
-  
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -222,15 +222,15 @@ const AdminProfilePage = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="admin-profile-container">
-      <h2 className="admin-profile-title">Admin Profile</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-700">Admin Profile</h2>
       {admin && (
         <div>
-          <div className="admin-profile-info">
-            <label>Name:</label>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">Name:</label>
             {isEditing ? (
               <input
-                className="admin-profile-input"
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 type="text"
                 value={editableName}
                 onChange={(e) => setEditableName(e.target.value)}
@@ -239,11 +239,11 @@ const AdminProfilePage = () => {
               <span>{admin.name}</span>
             )}
           </div>
-          <div className="admin-profile-info">
-            <label>Email:</label>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">Email:</label>
             {isEditing ? (
               <input
-                className="admin-profile-input"
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 type="email"
                 value={editableEmail}
                 onChange={(e) => setEditableEmail(e.target.value)}
@@ -252,14 +252,15 @@ const AdminProfilePage = () => {
               <span>{admin.email}</span>
             )}
           </div>
-          <div className="admin-profile-info">
-            <label>Role:</label> {admin.role}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">Role:</label> 
+            <span>{admin.role}</span>
           </div>
-          <div className="admin-profile-info">
-            <label>Description:</label>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">Description:</label>
             {isEditing ? (
               <textarea
-                className="admin-profile-textarea"
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 value={editableDescription}
                 onChange={(e) => setEditableDescription(e.target.value)}
               />
@@ -267,18 +268,19 @@ const AdminProfilePage = () => {
               <span>{admin.description}</span>
             )}
           </div>
-          <div className="admin-profile-info">
-            <label>Profile Image:</label>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">Profile Image:</label>
             {isEditing ? (
               <>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
+                  className="mt-1"
                 />
                 {profileImage && (
                   <button
-                    className="admin-profile-button"
+                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                     onClick={handleImageUpload}
                   >
                     Upload Image
@@ -291,7 +293,7 @@ const AdminProfilePage = () => {
                   <img
                     src={`${admin.profileImage}`}
                     alt="Profile"
-                    className="admin-profile-image"
+                    className="h-32 w-32 rounded-full mt-2"
                   />
                 ) : (
                   <span>No profile image</span>
@@ -304,19 +306,35 @@ const AdminProfilePage = () => {
 
       {isEditing ? (
         <>
-          <button className="admin-profile-button" onClick={handleSaveClick}>
+          <button
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            onClick={handleSaveClick}
+          >
             Save Changes
           </button>
-          <button className="admin-profile-button cancel-button" onClick={handleCancelClick}>
+          <button
+            className="ml-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+            onClick={handleCancelClick}
+          >
             Cancel
           </button>
         </>
       ) : (
-        <button className="admin-profile-button" onClick={handleEditClick}>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          onClick={handleEditClick}
+        >
           Edit Profile
         </button>
       )}
 
+      {/* ปุ่มกลับไปยังหน้าผู้ใช้ */}
+      <button
+        className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        onClick={() => navigate('/users')} // เปลี่ยนเส้นทาง
+      >
+        Back to Users
+      </button>
     </div>
   );
 };

@@ -380,7 +380,7 @@ const MissionList = () => {
               {(isAdmin || mission.assigned_user_id?.selfid === JSON.parse(atob(localStorage.getItem('token').split('.')[1])).selfid) && (
                 <TableCell align="left">
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     color="primary"
                     onClick={() => handleEditClick(mission)}
                     disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
@@ -388,7 +388,7 @@ const MissionList = () => {
                     Edit
                   </Button>
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     color="error"
                     onClick={() => handleDelete(mission._id)}
                     disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
@@ -482,6 +482,7 @@ const MissionList = () => {
                   <div className="text-sm text-gray-500">รุ่น: {vehicle.model}</div>
                   <div className="text-sm text-gray-500">ทะเบียน: {vehicle.license_plate}</div>
                   <div className="text-sm text-gray-500">เชื้อเพลิง: {vehicle.fuel_type}</div>
+                  <div className="text-sm text-gray-500">ข้อมูลซ่อมบำรุงล่าสุด: {vehicle.description}</div>
                 </div>
               ))}
             </div>

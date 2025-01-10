@@ -206,7 +206,7 @@ const VehicleList = () => {
                     </TableCell>
                     <TableCell align="left">
                       <Button
-                        variant="contained"
+                        variant="outlined"
                         color="primary"
                         onClick={() => handleEditClick(vehicle)}
                         style={{ marginRight: '10px' }}
@@ -214,7 +214,7 @@ const VehicleList = () => {
                         Edit
                       </Button>
                       <Button
-                        variant="contained"
+                        variant="outlined"
                         color="error"
                         onClick={() => handleDelete(vehicle._id)}
                       >

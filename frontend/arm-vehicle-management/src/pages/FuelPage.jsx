@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import {jwtDecode} from 'jwt-decode';
 
 const MySwal = withReactContent(Swal);
 
@@ -13,15 +14,20 @@ const FuelPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [openDialog, setOpenDialog] = useState(false); // เพิ่ม state สำหรับ Dialog
-  const [selectedVehicle, setSelectedVehicle] = useState(null); // เก็บยานพาหนะที่เลือก
-  const [fuelCapacity, setFuelCapacity] = useState(''); // เก็บค่าที่จะแก้ไข
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [fuelCapacity, setFuelCapacity] = useState('');
+  const [userData, setUserData] = useState(null); // เก็บข้อมูลของผู้ใช้ที่ login
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
         const config = { headers: { Authorization: `Bearer ${token}` } };
+
+        // ดึงข้อมูลผู้ใช้ที่ login
+        const decodedToken = jwtDecode(token);
+        setUserData(decodedToken);
 
         // ดึงข้อมูล mission
         const missionResponse = await axios.get('http://localhost:5000/api/missions', config);
@@ -44,13 +50,16 @@ const FuelPage = () => {
     fetchData();
   }, []);
 
+
+  
+
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
 
   const handleEditClick = (vehicle) => {
     setSelectedVehicle(vehicle);
-    setFuelCapacity(vehicle.fuel_capacity || ''); // เตรียมค่าปัจจุบันของ fuel_capacity เพื่อให้แก้ไข
+    setFuelCapacity(vehicle.fuel_capacity || '');
     setOpenDialog(true);
   };
 
@@ -62,17 +71,17 @@ const FuelPage = () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-  
+
       // ส่งข้อมูลที่แก้ไขไปยังเซิร์ฟเวอร์
       await axios.put(`http://localhost:5000/api/vehicles/${selectedVehicle._id}`, { fuel_capacity: fuelCapacity }, config);
-  
+
       // อัปเดตข้อมูลใน state
       setVehicles(vehicles.map((vehicle) =>
         vehicle._id === selectedVehicle._id
           ? { ...vehicle, fuel_capacity: fuelCapacity }
           : vehicle
       ));
-  
+
       // แสดงการแจ้งเตือนสำเร็จ
       MySwal.fire({
         title: "Success!",
@@ -80,10 +89,9 @@ const FuelPage = () => {
         icon: "success",
         confirmButtonText: "OK"
       });
-  
+
       setOpenDialog(false); // ปิด Dialog
     } catch (err) {
-      // แสดงการแจ้งเตือนเมื่อเกิดข้อผิดพลาด
       MySwal.fire({
         title: "Error",
         text: "There was an error updating the fuel capacity.",
@@ -93,11 +101,25 @@ const FuelPage = () => {
     }
   };
 
-  // กรองข้อมูลตาม license_plate
+  // ตรวจสอบสิทธิ์ในการแก้ไข
+  const canEdit = (mission, vehicle, user) => {
+    if (!userData) return false;
+    if (userData.role === 'admin') return true; // แอดมินสามารถแก้ไขได้ตลอด
+    if (mission.status === 'completed' || mission.status === 'in-progress' ) return false; // ห้ามแก้ไขถ้า mission เป็น completed ยกเว้นแอดมิน
+    return userData.selfid === user.selfid && !vehicle.edited_by_user; // ถ้า selfid ตรงและยังไม่เคยแก้ไข
+  };
+
   const filteredMissions = missions.filter((mission) => {
     const vehicle = vehicles.find(v => v._id === mission.assigned_vehicle_id._id);
     return vehicle && vehicle.license_plate.toLowerCase().includes(searchQuery.toLowerCase());
   });
+  
+
+  const totalFuelCapacity = filteredMissions.reduce((total, mission) => {
+    const vehicle = vehicles.find(v => v._id === mission.assigned_vehicle_id._id);
+    return total + (vehicle ? parseFloat(vehicle.fuel_capacity) || 0 : 0);
+  }, 0);
+
 
   if (loading) return <p>Loading data...</p>;
   if (error) return <p>{error}</p>;
@@ -106,7 +128,13 @@ const FuelPage = () => {
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold text-center mb-6">Fuel Capacity Records</h2>
 
-      {/* ช่องค้นหากรองข้อมูลตาม license_plate */}
+      <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
+        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
+          <h3 className="text-xl font-semibold">Total Fuel Capacity</h3>
+          <p className="text-gray-600 text-2xl">{totalFuelCapacity} liters</p>
+        </div>
+      </div>
+
       <TextField
         label="ค้นหาเลขทะเบียน"
         variant="outlined"
@@ -116,57 +144,54 @@ const FuelPage = () => {
         style={{ marginBottom: '20px' }}
       />
 
-<TableContainer component={Paper}>
-  <Table sx={{ minWidth: 650 }} aria-label="fuel table">
-    <TableHead>
-      <TableRow>
-        <TableCell>Vehicle Name</TableCell>
-        <TableCell align="left">License Plate</TableCell>
-        <TableCell align="right">Self ID</TableCell>
-        <TableCell align="right">Username</TableCell>
-        <TableCell align="right">Fuel Capacity (liters)</TableCell>
-        <TableCell align="right">Last Update</TableCell> {/* คอลัมน์ Last Update */}
-        <TableCell align="right">Actions</TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      {filteredMissions.map((mission) => {
-        const vehicle = vehicles.find(v => v._id === mission.assigned_vehicle_id._id);
-        const user = users.find(u => u._id === mission.assigned_user_id._id);
-
-        return (
-          vehicle && user && (
-            <TableRow key={mission._id}>
-              <TableCell component="th" scope="row">{vehicle.name}</TableCell>
-              <TableCell align="left">{vehicle.license_plate}</TableCell>
-              <TableCell align="right">{user.selfid || 'N/A'}</TableCell>
-              <TableCell align="right">{user.name || 'N/A'}</TableCell>
-              <TableCell align="right">{vehicle.fuel_capacity || 'N/A'}</TableCell>
-              
-              {/* เพิ่มคอลัมน์ Last Update */}
-              <TableCell align="right">
-                {vehicle.updatedAt ? new Date(vehicle.updatedAt).toLocaleString() : 'N/A'}
-              </TableCell>
-
-              <TableCell align="right">
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => handleEditClick(vehicle)}
-                >
-                  Edit
-                </Button>
-              </TableCell>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="fuel table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Vehicle Name</TableCell>
+              <TableCell align="left">License Plate</TableCell>
+              <TableCell align="right">Self ID</TableCell>
+              <TableCell align="right">Username</TableCell>
+              <TableCell align="right">Fuel Capacity (liters)</TableCell>
+              <TableCell align="right">Last Update</TableCell>
+              <TableCell align="right">Actions</TableCell>
             </TableRow>
-          )
-        );
-      })}
-    </TableBody>
-  </Table>
-</TableContainer>
+          </TableHead>
+          <TableBody>
+            {filteredMissions.map((mission) => {
+              const vehicle = vehicles.find(v => v._id === mission.assigned_vehicle_id._id);
+              const user = users.find(u => u._id === mission.assigned_user_id._id);
 
+              return (
+                vehicle && user && (
+                  <TableRow key={mission._id}>
+                    <TableCell component="th" scope="row">{vehicle.name}</TableCell>
+                    <TableCell align="left">{vehicle.license_plate}</TableCell>
+                    <TableCell align="right">{user.selfid || 'N/A'}</TableCell>
+                    <TableCell align="right">{user.name || 'N/A'}</TableCell>
+                    <TableCell align="right">{vehicle.fuel_capacity || 'N/A'}</TableCell>
+                    <TableCell align="right">
+                      {vehicle.updatedAt ? new Date(vehicle.updatedAt).toLocaleString() : 'N/A'}
+                    </TableCell>
+                    <TableCell align="right">
+                      {canEdit(mission, vehicle, user) && (
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => handleEditClick(vehicle)}
+                        >
+                          Edit
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      {/* Dialog สำหรับการแก้ไข Fuel Capacity */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Edit Fuel Capacity</DialogTitle>
         <DialogContent>

@@ -77,6 +77,7 @@ const NavigationBar = () => {
                 )}
                 <NavDropdown.Item as={Link} to="/vehicle" className="text-black hover:bg-gray-200">ข้อมูลรถ</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/maintenance" className="text-black hover:bg-gray-200">ข้อมูลซ่อมบำรุง</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/fuel" className="text-black hover:bg-gray-200">ข้อมูลการเบิกน้ำมัน</NavDropdown.Item>
               </NavDropdown>
 
               <NavDropdown title="คืนรถ" id="return-dropdown" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">

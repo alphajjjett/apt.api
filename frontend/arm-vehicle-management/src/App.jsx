@@ -13,6 +13,8 @@ import AdminProfilePage from './pages/AdminProfilePapge';
 import MaintenancePage from './pages/MaintenancePage';
 import VehicleReturnPage from './pages/VehicleReturnPage';
 import CreateVehicle from './pages/CreateVehicle';
+import FuelPage from './pages/FuelPage';
+
 
 import NavigationBar from './components/Navbar';
 
@@ -42,6 +44,7 @@ function App() {
             <Route path="/profile/:id" element={<UserProfilePage />} />
             <Route path="/maintenance" element={<MaintenancePage />} />
             <Route path="/return" element={<VehicleReturnPage />} />
+            <Route path="/fuel" element={<FuelPage />} />
             <Route path="/admins/:id" element={<AdminProfilePage />} />
           </Routes>
         </div>

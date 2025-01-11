@@ -75,11 +75,51 @@ const MissionList = () => {
     fetchVehicles();
   }, []);
 
+  // ดูให้หน่อยดิ้
   const handleVehicleSelect = (vehicleId) => {
     const vehicle = vehicles.find(v => v._id === vehicleId);
     setSelectedVehicle(vehicle);  
     setShowModal(false); 
   };
+
+  const handleReturnClick = (mission) => {
+    const returnData = {
+      mission: mission.mission_name,         
+      user: mission.assigned_user_id.name,  
+      vehicle: mission.assigned_vehicle_id.name, 
+      licensePlate: mission.assigned_vehicle_id.license_plate, 
+      bookingDate: mission.start_date,      
+      returnDate: new Date(),               
+      returnStatus: 'pending',            
+      description: "", 
+    };
+  
+    
+    axios.put(`/api/return/${mission._id}`, returnData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Send token for authentication
+      }
+    })
+    .then((response) => {
+      console.log('Return Success:', response.data);
+      Swal.fire({
+        title: 'Return Success',
+        text: 'The vehicle has been successfully returned.',
+        icon: 'success',
+      });
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'There was an error while returning the vehicle.',
+        icon: 'error',
+      });
+    });
+  };
+  
+  
 
 
   const handleStatusChange = async (missionId, newStatus) => {
@@ -395,8 +435,20 @@ const MissionList = () => {
                   >
                     Delete
                   </Button>
+                  {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
+                  {new Date() >= new Date(mission.end_date) && (
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      onClick={() => handleReturnClick(mission)}
+                      disabled={mission.status !== 'completed' && !isAdmin} // Disable if status is not 'pending'
+                    >
+                      คืนรถ
+                    </Button>
+                  )}
                 </TableCell>
               )}
+
             </TableRow>
           ))}
         </TableBody>

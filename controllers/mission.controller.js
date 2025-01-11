@@ -159,18 +159,6 @@ const deleteMission = async (req, res) => {
   }
 };
 
-// // เพิ่ม function สำหรับดึง mission ล่าสุด
-// const getLatestMission = async (req, res) => {
-//   try {
-//     const latestMission = await Mission.findOne().sort({ createdAt: -1 }); // เรียงตามวันที่สร้างล่าสุด
-//     if (!latestMission) {
-//       return res.status(404).json({ message: 'No mission found' });
-//     }
-//     res.status(200).json(latestMission);
-//   } catch (error) {
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
 
 
 

@@ -34,11 +34,10 @@ const bucket = storage.bucket(bucketName);
 app.use("/uploads", express.static(path.join(__dirname, "../apt.api/uploads")));
 
 const cors = require("cors");
-const Vehicle = require("./models/vehicle.model.js");
 const vehicleRoute = require("./routes/vehicle.route.js");
-const VehicleReturn = require("./models/vehiclereturn.model.js");
-const vehicleReturnRoute = require("./routes/vehiclereturn.route.js");
-const bookingRoutes = require("./routes/booking.route.js");
+
+const returnRoute = require("./routes/return.route.js") ;
+
 const missionRoutes = require("./routes/mission.route.js");
 const userRoutes = require("./routes/user.route.js");
 const adminRoutes = require("./routes/admin.route.js");
@@ -57,8 +56,9 @@ app.use(cors());
 // middleware
 
 app.use("/api/vehicles", vehicleRoute);
-app.use("/api/vehicle-returns", vehicleReturnRoute);
-app.use("/api/bookings", bookingRoutes);
+
+app.use('/api/return', returnRoute);
+
 app.use("/api/missions", missionRoutes);
 app.use("/api", dashboardRoute); // กำหนด route dashboard ที่ /api/dashboard
 
@@ -122,20 +122,7 @@ app.post("/api/missions", async (req, res) => {
   }
 });
 
-app.post("/api/vehicle-returns", (req, res) => {
-  const {
-    booking_id,
-    vehicle_id,
-    user_id,
-    return_date,
-    condition,
-    fuel_level,
-    remark,
-  } = req.body;
-  if (!booking_id || !vehicle_id || !user_id || !return_date) {
-    return res.status(400).send("Missing required fields");
-  }
-});
+
 
 app.get('/api/admins/:id', async (req, res) => {
   try {
@@ -181,16 +168,6 @@ app.post("/login", async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
-});
-
-app.get("/api/vehicle-returns/:id", async (req, res) => {
-  const { id } = req.params;
-  // ค้นหาข้อมูลตาม id ในฐานข้อมูล
-  const vehicleReturnData = await VehicleReturn.findById(id);
-  if (!vehicleReturnData) {
-    return res.status(404).json({ message: "Vehicle return data not found" });
-  }
-  res.json(vehicleReturnData);
 });
 
 // API สำหรับอัพโหลดรูปภาพ

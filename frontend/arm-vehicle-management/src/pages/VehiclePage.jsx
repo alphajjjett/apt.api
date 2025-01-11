@@ -232,7 +232,7 @@ const VehicleList = () => {
       {/* Edit Dialog */}
       {(isAdmin)&&(
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-        <DialogTitle>Edit Vehicle</DialogTitle>
+        <DialogTitle>แก้ไขข้อมูลรถ</DialogTitle>
         <DialogContent>
           <TextField
             label="Vehicle Name"
@@ -258,14 +258,14 @@ const VehicleList = () => {
             fullWidth
             style={{ marginBottom: '10px' }}
           />
-          <TextField
+          {/* <TextField
             label="Fuel Capacity"
             name="fuel_capacity"
             value={updatedVehicle.fuel_capacity}
             onChange={handleEditChange}
             fullWidth
             style={{ marginBottom: '10px' }}
-          />
+          /> */}
           <TextField
             label="Fuel Type"
             name="fuel_type"

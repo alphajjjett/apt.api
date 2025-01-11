@@ -11,9 +11,10 @@ import VehiclePage from './pages/VehiclePage';
 import UserProfilePage from './pages/UserProfilePage';
 import AdminProfilePage from './pages/AdminProfilePapge';
 import MaintenancePage from './pages/MaintenancePage';
-import VehicleReturnPage from './pages/VehicleReturnPage';
+// import VehicleReturnPage from './pages/VehicleReturnPage';
 import CreateVehicle from './pages/CreateVehicle';
 import FuelPage from './pages/FuelPage';
+import ReturnInformation from './pages/ReturnPage';
 
 
 import NavigationBar from './components/Navbar';
@@ -43,9 +44,10 @@ function App() {
             <Route path='/vehicle' element={<VehiclePage />} />
             <Route path="/profile/:id" element={<UserProfilePage />} />
             <Route path="/maintenance" element={<MaintenancePage />} />
-            <Route path="/return" element={<VehicleReturnPage />} />
+            {/* <Route path="/return" element={<VehicleReturnPage />} /> */}
             <Route path="/fuel" element={<FuelPage />} />
             <Route path="/admins/:id" element={<AdminProfilePage />} />
+            <Route path="/return" element={<ReturnInformation />} />
           </Routes>
         </div>
       </div>

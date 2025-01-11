@@ -4,7 +4,12 @@ const User = require('../models/user.model'); // สมมติว่าคุ�
 
 // เพิ่มภารกิจใหม่
 const createMission = async (req, res) => {
-  const { mission_name, description, status, assigned_user_id, assigned_vehicle_id, start_date, end_date } = req.body;
+  const { mission_name, 
+        description, 
+        status, 
+        assigned_user_id, 
+        assigned_vehicle_id, 
+        start_date, end_date } = req.body;
 
   try {
       // ตรวจสอบว่า vehicle และ user ที่ถูกอ้างอิงนั้นมีอยู่ในระบบจริง

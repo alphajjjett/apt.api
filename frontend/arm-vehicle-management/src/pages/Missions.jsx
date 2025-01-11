@@ -155,6 +155,7 @@ const CreateMission = () => {
         <div className="mb-4">
           <label className="block mb-2 font-bold">Vehicle:</label>
           <button
+            type="button" // เพิ่ม type="button" เพื่อไม่ให้ส่งฟอร์ม
             onClick={() => setShowModal(true)}
             className="w-full border border-gray-300 p-2 rounded"
           >

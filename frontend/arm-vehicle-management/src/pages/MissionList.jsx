@@ -84,7 +84,6 @@ const MissionList = () => {
 
   const handleReturnClick = (mission) => {
     const returnData = {
-      mission: mission.mission_name,         
       user: mission.assigned_user_id.name,  
       vehicle: mission.assigned_vehicle_id.name, 
       licensePlate: mission.assigned_vehicle_id.license_plate, 
@@ -93,12 +92,13 @@ const MissionList = () => {
       returnStatus: 'pending',            
       description: "", 
     };
-  
+    const token = localStorage.getItem('token');
+    console.log('Return Data:', returnData);
+    console.log('Mission ID:', mission._id);
     
-    axios.put(`/api/return/${mission._id}`, returnData, {
+    axios.post(`http://localhost:5000/api/return/${mission._id}`, returnData, {
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Send token for authentication
+        Authorization: `Bearer ${token}`, 
       }
     })
     .then((response) => {
@@ -118,6 +118,8 @@ const MissionList = () => {
       });
     });
   };
+  
+  
   
   
 

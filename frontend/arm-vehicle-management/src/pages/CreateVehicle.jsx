@@ -20,7 +20,7 @@ const VehiclePage = () => {
     license_plate: '',
     model: '',
     fuel_type: '',
-    fuel_capacity: 80,
+    fuel_capacity: '',
     description: ''
   });
 
@@ -107,10 +107,10 @@ const VehiclePage = () => {
       {/* Create New Vehicle Form */}
       {isAdmin && (
         <div>
-          <h2 className="text-2xl font-bold text-center mb-6">Create New Vehicle</h2>
+          <h2 className="text-2xl font-bold text-center mb-6">สร้างข้อมูลรถ</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Name:</label>
+              <label className="block text-sm font-medium mb-2">ยี่ห้อรถ:</label>
               <input
                 type="text"
                 name="name"
@@ -121,7 +121,7 @@ const VehiclePage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">License Plate:</label>
+              <label className="block text-sm font-medium mb-2">ทะเบียนรถ:</label>
               <input
                 type="text"
                 name="license_plate"
@@ -132,7 +132,7 @@ const VehiclePage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Model:</label>
+              <label className="block text-sm font-medium mb-2">รุ่น:</label>
               <input
                 type="text"
                 name="model"
@@ -143,7 +143,7 @@ const VehiclePage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Fuel Type:</label>
+              <label className="block text-sm font-medium mb-2">ประเภทเชื้อเพลง:</label>
               <input
                 type="text"
                 name="fuel_type"
@@ -153,7 +153,7 @@ const VehiclePage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Fuel Capacity (liters):</label>
+              <label className="block text-sm font-medium mb-2">จำนวนน้ำมัน (ลิตร):</label>
               <input
                 type="number"
                 name="fuel_capacity"
@@ -163,21 +163,21 @@ const VehiclePage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Description:</label>
+              <label className="block text-sm font-medium mb-2">รายละเอียดการซ่อมบำรุง:</label>
               <input
                 type="text"
                 name="description"
                 value={vehicleData.description}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
-                required
+                
               />
             </div>
             <button 
               type="submit" 
               className="w-full py-3 bg-green-500 text-white rounded-md hover:bg-green-700"
             >
-              Create Vehicle
+              สร้างข้อมูลรถ
             </button>
           </form>
         </div>

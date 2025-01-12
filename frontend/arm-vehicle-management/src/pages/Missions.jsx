@@ -96,12 +96,12 @@ const CreateMission = () => {
   };
 
   return (
-    <div className="container">
-      <h2>Create Mission</h2>
+    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <h2 className="text-2xl font-bold text-center mb-6"> สร้างข้อมูลการจอง </h2>
       {error && <p className="text-red-600 text-center mb-4">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-lg font-medium text-gray-700">Mission Name:</label>
+          <label className="block text-lg font-medium text-gray-700">ภาจกิจ:</label>
           <input
             type="text"
             value={missionName}
@@ -111,7 +111,7 @@ const CreateMission = () => {
           />
         </div>
         <div>
-          <label className="block text-lg font-medium text-gray-700">Description:</label>
+          <label className="block text-lg font-medium text-gray-700">รายละเอียดภารกิจ:</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -121,10 +121,10 @@ const CreateMission = () => {
         </div>
         {loggedUser && (
           <div>
-            <label className="block text-lg font-medium text-gray-700">Assigned User:</label>
+            <label className="block text-lg font-medium text-gray-700">ชื่อผู้จอง:</label>
             <input
               type="text"
-              value={loggedUser.name} // แสดงชื่อผู้ใช้จาก token
+              value={loggedUser.name}
               readOnly
               className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -132,7 +132,7 @@ const CreateMission = () => {
         )}
 
         <div>
-          <label className="block text-lg font-medium text-gray-700">Start Date:</label>
+          <label className="block text-lg font-medium text-gray-700">วันที่จอง:</label>
           <input
             type="date"
             value={startDate}
@@ -142,7 +142,7 @@ const CreateMission = () => {
           />
         </div>
         <div>
-          <label className="block text-lg font-medium text-gray-700">End Date:</label>
+          <label className="block text-lg font-medium text-gray-700">วันที่คืน:</label>
           <input
             type="date"
             value={endDate}
@@ -153,9 +153,9 @@ const CreateMission = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-2 font-bold">Vehicle:</label>
+          <label className="block text-lg font-medium text-gray-700">ยี่ห้อรถ:</label>
           <button
-            type="button" // เพิ่ม type="button" เพื่อไม่ให้ส่งฟอร์ม
+            type="button" 
             onClick={() => setShowModal(true)}
             className="w-full border border-gray-300 p-2 rounded"
           >
@@ -201,7 +201,7 @@ const CreateMission = () => {
           type="submit"
           className="w-full mt-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          Create Mission
+          สร้างการจอง
         </button>
       </form>
     </div>

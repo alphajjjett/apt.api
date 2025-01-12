@@ -325,8 +325,17 @@ const MissionList = () => {
   }
 
   return (
-    <div className="container">
-      <h2>Mission List</h2>
+    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <h2 className="text-2xl font-bold text-center mb-6" >Mission List</h2>
+
+      
+
+      <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
+        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
+          <h3 className="text-xl font-semibold">Total Mission</h3>
+          <p className="text-gray-600 text-2xl">{filteredMissions.length}</p>
+        </div>
+      </div>
 
       {/* Search box */}
       <TextField
@@ -338,18 +347,11 @@ const MissionList = () => {
         style={{ marginBottom: '20px' }}
       />
 
-      <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
-        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
-          <h3 className="text-xl font-semibold">Total Mission</h3>
-          <p className="text-gray-600 text-2xl">{filteredMissions.length}</p>
-        </div>
-      </div>
-
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="mission table">
         <TableHead>
         <TableRow>
-          <TableCell>Mission Name</TableCell>
+          <TableCell>ภารกิจ</TableCell>
           {/* <TableCell align="left">Description</TableCell> */}
           <TableCell align="left">หมายเลขประจำตัวผู้จอง</TableCell>
           <TableCell align="left">ชื่อผู้จอง</TableCell>
@@ -469,7 +471,7 @@ const MissionList = () => {
               <p><strong>ผู้จอง:</strong> {selectedMission.assigned_user_id?.name || 'N/A'}</p>
               <p><strong>วันที่จอง:</strong> {new Date(selectedMission.start_date).toLocaleDateString()}</p>
               <p><strong>วันที่คืน:</strong> {new Date(selectedMission.end_date).toLocaleDateString()}</p>
-              <p><strong>ยี้ห้อรถ:</strong> {selectedMission.assigned_vehicle_id?.name || 'N/A'} ({selectedMission.assigned_vehicle_id?.license_plate || 'N/A'})</p>
+              <p><strong>ยี่ห้อรถ:</strong> {selectedMission.assigned_vehicle_id?.name || 'N/A'} ({selectedMission.assigned_vehicle_id?.license_plate || 'N/A'})</p>
               {/* <p><strong>สถานะ:</strong> {selectedMission.status}</p> */}
               {/* <p><strong>Last Updated:</strong> {new Date(selectedMission.updatedAt).toLocaleDateString()}</p> */}
             </div>

@@ -145,17 +145,17 @@ const VehicleList = () => {
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">Vehicle List</h2>
+      <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลรถ</h2>
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
-          <h3 className="text-xl font-semibold">Total Vehicle</h3>
+          <h3 className="text-xl font-semibold">จำนวนรถ</h3>
           <p className="text-gray-600 text-2xl">{filteredVehicles.length}</p>
         </div>
       </div>
 
       {/* Search box */}
       <TextField
-        label="Search by ทะเบียนรถ"
+        label="ค้นหา โดย เลขทะเบียนรถ"
         variant="outlined"
         fullWidth
         value={searchQuery}
@@ -167,11 +167,11 @@ const VehicleList = () => {
         <Table sx={{ minWidth: 650 }} aria-label="vehicle table">
           <TableHead>
             <TableRow>
-              <TableCell>Vehicle Name</TableCell>
-              <TableCell align="left">Model</TableCell>
-              <TableCell align="left">License Plate</TableCell>
-              <TableCell align="left">Fuel Type</TableCell>
-              <TableCell align="left">Status</TableCell>
+              <TableCell>ยี่ห้อรถ</TableCell>
+              <TableCell align="left">รุ่น</TableCell>
+              <TableCell align="left">เลขทะเบียนรถ</TableCell>
+              <TableCell align="left">ประเภทเชื้อเพลง</TableCell>
+              <TableCell align="left">สถานะ</TableCell>
               {/* <TableCell align="left">Description</TableCell> */}
               {(isAdmin) && (
               <TableCell align="left">เปลี่ยนสถานะ</TableCell>
@@ -199,9 +199,9 @@ const VehicleList = () => {
                         value={vehicle.status}
                         onChange={(e) => handleStatusChange(vehicle._id, e.target.value)}
                       >
-                        <MenuItem value="available">Available</MenuItem>
-                        <MenuItem value="in-use">In Use</MenuItem>
-                        <MenuItem value="maintenance">Maintenance</MenuItem>
+                        <MenuItem value="available">พร้อมใช้งาน</MenuItem>
+                        <MenuItem value="in-use">อยู่ระหว่างการใช้งาน</MenuItem>
+                        <MenuItem value="maintenance">ซ่อมบำรุง</MenuItem>
                       </Select>
                     </TableCell>
                     <TableCell align="left">
@@ -211,14 +211,14 @@ const VehicleList = () => {
                         onClick={() => handleEditClick(vehicle)}
                         style={{ marginRight: '10px' }}
                       >
-                        Edit
+                        แก้ไขข้อมูลรถ
                       </Button>
                       <Button
                         variant="outlined"
                         color="error"
                         onClick={() => handleDelete(vehicle._id)}
                       >
-                        Delete
+                        ลบข้อมูล
                       </Button>
                     </TableCell>
                   </>

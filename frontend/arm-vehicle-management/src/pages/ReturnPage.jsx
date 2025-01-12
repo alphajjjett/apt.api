@@ -155,13 +155,14 @@ const ReturnInformation = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Mission Name</TableCell>
-              <TableCell>User</TableCell>
-              <TableCell>Vehicle</TableCell>
-              <TableCell>License Plate</TableCell>
-              <TableCell>Booking Date</TableCell>
-              <TableCell>Return Date</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>ภารกิจ</TableCell>
+              <TableCell>หมายเลขประจำตัวผู้จอง</TableCell>
+              <TableCell>ชื่อผู้จอง</TableCell>
+              <TableCell>ยี่ห้อรถ</TableCell>
+              <TableCell>ทะเบียน</TableCell>
+              <TableCell>วันที่จอง</TableCell>
+              <TableCell>วันที่คืน</TableCell>
+              <TableCell>สถานะ</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -169,6 +170,7 @@ const ReturnInformation = () => {
             {returns.map((ret) => (
               <TableRow key={ret._id}>
                 <TableCell>{ret.mission.mission_name}</TableCell>
+                <TableCell>{ret.user.selfid}</TableCell>
                 <TableCell>{ret.user.name}</TableCell>
                 <TableCell>{ret.vehicle.name}</TableCell>
                 <TableCell>{ret.vehicle.license_plate}</TableCell>
@@ -178,29 +180,29 @@ const ReturnInformation = () => {
                 <TableCell>
                 {isAdmin && (
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     color="primary"
                     onClick={() => handleEditDescription(ret.vehicle)}
                     disabled={ret.returnStatus === 'completed'}
                   >
-                    {ret.returnStatus === 'completed' ? 'Completed' : 'ใส่ข้อมูลหลังตรวจสอบรถ'}
+                    {ret.returnStatus === 'completed' ? 'คืนรถเรียบร้อย' : 'ใส่ข้อมูลหลังตรวจสอบรถ'}
                   </Button>
                 )}
                 {ret.returnStatus !== 'completed' && isAdmin && (
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     color="secondary"
                     onClick={() => handleConfirm(ret._id, ret.vehicle._id)}
                   >
-                    Confirm
+                    ยืนยัน
                   </Button>
                 )}
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     color="info"
                     onClick={() => handleViewDetails(ret)}
                   >
-                    Details
+                    รายละเอียด
                   </Button>
                 </TableCell>
               </TableRow>
@@ -226,14 +228,14 @@ const ReturnInformation = () => {
         >
           {selectedReturn ? (
             <>
-              <h3>Return Details</h3>
-              <p><strong>Mission Name:</strong> {selectedReturn.mission.mission_name}</p>
-              <p><strong>User:</strong> {selectedReturn.user.name}</p>
-              <p><strong>Vehicle Name:</strong> {selectedReturn.vehicle.name}</p>
-              <p><strong>License Plate:</strong> {selectedReturn.vehicle.license_plate}</p>
-              <p><strong>Booking Date:</strong> {new Date(selectedReturn.bookingDate).toLocaleDateString()}</p>
-              <p><strong>Return Date:</strong> {new Date(selectedReturn.returnDate).toLocaleDateString()}</p>
-              <p><strong>Status:</strong> {selectedReturn.returnStatus}</p>
+              <h3>ข้อมูลการคืนรถ</h3>
+              <p><strong>ภารกิจ:</strong> {selectedReturn.mission.mission_name}</p>
+              <p><strong>ผู้จอง:</strong> {selectedReturn.user.name}</p>
+              <p><strong>ยี่ห้อรถ:</strong> {selectedReturn.vehicle.name}</p>
+              <p><strong>ทะเบียน:</strong> {selectedReturn.vehicle.license_plate}</p>
+              <p><strong>วันที่จอง:</strong> {new Date(selectedReturn.bookingDate).toLocaleDateString()}</p>
+              <p><strong>วันที่คืน:</strong> {new Date(selectedReturn.returnDate).toLocaleDateString()}</p>
+              <p><strong>สถานะ:</strong> {selectedReturn.returnStatus}</p>
             </>
           ) : (
             <p>No details available.</p>
@@ -257,9 +259,9 @@ const ReturnInformation = () => {
             p: 4,
           }}
         >
-          <h3>Edit Vehicle Description</h3>
+          <h3>ใส่ข้อมูลหลังการตรวจสอบ</h3>
           <TextField
-            label="Description"
+            label="รายละเอียดการตรวจสอบ"
             fullWidth
             multiline
             rows={4}
@@ -267,8 +269,8 @@ const ReturnInformation = () => {
             onChange={(e) => setNewDescription(e.target.value)}
           />
           <Box mt={2} display="flex" justifyContent="space-between">
-            <Button onClick={() => setEditModalOpen(false)} color="secondary">Cancel</Button>
-            <Button onClick={handleSaveDescription} color="primary">Save</Button>
+            <Button onClick={() => setEditModalOpen(false)} color="secondary">ยกเลิก</Button>
+            <Button onClick={handleSaveDescription} color="primary">บันทึก</Button>
           </Box>
         </Box>
       </Modal>

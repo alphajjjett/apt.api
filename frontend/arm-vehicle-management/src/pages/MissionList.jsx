@@ -351,13 +351,13 @@ const MissionList = () => {
         <TableRow>
           <TableCell>Mission Name</TableCell>
           {/* <TableCell align="left">Description</TableCell> */}
-          <TableCell align="left">Self ID</TableCell>
-          <TableCell align="left">Assigned User</TableCell>
-          <TableCell align="left">Start Date</TableCell>
-          <TableCell align="left">End Date</TableCell>
-          <TableCell align="left">Vehicle</TableCell>
-          <TableCell align="left">Status</TableCell>
-          <TableCell align="left">Last Updated</TableCell>
+          <TableCell align="left">หมายเลขประจำตัวผู้จอง</TableCell>
+          <TableCell align="left">ชื่อผู้จอง</TableCell>
+          <TableCell align="left">วันที่จอง</TableCell>
+          <TableCell align="left">วันที่คืน</TableCell>
+          <TableCell align="left">ยี่ห้อรถ</TableCell>
+          <TableCell align="left">สถานะ</TableCell>
+          <TableCell align="left">อัพเดทล่าสุด</TableCell>
           {(isAdmin) && (
             <TableCell align="left">
               เปลี่ยนสถานะ
@@ -427,7 +427,7 @@ const MissionList = () => {
                     onClick={() => handleEditClick(mission)}
                     disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
                   >
-                    Edit
+                    รายละเอียด
                   </Button>
                   <Button
                     variant="outlined"
@@ -435,18 +435,19 @@ const MissionList = () => {
                     onClick={() => handleDelete(mission._id)}
                     disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
                   >
-                    Delete
+                    ลบข้อมูล
                   </Button>
                   {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
                   {new Date() >= new Date(mission.end_date) && (
                     <Button
-                      variant="outlined"
-                      color="success"
-                      onClick={() => handleReturnClick(mission)}
-                      disabled={mission.status !== 'completed' && !isAdmin} // Disable if status is not 'pending'
-                    >
-                      คืนรถ
-                    </Button>
+                    variant="outlined"
+                    color="success"
+                    onClick={() => handleReturnClick(mission)}
+                    disabled={mission.status === 'completed' || (!isAdmin && mission.status !== 'pending')} 
+                  >
+                    คืนรถ
+                  </Button>
+                  
                   )}
                 </TableCell>
               )}
@@ -459,26 +460,26 @@ const MissionList = () => {
 
       {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-      <DialogTitle>Mission Details</DialogTitle>
+      <DialogTitle>ข้อมูลการจอง</DialogTitle>
         <DialogContent>
           {selectedMission && (
             <div>
-              <p><strong>Mission Name:</strong> {selectedMission.mission_name}</p>
-              <p><strong>Description:</strong> {selectedMission.description}</p>
-              <p><strong>Assigned User:</strong> {selectedMission.assigned_user_id?.name || 'N/A'}</p>
-              <p><strong>Start Date:</strong> {new Date(selectedMission.start_date).toLocaleDateString()}</p>
-              <p><strong>End Date:</strong> {new Date(selectedMission.end_date).toLocaleDateString()}</p>
-              <p><strong>Vehicle:</strong> {selectedMission.assigned_vehicle_id?.name || 'N/A'} ({selectedMission.assigned_vehicle_id?.license_plate || 'N/A'})</p>
-              <p><strong>Status:</strong> {selectedMission.status}</p>
+              <p><strong>ภารกิจ:</strong> {selectedMission.mission_name}</p>
+              <p><strong>รายละเอียดภารกิจ:</strong> {selectedMission.description}</p>
+              <p><strong>ผู้จอง:</strong> {selectedMission.assigned_user_id?.name || 'N/A'}</p>
+              <p><strong>วันที่จอง:</strong> {new Date(selectedMission.start_date).toLocaleDateString()}</p>
+              <p><strong>วันที่คืน:</strong> {new Date(selectedMission.end_date).toLocaleDateString()}</p>
+              <p><strong>ยี้ห้อรถ:</strong> {selectedMission.assigned_vehicle_id?.name || 'N/A'} ({selectedMission.assigned_vehicle_id?.license_plate || 'N/A'})</p>
+              {/* <p><strong>สถานะ:</strong> {selectedMission.status}</p> */}
               {/* <p><strong>Last Updated:</strong> {new Date(selectedMission.updatedAt).toLocaleDateString()}</p> */}
             </div>
           )}
         </DialogContent>
 
-        <DialogTitle>Edit Mission</DialogTitle>
+        <DialogTitle>แก้ไขข้อมูลการจอง</DialogTitle>
         <DialogContent>
           <TextField
-            label="Mission Name"
+            label="ชื่อภารกิจ"
             variant="outlined"
             fullWidth
             name="mission_name"
@@ -487,7 +488,7 @@ const MissionList = () => {
             style={{ marginBottom: '10px', marginTop:'10px' }}
           />
           <TextField
-            label="Description"
+            label="รายละเอียดภารกิจ"
             variant="outlined"
             fullWidth
             name="description"

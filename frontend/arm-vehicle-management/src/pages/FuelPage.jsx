@@ -4,6 +4,9 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import {jwtDecode} from 'jwt-decode';
+import { Document, Page, Text, View, StyleSheet,PDFDownloadLink } from '@react-pdf/renderer';
+import Print from "../../src/components/print/print"
+
 
 const MySwal = withReactContent(Swal);
 
@@ -111,8 +114,12 @@ const FuelPage = () => {
 
   const filteredMissions = missions.filter((mission) => {
     const vehicle = vehicles.find(v => v._id === mission.assigned_vehicle_id._id);
-    return vehicle && vehicle.license_plate.toLowerCase().includes(searchQuery.toLowerCase());
+    const userMatch = mission.assigned_user_id.selfid.toLowerCase().includes(searchQuery.toLowerCase());
+    const vehicleMatch = vehicle && vehicle.license_plate.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    return vehicleMatch || userMatch; // ค้นหาด้วยป้ายทะเบียน หรือ assigned_user_id.selfid
   });
+  
   
 
   const totalFuelCapacity = filteredMissions.reduce((total, mission) => {
@@ -136,7 +143,7 @@ const FuelPage = () => {
       </div>
 
       <TextField
-        label="ค้นหาเลขทะเบียน"
+        label="ค้นหา โดย เลขทะเบียน"
         variant="outlined"
         fullWidth
         value={searchQuery}
@@ -155,6 +162,7 @@ const FuelPage = () => {
               <TableCell align="right">เชื้อเพลิงที่เบิก (ลิตร)</TableCell>
               <TableCell align="right">อัพเดทล่าสุด</TableCell>
               <TableCell align="right">Actions</TableCell>
+              <TableCell >พิมพ์เอกสาร</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -180,9 +188,25 @@ const FuelPage = () => {
                           color="primary"
                           onClick={() => handleEditClick(vehicle)}
                         >
-                          Edit
+                          แก้ไข
                         </Button>
+                      
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                          variant="outlined"
+                          color="primary"
+                      >
+                        <PDFDownloadLink
+                          document={
+                            <Print vehicle={vehicle} user={user} />
+                          }
+                          fileName="Fuel.pdf"
+                        >
+                          ดาวโหลด
+                        </PDFDownloadLink>
+                      </Button>
                     </TableCell>
                   </TableRow>
                 )

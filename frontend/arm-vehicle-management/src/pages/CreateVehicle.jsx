@@ -152,7 +152,7 @@ const VehiclePage = () => {
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
             </div>
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium mb-2">จำนวนน้ำมัน (ลิตร):</label>
               <input
                 type="number"
@@ -161,8 +161,8 @@ const VehiclePage = () => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <label className="block text-sm font-medium mb-2">รายละเอียดการซ่อมบำรุง:</label>
               <input
                 type="text"
@@ -172,7 +172,7 @@ const VehiclePage = () => {
                 className="w-full p-3 border border-gray-300 rounded-md"
                 
               />
-            </div>
+            </div> */}
             <button 
               type="submit" 
               className="w-full py-3 bg-green-500 text-white rounded-md hover:bg-green-700"

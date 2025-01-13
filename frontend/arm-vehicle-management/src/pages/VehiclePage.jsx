@@ -149,7 +149,7 @@ const VehicleList = () => {
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
           <h3 className="text-xl font-semibold">จำนวนรถ</h3>
-          <p className="text-gray-600 text-2xl">{filteredVehicles.length}</p>
+          <p className="text-gray-600 text-2xl">{filteredVehicles.length} คัน</p>
         </div>
       </div>
 

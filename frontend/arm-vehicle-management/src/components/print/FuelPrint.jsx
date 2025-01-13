@@ -67,13 +67,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const print = ({ vehicle, user }) => {
+const Print = ({ vehicle, user }) => {
+  // คำนวณยอดการเบิก
+  const totalFuel = vehicle.fuel_capacity; // คุณอาจจะต้องคำนวณหรือลบรวมจากหลายๆ รายการ
+
   return (
     <Document>
       <Page style={styles.page}>
-      <Text style={styles.heading}>ข้อมูลตารางการเบิกเชื้อเพลิง</Text>
         <View style={[styles.section, { marginBottom: 20 }]}>
-        <Text style={styles.heading}>ตารางข้อมูลรถ</Text>
+        <Text style={styles.heading}>ข้อมูลการเบิกเชื้อเพลิง</Text>
+          <Text style={styles.heading}>ข้อมูลรถ</Text>
           <View style={[styles.table, styles.tableHeader]}>
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, styles.boldText, { width: '25%' }]}>ยี่ห้อรถ</Text>
@@ -83,20 +86,16 @@ const print = ({ vehicle, user }) => {
             </View>
           </View>
 
-
           <View style={styles.table}>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell,{ width: '25%' }]}>{vehicle.name}</Text>
-              <Text style={[styles.tableCell,{ width: '25%' }]}>{vehicle.model}</Text>
-              <Text style={[styles.tableCell,{ width: '25%' }]}>{vehicle.license_plate}</Text>
-              <Text style={[styles.tableCell,{ width: '25%' }]}>{vehicle.fuel_type}</Text>
+              <Text style={[styles.tableCell, { width: '25%' }]}>{vehicle.name}</Text>
+              <Text style={[styles.tableCell, { width: '25%' }]}>{vehicle.model}</Text>
+              <Text style={[styles.tableCell, { width: '25%' }]}>{vehicle.license_plate}</Text>
+              <Text style={[styles.tableCell, { width: '25%' }]}>{vehicle.fuel_type}</Text>
             </View>
           </View>
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>ตารางข้อมูลผู้เบิก</Text>
-
+          <Text style={styles.heading}>ข้อมูลผู้เบิก</Text>
           <View style={[styles.table, styles.tableHeader]}>
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, styles.boldText, { width: '50%' }]}>หมายเลขประจำตัวผู้เบิก</Text>
@@ -107,15 +106,20 @@ const print = ({ vehicle, user }) => {
 
           <View style={styles.table}>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell,{ width: '50%' }]}>{user.selfid}</Text>
-              <Text style={[styles.tableCell,{ width: '50%' }]}>{user.name}</Text>
-              <Text style={[styles.tableCell,{ width: '50%' }]}>{vehicle.fuel_capacity}</Text>
+              <Text style={[styles.tableCell, { width: '50%' }]}>{user.selfid}</Text>
+              <Text style={[styles.tableCell, { width: '50%' }]}>{user.name}</Text>
+              <Text style={[styles.tableCell, { width: '50%' }]}>{vehicle.fuel_capacity}</Text>
             </View>
           </View>
+
+          <View style={styles.separator} />
+          <Text style={[styles.boldText, { textAlign: 'right', marginTop: 10 }]}>
+            ยอดการเบิกทั้งหมด: {totalFuel} ลิตร
+          </Text>
         </View>
       </Page>
     </Document>
   );
 };
 
-export default print;
+export default Print;

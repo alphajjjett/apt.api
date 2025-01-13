@@ -177,6 +177,7 @@ const Users = () => {
             <th className="py-2 px-4 bg-gray-200 text-gray-600">ชื่อ-นามสกุล</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">Email</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">รหัสผ่าน</th>
+            <th className="py-2 px-4 bg-gray-200 text-gray-600">เบอร์โทรศัพท์</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">บทบาท</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">ตำแหน่ง</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">Actions</th>
@@ -223,6 +224,9 @@ const Users = () => {
                 ) : (
                     <span>••••••••</span> // show ****** แทน
                 )}
+              </td>
+              <td className="py-2 px-4">
+                {user.phone}
               </td>
               <td className="py-2 px-4">
                 {user.role}

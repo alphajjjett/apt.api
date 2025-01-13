@@ -4,8 +4,9 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import {jwtDecode} from 'jwt-decode';
-import { Document, Page, Text, View, StyleSheet,PDFDownloadLink } from '@react-pdf/renderer';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import Print from "../../src/components/print/FuelPrint"
+import PrintAll from '../components/print/FuelPrintAll';
 
 
 const MySwal = withReactContent(Swal);
@@ -138,8 +139,22 @@ const FuelPage = () => {
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
           <h3 className="text-xl font-semibold">ยอดเชื้อเพลิง</h3>
-          <p className="text-gray-600 text-2xl">{totalFuelCapacity} ลิตร</p>
+          <p className="text-gray-600 text-2xl">จำนวน {totalFuelCapacity} ลิตร</p>
         </div>
+      </div>
+
+      <div className="mb-3">
+      <Button
+        variant="outlined"
+        color="primary"
+      >
+        <PDFDownloadLink
+          document={<PrintAll missions={missions} vehicles={vehicles} users={users} />}
+          fileName="AllFuel.pdf"
+        >
+          ดาวโหลดข้อมูลทั้งหมด
+        </PDFDownloadLink>
+      </Button>
       </div>
 
       <TextField

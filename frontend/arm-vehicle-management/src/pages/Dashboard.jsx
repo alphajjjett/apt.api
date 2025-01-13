@@ -81,26 +81,7 @@ const Dashboard = () => {
 
   // จัดกลุ่มข้อมูล missions
   const groupedMissions = groupMissionsByMonth(missions);
-
-
-  // ฟังก์ชันที่ใช้ในการหาวันที่ทั้งหมดที่มีภารกิจ
-  const getMissionDates = () => {
-    const dates = [];
-
-    missions.forEach(mission => {
-      const startDate = dayjs(mission.start_date);
-      const endDate = dayjs(mission.end_date);
-
-      // ลูปผ่านวันที่ตั้งแต่ start_date ถึง end_date
-      for (let date = startDate; date.isBefore(endDate) || date.isSame(endDate, 'day'); date = date.add(1, 'day')) {
-        dates.push(date.format('YYYY-MM-DD'));
-      }
-    });
-
-    return dates; // คืนค่ารายการวันที่ทั้งหมดที่มีภารกิจ
-  };
-
-  const missionDates = getMissionDates(); // รายการวันที่ที่มีภารกิจ
+  
 
   if (loading) return <div className="text-center py-6">Loading...</div>;
   if (error) return <div className="text-center text-red-500 py-6">{error}</div>;

@@ -223,11 +223,11 @@ const AdminProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-700">Admin Profile</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-gray-700">โปรไฟล์ แอดมิน</h2>
       {admin && (
         <div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">Name:</label>
+            <label className="block text-sm font-medium text-gray-600">ชื่อ-นามสกุล:</label>
             {isEditing ? (
               <input
                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -253,11 +253,11 @@ const AdminProfilePage = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">Role:</label> 
+            <label className="block text-sm font-medium text-gray-600">บทบาท:</label> 
             <span>{admin.role}</span>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">Description:</label>
+            <label className="block text-sm font-medium text-gray-600">ตำแหน่ง:</label>
             {isEditing ? (
               <textarea
                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -269,7 +269,7 @@ const AdminProfilePage = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">Profile Image:</label>
+            <label className="block text-sm font-medium text-gray-600">รูปโปรไฟล์:</label>
             {isEditing ? (
               <>
                 <input
@@ -283,7 +283,7 @@ const AdminProfilePage = () => {
                     className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                     onClick={handleImageUpload}
                   >
-                    Upload Image
+                    อัพโหลด
                   </button>
                 )}
               </>
@@ -296,7 +296,7 @@ const AdminProfilePage = () => {
                     className="h-32 w-32 rounded-full mt-2"
                   />
                 ) : (
-                  <span>No profile image</span>
+                  <span>ไม่มีรูปโปรไฟล์</span>
                 )}
               </div>
             )}
@@ -310,13 +310,13 @@ const AdminProfilePage = () => {
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
             onClick={handleSaveClick}
           >
-            Save Changes
+            บันทึก
           </button>
           <button
             className="ml-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
             onClick={handleCancelClick}
           >
-            Cancel
+            ยกเลิก
           </button>
         </>
       ) : (
@@ -324,7 +324,7 @@ const AdminProfilePage = () => {
           className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           onClick={handleEditClick}
         >
-          Edit Profile
+          แก้ไขข้อมูล
         </button>
       )}
 
@@ -333,7 +333,7 @@ const AdminProfilePage = () => {
         className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
         onClick={() => navigate('/users')} // เปลี่ยนเส้นทาง
       >
-        Back to Users
+        กลับไปยังหน้าข้อมูลผู้ใช้
       </button>
     </div>
   );

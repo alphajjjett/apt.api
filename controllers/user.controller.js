@@ -81,7 +81,7 @@ const registerUser = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "-password");
+    const users = await User.find({});
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });
@@ -125,19 +125,25 @@ const getCurrentUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-
-  const { name, email, description, profileImage,phone } = req.body;
+  const { name, email, description, profileImage, phone, password } = req.body;
 
   try {
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
     user.name = name || user.name;
     user.email = email || user.email;
     user.phone = phone || user.phone;
     user.description = description || user.description;
     user.profileImage = profileImage || user.profileImage;
+
+    // ตรวจสอบว่าผู้ใช้ได้ส่งรหัสผ่านใหม่เข้ามาหรือไม่
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
 
     const updatedUser = await user.save();
 

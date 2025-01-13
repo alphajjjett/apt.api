@@ -168,16 +168,17 @@ const Users = () => {
         onClick={handleProfileClick}
         className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 mt-4 rounded"
       >
-        Admin Profile
+        โปรไฟล์ แอดมิน
       </button>
 
       <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-4">
         <thead>
           <tr>
-            <th className="py-2 px-4 bg-gray-200 text-gray-600">Name</th>
+            <th className="py-2 px-4 bg-gray-200 text-gray-600">ชื่อ-นามสกุล</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">Email</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-600">Role</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-600">Description</th>
+            <th className="py-2 px-4 bg-gray-200 text-gray-600">รหัสผ่าน</th>
+            <th className="py-2 px-4 bg-gray-200 text-gray-600">บทบาท</th>
+            <th className="py-2 px-4 bg-gray-200 text-gray-600">ตำแหน่ง</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-600">Actions</th>
           </tr>
         </thead>
@@ -211,6 +212,19 @@ const Users = () => {
                 )}
               </td>
               <td className="py-2 px-4">
+                {editingUserId === user._id ? (
+                  <input
+                    type="text"
+                    name="password"
+                    value={updatedUser.password || user.password}
+                    onChange={handleEditChange}
+                    className="border px-2 py-1 rounded"
+                  />
+                ) : (
+                    <span>••••••••</span> // show ****** แทน
+                )}
+              </td>
+              <td className="py-2 px-4">
                 {user.role}
               </td>
               <td className="py-2 px-4">
@@ -233,7 +247,7 @@ const Users = () => {
                       onClick={() => handleSaveEdit(user._id)}
                       className="bg-green-500 hover:bg-green-600 text-white py-1 px-2 rounded ml-2"
                     >
-                      Save
+                      บันทึก
                     </button>
                     <button
                       onClick={() => {
@@ -242,7 +256,7 @@ const Users = () => {
                       }}
                       className="bg-gray-500 hover:bg-gray-600 text-white py-1 px-2 rounded ml-2"
                     >
-                      Cancel
+                      ยกเลิก
                     </button>
                   </>
                 ) : (
@@ -253,13 +267,13 @@ const Users = () => {
                           onClick={() => setEditingUserId(user._id)}
                           className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded ml-2"
                         >
-                          Edit
+                          แก้ไขข้อมูล
                         </button>
                         <button
                           onClick={() => handleDeleteUser(user._id)}
                           className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded ml-2"
                         >
-                          Delete
+                          ลบข้อมูล
                         </button>
                       </>
                     )}
@@ -274,7 +288,7 @@ const Users = () => {
         onClick={handleBackClick}
         className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 mt-4 rounded"
       >
-        Back to Dashboard
+        กลับยังหน้าหลัก
       </button>
     </div>
   );

@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import {jwtDecode} from 'jwt-decode';
 import { Document, Page, Text, View, StyleSheet,PDFDownloadLink } from '@react-pdf/renderer';
-import Print from "../../src/components/print/print"
+import Print from "../../src/components/print/FuelPrint"
 
 
 const MySwal = withReactContent(Swal);

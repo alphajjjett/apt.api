@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "axios";
-import "../styles/UserProfilePage.css"; 
+// import "../styles/UserProfilePage.css"; 
 
 const MySwal = withReactContent(Swal);
 
@@ -17,6 +17,7 @@ const UserProfilePage = () => {
   const [editableName, setEditableName] = useState("");
   const [editableEmail, setEditableEmail] = useState("");
   const [editableDescription, setEditableDescription] = useState("");
+  const [editablePassword, setEditablePassword] = useState("");
   const [editablePhone, setEditablePhone] = useState("");
   const [profileImage, setProfileImage] = useState(null); 
 
@@ -25,6 +26,7 @@ const UserProfilePage = () => {
     setEditableName(user.name);
     setEditableEmail(user.email);
     setEditableDescription(user.description || "");
+    setEditablePassword(user.password);
     setEditablePhone(user.phone);
   };
 
@@ -36,6 +38,9 @@ const UserProfilePage = () => {
       phone: editablePhone,
       profileImage: user.profileImage, 
     };
+    if (editablePassword) {
+      updatedUser.password = editablePassword;
+    }
 
     try {
       const response = await axios.put(
@@ -76,7 +81,6 @@ const UserProfilePage = () => {
     setIsEditing(false);
   };
   
-  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -87,7 +91,7 @@ const UserProfilePage = () => {
   const handleImageUpload = async () => {
     const formData = new FormData();
     formData.append("file", profileImage);
-    formData.append("id" , id)
+    formData.append("id" , id);
 
     try {
       const response = await axios.post(
@@ -100,7 +104,6 @@ const UserProfilePage = () => {
           },
         }
       );
-
 
       const imageUrl = response.data.path; 
       await handleSaveProfileImage(imageUrl);
@@ -181,8 +184,6 @@ const UserProfilePage = () => {
 
       try {
         const decodedToken = jwtDecode(token);
-        console.log("Decoded Token:", decodedToken);
-
         if (decodedToken.exp < Date.now() / 1000) {
           setError("Token has expired, please login again");
           setLoading(false);
@@ -199,6 +200,7 @@ const UserProfilePage = () => {
           const userData = {
             name: decodedToken.name,
             email: decodedToken.email,
+            password: decodedToken.password,
             selfid: decodedToken.selfid,
             phone: decodedToken.phone,
             role: decodedToken.role,
@@ -206,7 +208,6 @@ const UserProfilePage = () => {
             profileImage: decodedToken.profileImage || "", 
           };
           setUser(userData);
-          console.log("User data:", userData); // ตรวจสอบข้อมูล user
         }
       } catch (error) {
         setError("Error decoding token or fetching user data");
@@ -224,26 +225,24 @@ const UserProfilePage = () => {
     };
   }, [id]);
 
-  console.log("user detail is ===========>" , user)
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="user-profile-container">
-      <h2 className="user-profile-title">User Profile</h2>
+    <div className="user-profile-container bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto mt-10">
+      <h2 className="text-3xl font-bold mb-6 text-gray-900">โปรไฟล์ส่วนตัว</h2>
       {user && (
         <div>
-          <div className="user-profile-info">
-            <label>Self ID:</label>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">หมายเลขประจำตัว:</label>
               <span>{user.selfid}</span>
           </div>
 
-          <div className="user-profile-info">
-            <label>Name:</label>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">ชื่อ-นามสกุล:</label>
             {isEditing ? (
               <input
-                className="user-profile-input"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 type="text"
                 value={editableName}
                 onChange={(e) => setEditableName(e.target.value)}
@@ -252,11 +251,11 @@ const UserProfilePage = () => {
               <span>{user.name}</span>
             )}
           </div>
-          <div className="user-profile-info">
-            <label>Email:</label>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Email:</label>
             {isEditing ? (
               <input
-                className="user-profile-input"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 type="email"
                 value={editableEmail}
                 onChange={(e) => setEditableEmail(e.target.value)}
@@ -265,14 +264,30 @@ const UserProfilePage = () => {
               <span>{user.email}</span>
             )}
           </div>
-          <div className="user-profile-info">
-            <label>Role:</label> {user.role}
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">รหัสผ่าน:</label>
+            {isEditing ? (
+              <input
+                type="password"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                value={editablePassword}
+                onChange={(e) => setEditablePassword(e.target.value)}
+              />
+            ) : (
+              <span>••••••••</span> 
+            )}
           </div>
-          <div className="user-profile-info">
-            <label>Description:</label>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">บทบาท:</label> {user.role}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">ตำแหน่ง:</label>
             {isEditing ? (
               <textarea
-                className="user-profile-textarea"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 value={editableDescription}
                 onChange={(e) => setEditableDescription(e.target.value)}
               />
@@ -281,11 +296,11 @@ const UserProfilePage = () => {
             )}
           </div>
 
-          <div className="user-profile-info">
-            <label>Phone:</label>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">เบอร์โทรศัพท์:</label>
             {isEditing ? (
-              <textarea
-                className="user-profile-textarea"
+              <input
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 value={editablePhone}
                 onChange={(e) => setEditablePhone(e.target.value)}
               />
@@ -294,21 +309,22 @@ const UserProfilePage = () => {
             )}
           </div>
 
-          <div className="user-profile-info">
-            <label>Profile Image:</label>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">รูปโปรไฟล์:</label>
             {isEditing ? (
               <>
                 <input
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
                 />
                 {profileImage && (
                   <button
-                    className="user-profile-button"
+                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none"
                     onClick={handleImageUpload}
                   >
-                    Upload Image
+                    อัพโหลดรูป
                   </button>
                 )}
               </>
@@ -318,10 +334,10 @@ const UserProfilePage = () => {
                   <img
                     src={`${user.profileImage}`}
                     alt="Profile"
-                    className="user-profile-image"
+                    className="w-24 h-24 rounded-full"
                   />
                 ) : (
-                  <span>No profile image</span>
+                  <span>ไม่มีรูปโปรไฟล์</span>
                 )}
               </div>
             )}
@@ -331,19 +347,27 @@ const UserProfilePage = () => {
 
       {isEditing ? (
         <>
-          <button className="user-profile-button" onClick={handleSaveClick}>
-            Save Changes
+          <button
+            className="px-4 py-2 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 focus:outline-none"
+            onClick={handleSaveClick}
+          >
+            บันทึก
           </button>
-          <button className="user-profile-button cancel-button" onClick={handleCancelClick}>
-            Cancel
+          <button
+            className="ml-4 px-4 py-2 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 focus:outline-none"
+            onClick={handleCancelClick}
+          >
+            ยกเลิก
           </button>
         </>
       ) : (
-        <button className="user-profile-button" onClick={handleEditClick}>
+        <button
+          className="px-4 py-2 bg-indigo-500 text-white rounded-md shadow-sm hover:bg-indigo-600 focus:outline-none"
+          onClick={handleEditClick}
+        >
           Edit Profile
         </button>
       )}
-
     </div>
   );
 };

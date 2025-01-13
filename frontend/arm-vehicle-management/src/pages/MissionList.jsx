@@ -326,13 +326,13 @@ const MissionList = () => {
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-center mb-6" >Mission List</h2>
+      <h2 className="text-2xl font-bold text-center mb-6" >ข้อมูลภารกิจ</h2>
 
       
 
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
-          <h3 className="text-xl font-semibold">Total Mission</h3>
+          <h3 className="text-xl font-semibold">ยอดข้อมูลภารกิจ</h3>
           <p className="text-gray-600 text-2xl">{filteredMissions.length}</p>
         </div>
       </div>
@@ -512,10 +512,10 @@ const MissionList = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditDialogOpen(false)} color="secondary">
-            Cancel
+            ยกเลิก
           </Button>
           <Button onClick={handleSubmitEdit} color="primary">
-            Save Changes
+            บันทึก
           </Button>
         </DialogActions>
 
@@ -525,7 +525,7 @@ const MissionList = () => {
         {/* Modal for vehicle selection */}
         <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg" style={{ zIndex: 3000 }} >
           <Modal.Header closeButton>
-            <Modal.Title>Select a Vehicle</Modal.Title>
+            <Modal.Title>เลือกรถ</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -549,7 +549,7 @@ const MissionList = () => {
               onClick={() => setShowModal(false)}
               className="bg-gray-500 text-white py-2 px-4 rounded"
             >
-              Close
+              ยกเลิก
             </button>
           </Modal.Footer>
         </Modal>

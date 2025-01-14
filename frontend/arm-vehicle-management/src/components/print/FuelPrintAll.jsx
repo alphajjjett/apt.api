@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font,Image } from '@react-pdf/renderer';
 import fontTH from './font/THSARABUN.TTF';
 
 Font.register({ family: 'sath', src: fontTH });
@@ -70,6 +70,23 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     marginTop: 10,
   },
+  logo: {
+    width: 70,  // ปรับขนาดกว้างของโลโก้
+    height: 70,  // ปรับขนาดสูงของโลโก้
+    alignSelf: 'left',
+  },
+  logoTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // marginBottom: 20,
+  },
+  textRight: {
+    fontSize: 12,
+    color: '#333333',
+    // position: 'absolute',
+    right: 0,
+    top: 0,
+  },
 });
 
 const PrintAll = ({ missions, vehicles, users }) => {
@@ -83,6 +100,18 @@ const PrintAll = ({ missions, vehicles, users }) => {
     <Document>
       <Page style={styles.page}>
         <View style={styles.section}>
+          {/* เพิ่มโลโก้ที่นี่ */}
+                  <View style={styles.logoTextContainer}>
+                    <Image style={styles.logo} 
+                          src="./logo/logo.png" 
+                          alt="โลโก้" 
+                    />
+                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                      <Text style={styles.textRight}>แผนกธุรการ</Text>
+                      <Text style={styles.textRight}>กองโรงงานสรรพาวุธ 5</Text>
+                      <Text style={styles.textRight}>กรมสรรพาวุธทหารอากาศ</Text>
+                    </View>
+                  </View>
           <Text style={styles.heading}>ข้อมูลการเบิกเชื้อเพลิง</Text>
           <View style={styles.table}>
             <View style={styles.tableRow}>

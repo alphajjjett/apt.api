@@ -150,7 +150,7 @@ const ReturnInformation = () => {
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">Return Information</h2>
+      <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลการคืนรถ</h2>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

@@ -9,9 +9,9 @@ const NavigationBar = () => {
   const isLoggedIn = localStorage.getItem('token');
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState(null);
-  const [showMissionsDropdown, setShowMissionsDropdown] = useState(false);
-  const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
-  const [showReturnDropdown, setShowReturnDropdown] = useState(false);
+  // const [showMissionsDropdown, setShowMissionsDropdown] = useState(false);
+  // const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
+  // const [showReturnDropdown, setShowReturnDropdown] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false); // เพิ่มตัวแปร isAdmin
 
   const handleLogout = () => {
@@ -73,9 +73,9 @@ const NavigationBar = () => {
                 title="ภารกิจ"
                 id="missions-dropdown"
                 className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-                onMouseEnter={() => setShowMissionsDropdown(true)}
-                onMouseLeave={() => setShowMissionsDropdown(false)}
-                show={showMissionsDropdown}
+                // onMouseEnter={() => setShowMissionsDropdown(true)}
+                // onMouseLeave={() => setShowMissionsDropdown(false)}
+                // show={showMissionsDropdown}
               >
                 <NavDropdown.Item as={Link} to="/missionslist" className="text-black hover:bg-gray-200">
                   ข้อมูลภารกิจ
@@ -89,9 +89,9 @@ const NavigationBar = () => {
                 title="รถ"
                 id="vehicle-dropdown"
                 className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-                onMouseEnter={() => setShowVehicleDropdown(true)}
-                onMouseLeave={() => setShowVehicleDropdown(false)}
-                show={showVehicleDropdown}
+                // onMouseEnter={() => setShowVehicleDropdown(true)}
+                // onMouseLeave={() => setShowVehicleDropdown(false)}
+                // show={showVehicleDropdown}
               >
                 {isAdmin && (
                 <NavDropdown.Item as={Link} to="/create-vehicle" className="text-black hover:bg-gray-200">เพิ่มข้อมูลรถ</NavDropdown.Item>
@@ -105,9 +105,9 @@ const NavigationBar = () => {
               title="คืนรถ"
               id="return-dropdown"
               className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-              onMouseEnter={() => setShowReturnDropdown(true)}
-              onMouseLeave={() => setShowReturnDropdown(false)}
-              show={showReturnDropdown}
+              // onMouseEnter={() => setShowReturnDropdown(true)}
+              // onMouseLeave={() => setShowReturnDropdown(false)}
+              // show={showReturnDropdown}
             >
                 <NavDropdown.Item as={Link} to="/return" className="text-black hover:bg-gray-200">ข้อมูลการคืนรถ</NavDropdown.Item>
               </NavDropdown>

@@ -130,15 +130,33 @@ const VehicleList = () => {
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      
       setVehicles((prevVehicles) =>
         prevVehicles.map((vehicle) =>
           vehicle._id === vehicleId ? { ...vehicle, status: newStatus } : vehicle
         )
       );
+  
+      // แสดงการแจ้งเตือนสำเร็จ
+      Swal.fire({
+        title: 'Success',
+        text: `Vehicle status updated to ${newStatus} successfully.`,
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
     } catch (error) {
       setError('Failed to update vehicle status');
+  
+      // แสดงการแจ้งเตือนเมื่อเกิดข้อผิดพลาด
+      Swal.fire({
+        title: 'Error',
+        text: 'There was an issue updating the vehicle status.',
+        icon: 'error',
+        confirmButtonText: 'Try Again',
+      });
     }
   };
+  
 
   if (loading) return <p>Loading vehicles...</p>;
   if (error) return <p>{error}</p>;

@@ -7,6 +7,7 @@ import {jwtDecode} from 'jwt-decode';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import Print from "../../src/components/print/FuelPrint"
 import PrintAll from '../components/print/FuelPrintAll';
+import { useNavigate } from 'react-router-dom';
 
 
 const MySwal = withReactContent(Swal);
@@ -22,6 +23,7 @@ const FuelPage = () => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [fuelCapacity, setFuelCapacity] = useState('');
   const [userData, setUserData] = useState(null); // เก็บข้อมูลของผู้ใช้ที่ login
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +72,11 @@ const FuelPage = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
+
+  const handleGoToMlist = () => {
+    navigate('/missionslist'); // เปลี่ยนไปที่หน้า fuel
+  };
+
 
   const handleSave = async () => {
     try {
@@ -176,7 +183,7 @@ const FuelPage = () => {
               <TableCell align="right">ชื่อผู้จอง</TableCell>
               <TableCell align="right">เชื้อเพลิงที่เบิก (ลิตร)</TableCell>
               <TableCell align="right">อัพเดทล่าสุด</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell align="center">Actions</TableCell>
               <TableCell >พิมพ์เอกสาร</TableCell>
             </TableRow>
           </TableHead>
@@ -192,7 +199,7 @@ const FuelPage = () => {
                     <TableCell align="left">{vehicle.license_plate}</TableCell>
                     <TableCell align="right">{user.selfid || 'N/A'}</TableCell>
                     <TableCell align="right">{user.name || 'N/A'}</TableCell>
-                    <TableCell align="right">{vehicle.fuel_capacity || 'N/A'}</TableCell>
+                    <TableCell align="right">{vehicle.fuel_capacity || 'N/A'} ลิตร</TableCell>
                     <TableCell align="right">
                       {vehicle.updatedAt ? new Date(vehicle.updatedAt).toLocaleString() : 'N/A'}
                     </TableCell>
@@ -203,7 +210,7 @@ const FuelPage = () => {
                           color="primary"
                           onClick={() => handleEditClick(vehicle)}
                         >
-                          แก้ไข
+                          เบิกเชื้อเพลิง
                         </Button>
                       
                       )}
@@ -232,10 +239,10 @@ const FuelPage = () => {
       </TableContainer>
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Edit Fuel Capacity</DialogTitle>
+        <DialogTitle>เบิกเชื้อเพลิง</DialogTitle>
         <DialogContent>
           <TextField
-            label="Fuel Capacity"
+            label="จำนวนเชื้อเพลิง (ลิตร)"
             variant="outlined"
             fullWidth
             value={fuelCapacity}
@@ -246,11 +253,17 @@ const FuelPage = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">
-            Cancel
+            ยกเลิก
           </Button>
-          <Button onClick={handleSave} color="primary">
-            Save
-          </Button>
+          <Button 
+              onClick={() => {
+                handleSave();
+                handleGoToMlist();
+              }} 
+              color="primary"
+            >
+              บันทึก
+            </Button>
         </DialogActions>
       </Dialog>
     </div>

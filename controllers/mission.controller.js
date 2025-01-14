@@ -39,7 +39,7 @@ const createMission = async (req, res) => {
       }
 
       // ตรวจสอบว่า start_date ไม่เกิน end_date
-      if (startDate >= endDate) {
+      if (startDate > endDate) {
           return res.status(400).json({ message: 'Start date must be earlier than end date' });
       }
 

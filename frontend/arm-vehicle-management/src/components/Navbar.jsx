@@ -9,6 +9,9 @@ const NavigationBar = () => {
   const isLoggedIn = localStorage.getItem('token');
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState(null);
+  const [showMissionsDropdown, setShowMissionsDropdown] = useState(false);
+  const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
+  const [showReturnDropdown, setShowReturnDropdown] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false); // เพิ่มตัวแปร isAdmin
 
   const handleLogout = () => {
@@ -55,8 +58,8 @@ const NavigationBar = () => {
     <Navbar expand="lg" variant="dark" className="bg-gray-800">
       <Container>
         <Navbar.Brand as={Link} to="/dashboard" className="text-white flex items-center space-x-3">
-          <img src="https://flowbite.com/docs/images/logo.svg" className="h-8" alt="Flowbite Logo" />
-          <span className="text-2xl font-semibold">Inter-Vehicle Booking</span>
+          <img src="./logo/logo.png" className="h-14" alt="apd5 logo" />
+          <span className="text-2xl font-semibold">ระบบจองรถการปฏิบัติราชการ</span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -65,13 +68,31 @@ const NavigationBar = () => {
               <Nav.Link as={Link} to="/dashboard" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
                 หน้าหลัก
               </Nav.Link>
+              
+            <NavDropdown
+                title="ภารกิจ"
+                id="missions-dropdown"
+                className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+                onMouseEnter={() => setShowMissionsDropdown(true)}
+                onMouseLeave={() => setShowMissionsDropdown(false)}
+                show={showMissionsDropdown}
+              >
+                <NavDropdown.Item as={Link} to="/missionslist" className="text-black hover:bg-gray-200">
+                  ข้อมูลภารกิจ
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/missions" className="text-black hover:bg-gray-200">
+                  สร้างภารกิจ
+                </NavDropdown.Item>
+            </NavDropdown>
 
-              <NavDropdown title="ภารกิจ" id="missions-dropdown" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
-                <NavDropdown.Item as={Link} to="/missionslist" className="text-black hover:bg-gray-200">ข้อมูลภารกิจ</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/missions" className="text-black hover:bg-gray-200">สร้างภารกิจ</NavDropdown.Item>
-              </NavDropdown>
-
-              <NavDropdown title="รถ" id="vehicle-dropdown" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
+              <NavDropdown
+                title="รถ"
+                id="vehicle-dropdown"
+                className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+                onMouseEnter={() => setShowVehicleDropdown(true)}
+                onMouseLeave={() => setShowVehicleDropdown(false)}
+                show={showVehicleDropdown}
+              >
                 {isAdmin && (
                 <NavDropdown.Item as={Link} to="/create-vehicle" className="text-black hover:bg-gray-200">เพิ่มข้อมูลรถ</NavDropdown.Item>
                 )}
@@ -80,7 +101,14 @@ const NavigationBar = () => {
                 <NavDropdown.Item as={Link} to="/fuel" className="text-black hover:bg-gray-200">ข้อมูลการเบิกน้ำมัน</NavDropdown.Item>
               </NavDropdown>
 
-              <NavDropdown title="คืนรถ" id="return-dropdown" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
+              <NavDropdown
+              title="คืนรถ"
+              id="return-dropdown"
+              className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+              onMouseEnter={() => setShowReturnDropdown(true)}
+              onMouseLeave={() => setShowReturnDropdown(false)}
+              show={showReturnDropdown}
+            >
                 <NavDropdown.Item as={Link} to="/return" className="text-black hover:bg-gray-200">ข้อมูลการคืนรถ</NavDropdown.Item>
               </NavDropdown>
 

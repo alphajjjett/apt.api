@@ -6,7 +6,7 @@ import Register from './pages/Register';
 import Users from './pages/Users';
 import Missions from './pages/Missions';
 import MissionList from './pages/MissionList';
-import MissionRequest from './pages/MissionRequest';
+// import MissionRequest from './pages/MissionRequest';
 import VehiclePage from './pages/VehiclePage';
 import UserProfilePage from './pages/UserProfilePage';
 import AdminProfilePage from './pages/AdminProfilePapge';
@@ -39,7 +39,7 @@ function App() {
             <Route path="/users" element={<Users />} />
             <Route path="/missions" element={<Missions />} />
             <Route path='/missionslist' element={<MissionList />} />
-            <Route path='/mission_request' element={<MissionRequest />} />
+            {/* <Route path='/mission_request' element={<MissionRequest />} /> */}
             <Route path="/create-vehicle" element={<CreateVehicle />} />
             <Route path='/vehicle' element={<VehiclePage />} />
             <Route path="/profile/:id" element={<UserProfilePage />} />

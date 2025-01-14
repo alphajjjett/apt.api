@@ -23,7 +23,7 @@ const createReturn = async (req, res) => {
       mission: mission._id,  // Store the mission ID
       user: user._id,        // Store the user ID
       vehicle: vehicle._id,  // Store the vehicle ID
-      bookingDate: mission.start_date, // Automatically use mission's start_date
+      bookingDate: mission.end_date, // Automatically use mission's start_date
       returnDate: returnDate || new Date(),  // Default to current date if not provided
       returnStatus: returnStatus || 'pending', // Default to 'pending'
       description: description || '',  // Optional description

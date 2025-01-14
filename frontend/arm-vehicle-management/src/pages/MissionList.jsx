@@ -253,6 +253,15 @@ const MissionList = () => {
     return selfid.includes(searchQuery);
   });
 
+  const handleGoToFuel = () => {
+    navigate('/fuel'); // เปลี่ยนไปที่หน้า fuel
+  };
+
+  const handleGoToReturn = () => {
+    navigate('/return'); // เปลี่ยนไปที่หน้า fuel
+  };
+
+
   const handleEditClick = (mission) => {
     const token = localStorage.getItem('token');
     const { selfid } = JSON.parse(atob(token.split('.')[1])); // get logged-in user's selfid
@@ -431,6 +440,14 @@ const MissionList = () => {
                   >
                     รายละเอียด
                   </Button>
+                  {/* ปุ่มสำหรับไปยังหน้า fuel */}
+                  <Button
+                     variant="outlined"
+                    color="primary"
+                    onClick={handleGoToFuel}
+                  >
+                    เบิกน้ำมัน
+                  </Button>
                   <Button
                     variant="outlined"
                     color="error"
@@ -440,16 +457,18 @@ const MissionList = () => {
                     ลบข้อมูล
                   </Button>
                   {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
-                  {new Date() >= new Date(mission.end_date) && (
+                  {isAdmin && new Date() >= new Date(mission.end_date) && (
                     <Button
-                    variant="outlined"
-                    color="success"
-                    onClick={() => handleReturnClick(mission)}
-                    disabled={mission.status === 'completed' || (!isAdmin && mission.status !== 'pending')} 
-                  >
-                    คืนรถ
-                  </Button>
-                  
+                      variant="outlined"
+                      color="success"
+                      onClick={() => {
+                        handleReturnClick(mission);
+                        handleGoToReturn(); 
+                      }}
+                      disabled={mission.status === 'completed' || (!isAdmin && mission.status !== 'pending')}
+                    >
+                      คืนรถ
+                    </Button>
                   )}
                 </TableCell>
               )}
@@ -472,6 +491,7 @@ const MissionList = () => {
               <p><strong>วันที่จอง:</strong> {new Date(selectedMission.start_date).toLocaleDateString()}</p>
               <p><strong>วันที่คืน:</strong> {new Date(selectedMission.end_date).toLocaleDateString()}</p>
               <p><strong>ยี่ห้อรถ:</strong> {selectedMission.assigned_vehicle_id?.name || 'N/A'} ({selectedMission.assigned_vehicle_id?.license_plate || 'N/A'})</p>
+              <p><strong>จำนวนเชื้อเพลิงที่เบิก:</strong> {selectedMission.assigned_vehicle_id?.fuel_capacity || 'N/A'} </p>
               {/* <p><strong>สถานะ:</strong> {selectedMission.status}</p> */}
               {/* <p><strong>Last Updated:</strong> {new Date(selectedMission.updatedAt).toLocaleDateString()}</p> */}
             </div>

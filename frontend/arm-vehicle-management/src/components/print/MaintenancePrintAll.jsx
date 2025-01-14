@@ -73,18 +73,18 @@ const PrintMaintenance = ({ vehicles }) => (
         <Text style={styles.heading}>ข้อมูลการซ่อมบำรุงรถยนต์</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, styles.boldText,{ width: '10%' }]}>ยี่ห้อรถ</Text>
+            <Text style={[styles.tableCell, styles.boldText,{ width: '20%' }]}>ยี่ห้อรถ</Text>
             <Text style={[styles.tableCell, styles.boldText,{ width: '10%' }]}>รุ่น</Text>
-            <Text style={[styles.tableCell, styles.boldText,{ width: '10%' }]}>ทะเบียน</Text>
+            <Text style={[styles.tableCell, styles.boldText,{ width: '15%' }]}>ทะเบียน</Text>
             <Text style={[styles.tableCell, styles.boldText,{ width: '40%' }]}>รายละเอียดการซ่อมบำรุง</Text>
             <Text style={[styles.tableCell, styles.boldText,{ width: '25%' }]}>สถานะของรถ</Text>
             <Text style={[styles.tableCell, styles.boldText,{ width: '25%' }]}>วันที่ / เวลา</Text>
           </View>
           {vehicles.map((vehicle) => (
             <View style={styles.tableRow} key={vehicle._id}>
-              <Text style={[styles.tableCell,{ width: '10%' }]}>{vehicle.name}</Text>
+              <Text style={[styles.tableCell,{ width: '20%' }]}>{vehicle.name}</Text>
               <Text style={[styles.tableCell,{ width: '10%' }]}>{vehicle.model}</Text>
-              <Text style={[styles.tableCell,{ width: '10%' }]}>{vehicle.license_plate}</Text>
+              <Text style={[styles.tableCell,{ width: '15%' }]}>{vehicle.license_plate}</Text>
               <Text style={[styles.tableCell,{ width: '40%' }]}>{vehicle.description || 'N/A'}</Text>
               <Text style={[styles.tableCell,{ width: '25%' }]}>{vehicle.status}</Text>
               <Text style={[styles.tableCell,{ width: '25%' }]}>

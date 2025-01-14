@@ -82,6 +82,8 @@ const CreateMission = () => {
         title: 'Mission created successfully',
         text: 'Your mission has been created successfully.',
         confirmButtonText: 'OK'
+      }).then(() => {
+        navigate('/missionslist'); 
       });
       
     } catch (error) {
@@ -91,7 +93,7 @@ const CreateMission = () => {
         text: 'There was an issue creating your mission.',
         confirmButtonText: 'Try Again'
       });
-      setError('Failed to create mission');
+      // setError('Failed to create mission');
     }
   };
 

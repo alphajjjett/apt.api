@@ -160,8 +160,8 @@ const ReturnInformation = () => {
               <TableCell>ชื่อผู้จอง</TableCell>
               <TableCell>ยี่ห้อรถ</TableCell>
               <TableCell>ทะเบียน</TableCell>
-              <TableCell>วันที่จอง</TableCell>
               <TableCell>วันที่คืน</TableCell>
+              <TableCell>วันที่ตรวจซ่อม</TableCell>
               <TableCell>สถานะ</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -269,8 +269,16 @@ const ReturnInformation = () => {
             onChange={(e) => setNewDescription(e.target.value)}
           />
           <Box mt={2} display="flex" justifyContent="space-between">
-            <Button onClick={() => setEditModalOpen(false)} color="secondary">ยกเลิก</Button>
-            <Button onClick={handleSaveDescription} color="primary">บันทึก</Button>
+            <Button 
+              onClick={() => setEditModalOpen(false)} 
+              color="secondary">
+                ยกเลิก
+              </Button>
+            <Button 
+              onClick={handleSaveDescription} 
+              color="primary">
+                บันทึก
+            </Button>
           </Box>
         </Box>
       </Modal>

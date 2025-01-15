@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Register.css';  // Import your external CSS file
+import Swal from 'sweetalert2'; // Import Swal
 
 const Register = () => {
   const [selfid, setSelfId] = useState('');
@@ -15,12 +15,12 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-  
-    if (!name || !email || !password || !description  || !selfid || !phone ){
+
+    if (!name || !email || !password || !description || !selfid || !phone) {
       setError('Please fill in all fields.');
       return;
     }
-  
+
     try {
       const response = await axios.post('http://localhost:5000/api/users/register', {
         name,
@@ -31,26 +31,38 @@ const Register = () => {
         selfid,
         role: 'user',
       });
+      
       localStorage.setItem('token', response.data.token);
-      navigate('/dashboard'); // Navigate to dashboard after registration
-  
-      // Reload the page to reflect the registration status
-      window.location.reload();
+      Swal.fire({
+        title: 'สำเร็จ!',
+        text: 'สมัครสมาชิกสำเร็จ!',
+        icon: 'success',
+        confirmButtonText: 'ตกลง'
+      }).then(() => {
+        navigate('/dashboard'); // Navigate to dashboard after registration
+        window.location.reload();
+      });
+      
     } catch (err) {
       console.error(err);
+      Swal.fire({
+        title: 'ผิดพลาด!',
+        text: 'การสมัครสมาชิกล้มเหลว กรุณาลองใหม่อีกครั้ง.',
+        icon: 'error',
+        confirmButtonText: 'ตกลง'
+      });
       setError('Failed to register. Please try again.');
     }
   };
-  
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 py-6">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg">
-        <h2 className="text-3xl font-bold text-center mb-6">Register</h2>
+        <h2 className="text-3xl font-bold text-center mb-6">สมัครสมาชิก</h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleRegister}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Name:</label>
+            <label className="block text-sm font-medium text-gray-700">ชื่อ:</label>
             <input
               type="text"
               value={name}
@@ -60,7 +72,7 @@ const Register = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Self ID:</label>
+            <label className="block text-sm font-medium text-gray-700">หมายเลขประจำตัว:</label>
             <input
               type="text"
               value={selfid}
@@ -70,7 +82,7 @@ const Register = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Email:</label>
+            <label className="block text-sm font-medium text-gray-700">อีเมล์:</label>
             <input
               type="email"
               value={email}
@@ -80,7 +92,7 @@ const Register = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Password:</label>
+            <label className="block text-sm font-medium text-gray-700">รหัสผ่าน:</label>
             <input
               type="password"
               value={password}
@@ -90,7 +102,7 @@ const Register = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Phone:</label>
+            <label className="block text-sm font-medium text-gray-700">เบอร์โทรศัพท์:</label>
             <input
               type="text"
               value={phone}
@@ -100,7 +112,7 @@ const Register = () => {
             />
           </div>
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700">Description:</label>
+            <label className="block text-sm font-medium text-gray-700">ตำแหน่ง:</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -112,17 +124,16 @@ const Register = () => {
             type="submit"
             className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Register
+            สมัครสมาชิก
           </button>
         </form>
-        
-        {/* Add Navigation Buttons */}
-        <div className="mt-4 flex justify-between">
+
+        <div className="mt-2 flex justify-between">
           <button
             onClick={() => navigate('/')}
             className="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            Cancel
+            ยกเลิก
           </button>
         </div>
       </div>

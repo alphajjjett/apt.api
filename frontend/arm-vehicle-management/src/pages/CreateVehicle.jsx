@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-// import Table from '@mui/material/Table';
-// import TableBody from '@mui/material/TableBody';
-// import TableCell from '@mui/material/TableCell';
-// import TableContainer from '@mui/material/TableContainer';
-// import TableHead from '@mui/material/TableHead';
-// import TableRow from '@mui/material/TableRow';
-// import Paper from '@mui/material/Paper';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -62,48 +55,8 @@ const VehiclePage = () => {
     }
   };
 
-  // const handleDelete = async (vehicleId) => {
-  //   MySwal.fire({
-  //     title: "Are you sure?",
-  //     text: "You won't be able to revert this!",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Yes, delete it!",
-  //     cancelButtonText: "No, cancel!",
-  //     reverseButtons: true
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       try {
-  //         const token = localStorage.getItem('token');
-  //         const config = { headers: { Authorization: `Bearer ${token}` } };
-  
-  //         await axios.delete(`http://localhost:5000/api/vehicles/${vehicleId}`, config);
-  //         setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));
-          
-  //         MySwal.fire({
-  //           title: "Deleted!",
-  //           text: "The vehicle has been deleted.",
-  //           icon: "success"
-  //         });
-  //       } catch (error) {
-  //         MySwal.fire({
-  //           title: "Error",
-  //           text: "There was an error deleting the vehicle.",
-  //           icon: "error"
-  //         });
-  //       }
-  //     } else if (result.dismiss === Swal.DismissReason.cancel) {
-  //       MySwal.fire({
-  //         title: "Cancelled",
-  //         text: "Your vehicle is safe :)",
-  //         icon: "error"
-  //       });
-  //     }
-  //   });
-  // };
-
   return (
-    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
       {/* Create New Vehicle Form */}
       {isAdmin && (
         <div>
@@ -152,27 +105,6 @@ const VehiclePage = () => {
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
             </div>
-            {/* <div>
-              <label className="block text-sm font-medium mb-2">จำนวนน้ำมัน (ลิตร):</label>
-              <input
-                type="number"
-                name="fuel_capacity"
-                value={vehicleData.fuel_capacity}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-            </div> */}
-            {/* <div>
-              <label className="block text-sm font-medium mb-2">รายละเอียดการซ่อมบำรุง:</label>
-              <input
-                type="text"
-                name="description"
-                value={vehicleData.description}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-                
-              />
-            </div> */}
             <button 
               type="submit" 
               className="w-full py-3 bg-green-500 text-white rounded-md hover:bg-green-700"

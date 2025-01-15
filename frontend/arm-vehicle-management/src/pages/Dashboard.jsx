@@ -141,9 +141,10 @@ const Dashboard = () => {
 
 
   return (
+    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg"> {/* กูจะเปลี่ยนสีไอ้*** */}
     <div className="bg-white p-6 flex flex-col justify-center items-center">
      {/* Stats Section (Cards) */}
-        <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
+        <div className="flex flex-col lg:flex-row gap-3 mb-5 w-full max-w-6xl">
           <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
             <h3 className="text-xl font-semibold">พร้อมใช้งาน ( Available )</h3>
             <p className="text-gray-600 text-2xl">จำนวน {data.available} คัน</p>
@@ -196,7 +197,7 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-
+    </div>
   );
 };
 

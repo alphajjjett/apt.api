@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Login.css'; 
+import Swal from 'sweetalert2'; // Import Swal
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('user'); // Default to user role
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   // Handle login for both user and admin
@@ -21,12 +20,27 @@ const Login = () => {
   
       const response = await axios.post(apiUrl, { email, password });
       localStorage.setItem('token', response.data.token);
-      navigate('/dashboard'); // Navigate to the dashboard upon successful login
-  
-      // Reload the page to reflect the login status
-      window.location.reload();
+      
+      // Success alert using Swal
+      Swal.fire({
+        icon: 'success',
+        title: 'Login Successful!',
+        text: `Welcome ${role === 'admin' ? 'Admin' : 'User'}!`,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Go to Dashboard',
+      }).then(() => {
+        navigate('/dashboard'); // Navigate to the dashboard upon successful login
+        window.location.reload(); // Reload the page to reflect the login status
+      });
     } catch (err) {
-      setError('Invalid credentials'); // Set error message for invalid login
+      // Error alert using Swal
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: 'Invalid email or password',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Try Again',
+      });
     }
   };
 
@@ -36,43 +50,42 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-form">
-        <h2>Login</h2>
-        {error && <p className="error-message">{error}</p>}
+    <div className="container min-h-screen flex items-center justify-center rounded-lg">
+      <div className="w-full max-w-sm p-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 
         <form onSubmit={handleLogin}>
-          <div>
-            <label htmlFor="email" className="block">Email</label>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-700 mb-2">อีเมล์</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="input-field"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div>
-            <label htmlFor="password" className="block">Password</label>
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-gray-700 mb-2">รหัสผ่าน</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="input-field"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div>
-            <label htmlFor="role" className="block">Role</label>
+          <div className="mb-6">
+            <label htmlFor="role" className="block text-gray-700 mb-2">Role</label>
             <select
               id="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="select-role"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="user">User</option>
               <option value="admin">Admin</option>
@@ -81,14 +94,14 @@ const Login = () => {
 
           <button
             type="submit"
-            className="button"
+            className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
-            Login
+            เข้าสู่ระบบ
           </button>
         </form>
 
-        <div className="register-link">
-          <p>Don't have an account? <a href="/register" onClick={goToRegister}>Register</a></p>
+        <div className="mt-4 text-center">
+          <p>ยังไม่มีบัญชี ? <button onClick={goToRegister} className="text-blue-500 hover:underline">สมัครสมาชิก</button></p>
         </div>
       </div>
     </div>

@@ -35,6 +35,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../apt.api/uploads")));
 
 const cors = require("cors");
 const vehicleRoute = require("./routes/vehicle.route.js");
+const fuelRoute = require('./routes/fuel.route.js');
 
 const returnRoute = require("./routes/return.route.js") ;
 
@@ -56,7 +57,7 @@ app.use(cors());
 // middleware
 
 app.use("/api/vehicles", vehicleRoute);
-
+app.use('/api/fuel', fuelRoute);
 app.use('/api/return', returnRoute);
 
 app.use("/api/missions", missionRoutes);

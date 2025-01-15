@@ -18,10 +18,10 @@ const VehicleSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        fuel_capacity: {
-            type: Number,
-            default : 0
-        },
+        // fuel_capacity: {
+        //     type: Number,
+        //     default : 0
+        // },
         status: {
             type: String,
             enum: ['available', 'in-use', 'maintenance'],

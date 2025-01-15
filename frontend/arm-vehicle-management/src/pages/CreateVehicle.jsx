@@ -20,7 +20,7 @@ const VehiclePage = () => {
     license_plate: '',
     model: '',
     fuel_type: '',
-    fuel_capacity: '',
+    // fuel_capacity: '',
     description: ''
   });
 

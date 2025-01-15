@@ -14,7 +14,7 @@ const getAllVehicles = async (req, res) => {
 
 // Controller สำหรับการสร้างข้อมูลรถใหม่
 const createVehicle = async (req, res) => {
-    const { name, license_plate, model, fuel_type, fuel_capacity,description} = req.body;
+    const { name, license_plate, model, fuel_type,description} = req.body;
   
     try {
       const newVehicle = new Vehicle({
@@ -22,7 +22,7 @@ const createVehicle = async (req, res) => {
         license_plate,
         model,
         fuel_type,
-        fuel_capacity: fuel_capacity,
+        // fuel_capacity: fuel_capacity,
         description
       });
   

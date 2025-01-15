@@ -73,42 +73,37 @@ const styles = StyleSheet.create({
   logoTextContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // marginBottom: 20,
   },
   textRight: {
     fontSize: 12,
     color: '#333333',
-    // position: 'absolute',
     right: 0,
     top: 0,
   },
-  
 });
 
-const Print = ({ vehicle, user }) => {
-  // คำนวณยอดการเบิก
-  const totalFuel = vehicle.fuel_capacity; // คุณอาจจะต้องคำนวณหรือลบรวมจากหลายๆ รายการ
+const Print = ({ vehicle, user, fuelRecord }) => {
+  // ตรวจสอบให้แน่ใจว่า fuelRecord มีข้อมูลที่จำเป็น
+  const totalFuel = fuelRecord ? parseFloat(fuelRecord.fuelCapacity) : 0; // ใช้ข้อมูลจาก fuelRecord ที่ส่งเข้ามา
 
   return (
     <Document>
       <Page style={styles.page}>
-        <View style={styles.section}> 
-          {/* { marginBottom: 20 } */}
-        {/* เพิ่มโลโก้ที่นี่ */}
-        <View style={styles.logoTextContainer}>
-          <Image style={styles.logo} 
-                src="./logo/logo.png" 
-                alt="โลโก้" 
-          />
-          <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-            <Text style={styles.textRight}>แผนกธุรการ</Text>
-            <Text style={styles.textRight}>กองโรงงานสรรพาวุธ 5</Text>
-            <Text style={styles.textRight}>กรมสรรพาวุธทหารอากาศ</Text>
+        <View style={styles.section}>
+          {/* เพิ่มโลโก้ที่นี่ */}
+          <View style={styles.logoTextContainer}>
+            <Image style={styles.logo} 
+                  src="./logo/logo.png" 
+                  alt="โลโก้" 
+            />
+            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+              <Text style={styles.textRight}>แผนกธุรการ</Text>
+              <Text style={styles.textRight}>กองโรงงานสรรพาวุธ 5</Text>
+              <Text style={styles.textRight}>กรมสรรพาวุธทหารอากาศ</Text>
+            </View>
           </View>
-        </View>
 
-
-        <Text style={styles.heading}>ข้อมูลการเบิกเชื้อเพลิง</Text>
+          <Text style={styles.heading}>ข้อมูลการเบิกเชื้อเพลิง</Text>
           <Text style={styles.heading}>ข้อมูลรถ</Text>
           <View style={[styles.table, styles.tableHeader]}>
             <View style={styles.tableRow}>
@@ -141,7 +136,7 @@ const Print = ({ vehicle, user }) => {
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, { width: '50%' }]}>{user.selfid}</Text>
               <Text style={[styles.tableCell, { width: '50%' }]}>{user.name}</Text>
-              <Text style={[styles.tableCell, { width: '50%' }]}>{vehicle.fuel_capacity}</Text>
+              <Text style={[styles.tableCell, { width: '50%' }]}>{fuelRecord ? fuelRecord.fuelCapacity : 'N/A'}</Text> {/* แสดงข้อมูลจาก fuelRecord */}
             </View>
           </View>
 

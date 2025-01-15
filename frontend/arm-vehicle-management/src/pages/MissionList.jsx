@@ -82,6 +82,44 @@ const MissionList = () => {
     setShowModal(false); 
   };
 
+  const handleFuelRequestClick = (mission) => {
+    const fuelData = {
+      userId: mission.assigned_user_id._id,  // ส่ง userId แทน name
+      vehicleId: mission.assigned_vehicle_id._id, // ส่ง vehicleId แทน name
+      fuelCapacity: 0,  // จำนวนเชื้อเพลิงที่เบิก (หากต้องการ)
+      fuelDate: new Date(mission.start_date),  // ใช้วันที่ของ mission
+      fuelStatus: 'pending',   
+    };
+    
+    const token = localStorage.getItem('token');
+    console.log('Fuel Request Data:', fuelData);
+    console.log('Mission ID:', mission._id);
+    
+    axios.post(`http://localhost:5000/api/fuel/${mission._id}`, fuelData, {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      }
+    })
+    .then((response) => {
+      console.log('Fuel Request Success:', response.data);
+      Swal.fire({
+        title: 'Fuel Request Success',
+        text: 'The fuel request has been successfully recorded.',
+        icon: 'success',
+      });
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'There was an error while requesting fuel.',
+        icon: 'error',
+      });
+    });
+};
+
+  
+
   const handleReturnClick = (mission) => {
     const returnData = {
       user: mission.assigned_user_id.name,  
@@ -440,14 +478,14 @@ const MissionList = () => {
                   >
                     รายละเอียด
                   </Button>
-                  {/* ปุ่มสำหรับไปยังหน้า fuel */}
+                  {/* ปุ่มสำหรับไปยังหน้า fuel
                   <Button
                      variant="outlined"
                     color="primary"
                     onClick={handleGoToFuel}
                   >
                     เบิกน้ำมัน
-                  </Button>
+                  </Button> */}
                   <Button
                     variant="outlined"
                     color="error"
@@ -456,6 +494,20 @@ const MissionList = () => {
                   >
                     ลบข้อมูล
                   </Button>
+
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => {
+                      handleFuelRequestClick(mission);
+                      handleGoToFuel();  // เปลี่ยนไปที่หน้า fuel เมื่อทำการบันทึกการเบิกน้ำมันสำเร็จ
+                    }}
+                  >
+                    เบิกน้ำมัน
+                  </Button>
+
+
+
                   {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
                   {isAdmin && new Date() >= new Date(mission.end_date) && (
                     <Button
@@ -491,7 +543,7 @@ const MissionList = () => {
               <p><strong>วันที่จอง:</strong> {new Date(selectedMission.start_date).toLocaleDateString()}</p>
               <p><strong>วันที่คืน:</strong> {new Date(selectedMission.end_date).toLocaleDateString()}</p>
               <p><strong>ยี่ห้อรถ:</strong> {selectedMission.assigned_vehicle_id?.name || 'N/A'} ({selectedMission.assigned_vehicle_id?.license_plate || 'N/A'})</p>
-              <p><strong>จำนวนเชื้อเพลิงที่เบิก:</strong> {selectedMission.assigned_vehicle_id?.fuel_capacity || 'N/A'} </p>
+              {/* <p><strong>จำนวนเชื้อเพลิงที่เบิก:</strong> {selectedMission.assigned_vehicle_id?.fuel_capacity || 'N/A'} </p> */}
               {/* <p><strong>สถานะ:</strong> {selectedMission.status}</p> */}
               {/* <p><strong>Last Updated:</strong> {new Date(selectedMission.updatedAt).toLocaleDateString()}</p> */}
             </div>

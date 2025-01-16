@@ -35,9 +35,9 @@ app.use("/uploads", express.static(path.join(__dirname, "../apt.api/uploads")));
 
 const cors = require("cors");
 const vehicleRoute = require("./routes/vehicle.route.js");
-const fuelRoute = require('./routes/fuel.route.js');
+const fuelRoute = require("./routes/fuel.route.js");
 
-const returnRoute = require("./routes/return.route.js") ;
+const returnRoute = require("./routes/return.route.js");
 
 const missionRoutes = require("./routes/mission.route.js");
 const userRoutes = require("./routes/user.route.js");
@@ -57,8 +57,8 @@ app.use(cors());
 // middleware
 
 app.use("/api/vehicles", vehicleRoute);
-app.use('/api/fuel', fuelRoute);
-app.use('/api/return', returnRoute);
+app.use("/api/fuel", fuelRoute);
+app.use("/api/return", returnRoute);
 
 app.use("/api/missions", missionRoutes);
 app.use("/api", dashboardRoute); // กำหนด route dashboard ที่ /api/dashboard
@@ -123,9 +123,7 @@ app.post("/api/missions", async (req, res) => {
   }
 });
 
-
-
-app.get('/api/admins/:id', async (req, res) => {
+app.get("/api/admins/:id", async (req, res) => {
   try {
     const admin = await Admin.findById(req.params.id);
     if (!admin) {
@@ -136,7 +134,6 @@ app.get('/api/admins/:id', async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 // Route สำหรับการ login
 app.post("/login", async (req, res) => {
@@ -187,7 +184,6 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
   try {
     const { data } = await axios.post(
       "http://45.144.167.78:8080/upload-to-gcloud",
-      // "http://localhost:8080/upload-to-gcloud",
       formData,
       {
         headers: {
@@ -222,42 +218,6 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
       .status(500)
       .json({ message: "Failed to upload image", error: error.message });
   }
-
-  // try {
-  //   const blob = bucket.file(req.file.originalname);
-  //   const blobStream = blob.createWriteStream();
-
-  //   blobStream.on("error", (err) => {
-  //     res.status(500).json({ message: "upload image failed" });
-  //   });
-
-  //   blobStream.on("finish", async () => {
-  //     await blob.makePublic();
-  //     const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
-
-  //     const updateReq = {
-  //       params: { id },
-  //       body: { profileImage: publicUrl },
-  //     };
-
-  //     const updateRes = {
-  //       json: (data) =>
-  //         res.json({ message: "Image uploaded and user updated", data }),
-  //       status: (statusCode) => ({
-  //         json: (data) => res.status(statusCode).json(data),
-  //       }),
-  //     };
-
-  //     await updateUser(updateReq, updateRes);
-  //   });
-
-  //   blobStream.end(req.file.buffer);
-  // } catch (error) {
-  //   console.error("Error uploading image", error);
-  //   return res
-  //     .status(500)
-  //     .json({ message: "Failed to upload image", error: error.message });
-  // }
 });
 
 app.get("/", (req, res) => {

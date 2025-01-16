@@ -13,7 +13,7 @@ const auth = require('../middleware/auth.middleware');
 
 router.post('/login', loginAdmin);
 
-router.post('/register', registerAdmin); 
+router.post('/register',auth ,registerAdmin); 
 
 // Route to get all users (admin only)
 router.get('/', getAllAdmins);  // Only admin can get all users

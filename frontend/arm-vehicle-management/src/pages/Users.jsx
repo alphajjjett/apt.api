@@ -43,6 +43,49 @@ const Users = () => {
       navigate('/', { replace: true });
     }
   };
+
+  const handleCreateAdmin = () => {
+    MySwal.fire({
+      title: 'เพิ่ม Admin',
+      html:
+        '<input id="swal-input1" class="swal2-input" placeholder="Name">' +
+        '<input id="swal-input2" class="swal2-input" placeholder="Email">' +
+        '<input id="swal-input3" class="swal2-input" placeholder="Password" type="password">' +
+        '<input id="swal-input4" class="swal2-input" placeholder="Description">',
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Create',
+      cancelButtonText: 'Cancel',
+      preConfirm: () => {
+        const name = document.getElementById('swal-input1').value;
+        const email = document.getElementById('swal-input2').value;
+        const password = document.getElementById('swal-input3').value;
+        const description = document.getElementById('swal-input4').value;
+        
+        if (!name || !email || !password) {
+          MySwal.showValidationMessage('Please enter all required fields');
+          return;
+        }
+  
+        return { name, email, password, description };
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const { name, email, password, description } = result.value;
+        try {
+          const token = localStorage.getItem('token');
+          await axios.post(
+            'http://localhost:5000/api/admins/register',
+            { name, email, password, description },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          MySwal.fire('Created!', 'New admin has been created.', 'success');
+        } catch (error) {
+          MySwal.fire('Error', 'Failed to create admin.', 'error');
+        }
+      }
+    });
+  };
   
 
   useEffect(() => {
@@ -170,6 +213,13 @@ const Users = () => {
       >
         โปรไฟล์ แอดมิน
       </button>
+    
+    <button
+      onClick={handleCreateAdmin}
+      className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded ml-3"
+    >
+      เพิ่ม แอดมิน
+    </button>
 
       <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-4">
         <thead>

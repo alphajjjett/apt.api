@@ -14,7 +14,7 @@ const VehiclePage = () => {
     model: '',
     fuel_type: '',
     // fuel_capacity: '',
-    description: ''
+    // description: ''
   });
 
   useEffect(() => {

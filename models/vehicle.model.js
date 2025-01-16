@@ -27,11 +27,6 @@ const VehicleSchema = new mongoose.Schema(
             enum: ['available', 'in-use', 'maintenance'],
             default: 'available'
         }
-        ,
-        description: {
-            type: String,
-            default: ''
-        }
     },
     {
         timestamps: true

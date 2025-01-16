@@ -96,7 +96,7 @@ const VehicleList = () => {
       model: vehicle.model,
       license_plate: vehicle.license_plate,
       fuel_type: vehicle.fuel_type,
-      description: vehicle.description,
+      // description: vehicle.description,
     });
     setEditDialogOpen(true);
   };
@@ -292,7 +292,7 @@ const VehicleList = () => {
             fullWidth
             style={{ marginBottom: '10px' }}
           />
-          <TextField
+          {/* <TextField
             label="Description"
             name="description"
             value={updatedVehicle.description}
@@ -300,7 +300,7 @@ const VehicleList = () => {
             fullWidth
             multiline
             rows={3}
-          />
+          /> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditDialogOpen(false)} color="secondary">

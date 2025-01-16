@@ -19,7 +19,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
-        selfid : user.selfid,
+        selfid: user.selfid,
         role: user.role,
         email: user.email,
         name: user.name,
@@ -38,7 +38,7 @@ const loginUser = async (req, res) => {
 };
 
 const registerUser = async (req, res) => {
-  const { name, email, password, description,selfid,phone } = req.body;
+  const { name, email, password, description, selfid, phone } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -64,7 +64,7 @@ const registerUser = async (req, res) => {
         selfid: newUser.selfid,
         name: newUser.name,
         email: newUser.email,
-        phone : newUser.phone,
+        phone: newUser.phone,
         role: newUser.role,
         description: newUser.description,
       },
@@ -125,7 +125,10 @@ const getCurrentUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
+  const decodedToken = req.headers.authorization.split(" ")[1];
   const { name, email, description, profileImage, phone, password } = req.body;
+
+  console.log("decodedToken is ", decodedToken);
 
   try {
     const user = await User.findById(id);
@@ -145,11 +148,26 @@ const updateUser = async (req, res) => {
       user.password = hashedPassword;
     }
 
+    const token = jwt.sign(
+      {
+        id: decodedToken.id,
+        selfid: decodedToken.selfid,
+        name: decodedToken.name,
+        email: decodedToken.email,
+        phone: decodedToken.phone,
+        role: decodedToken.role,
+        description: decodedToken.description,
+        profileImage: user.profileImage,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
     const updatedUser = await user.save();
 
     res.json(updatedUser);
   } catch (error) {
-    console.error("::::::::::::::::::::::::::::::::::::::::::::::>", error);
+    console.error("error is :", error);
     res.status(500).json({ message: "Server error" });
   }
 };

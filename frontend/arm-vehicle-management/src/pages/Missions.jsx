@@ -4,8 +4,8 @@ import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import Modal from 'react-bootstrap/Modal'; // import Modal from react-bootstrap
-import 'bootstrap/dist/css/bootstrap.min.css'; // อย่าลืมติดตั้ง bootstrap
+import Modal from 'react-bootstrap/Modal';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const MySwal = withReactContent(Swal);
 
@@ -27,9 +27,6 @@ const CreateMission = () => {
     if (token) {
       const decodedToken = jwtDecode(token);
       setLoggedUser(decodedToken);
-      // if (decodedToken.role === 'admin') {
-      //   navigate('/mission_request');
-      // }
     }
   }, [navigate]);
 
@@ -93,17 +90,16 @@ const CreateMission = () => {
         text: 'There was an issue creating your mission.',
         confirmButtonText: 'Try Again'
       });
-      // setError('Failed to create mission');
     }
   };
 
   return (
-    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-center mb-6"> สร้างข้อมูลการจอง </h2>
+    <div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-bold text-center mb-4">สร้างข้อมูลการจอง</h2>
       {error && <p className="text-red-600 text-center mb-4">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-lg font-medium text-gray-700">ภาจกิจ:</label>
+          <label className="block text-lg font-medium text-gray-700">ภารกิจ:</label>
           <input
             type="text"
             value={missionName}
@@ -154,12 +150,12 @@ const CreateMission = () => {
           />
         </div>
 
-        <div className="mb-4">
+        <div>
           <label className="block text-lg font-medium text-gray-700">ยี่ห้อรถ:</label>
           <button
             type="button" 
             onClick={() => setShowModal(true)}
-            className="w-full border border-gray-300 p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded-md"
           >
             {selectedVehicle
               ? `${vehicles.find((vehicle) => vehicle._id === selectedVehicle).name} 
@@ -192,7 +188,7 @@ const CreateMission = () => {
           <Modal.Footer>
             <button
               onClick={() => setShowModal(false)}
-              className="bg-gray-500 text-white py-2 px-4 rounded"
+              className="bg-gray-500 text-white py-2 px-4 rounded-md"
             >
               Close
             </button>
@@ -200,11 +196,12 @@ const CreateMission = () => {
         </Modal>
 
         <button
-          type="submit"
-          className="w-full mt-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          สร้างการจอง
+            type="submit"
+            className="w-full mt-4 py-2 bg-green-400 text-white rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-300"
+          >
+            สร้างการจอง
         </button>
+
       </form>
     </div>
   );

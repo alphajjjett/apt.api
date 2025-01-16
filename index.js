@@ -44,6 +44,7 @@ const userRoutes = require("./routes/user.route.js");
 const adminRoutes = require("./routes/admin.route.js");
 const dashboardRoute = require("./routes/dashboard.route");
 const vehicleRoutes = require("./routes/vehicle.route");
+const maintenanceRoute = require('./routes/maintenance.route.js');
 
 const uri = process.env.MONGO_URI;
 console.log(uri);
@@ -59,6 +60,7 @@ app.use(cors());
 app.use("/api/vehicles", vehicleRoute);
 app.use("/api/fuel", fuelRoute);
 app.use("/api/return", returnRoute);
+app.use('/api/maintenance', maintenanceRoute);
 
 app.use("/api/missions", missionRoutes);
 app.use("/api", dashboardRoute); // กำหนด route dashboard ที่ /api/dashboard

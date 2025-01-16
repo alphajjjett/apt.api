@@ -198,7 +198,11 @@ const FuelPage = () => {
               <TableCell align="right">ชื่อผู้จอง</TableCell>
               <TableCell align="right">เชื้อเพลิงที่เบิก (ลิตร)</TableCell>
               <TableCell align="right">อัพเดทล่าสุด</TableCell>
-              <TableCell align="center">Actions</TableCell>
+ 
+              {userData && userData.role === 'admin' && (
+                <TableCell align="center">Actions</TableCell>
+              )}
+              
               <TableCell>พิมพ์เอกสาร</TableCell>
             </TableRow>
           </TableHead>
@@ -219,9 +223,9 @@ const FuelPage = () => {
           <TableCell align="right">
             {fuelRecord.fuelDate ? new Date(fuelRecord.fuelDate).toLocaleString() : 'N/A'}
           </TableCell>
-
-          <TableCell align="center">
-            {canEdit(mission, vehicle, user,) && (
+          {/* ทำแบบ isAdmin  ง่ายกว่าเยอะ */}
+          {(userData && userData.role === 'admin') || canEdit(mission, vehicle, user) ? (
+            <TableCell align="center">
               <Button
                 variant="outlined"
                 color="primary"
@@ -229,9 +233,10 @@ const FuelPage = () => {
               >
                 แก้ไข
               </Button>
-            )}
-          </TableCell>
+            </TableCell>
+          ) : null}
           <TableCell>
+
             <PDFDownloadLink document={<Print vehicle={vehicle} user={user} fuelRecord={fuelRecord} />} fileName={`${mission.assigned_user_id.selfid}_Fuel.pdf`}>
               {({ loading }) => (loading ? 'Loading...' : 'พิมพ์เอกสาร')}
             </PDFDownloadLink>

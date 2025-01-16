@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Font,Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import fontTH from './font/THSARABUN.TTF';
 
 Font.register({ family: 'sath', src: fontTH });
@@ -83,41 +83,41 @@ const styles = StyleSheet.create({
   },
 });
 
-const PrintMaintenance = ({ vehicles }) => (
+const PrintMaintenance = ({ maintenance }) => (
   <Document>
     <Page style={styles.page}>
       <View style={styles.section}>
- {/* เพิ่มโลโก้ที่นี่ */}
-                  <View style={styles.logoTextContainer}>
-                    <Image style={styles.logo} 
-                          src="./logo/logo.png" 
-                          alt="โลโก้" 
-                    />
-                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                      <Text style={styles.textRight}>แผนกธุรการ</Text>
-                      <Text style={styles.textRight}>กองโรงงานสรรพาวุธ 5</Text>
-                      <Text style={styles.textRight}>กรมสรรพาวุธทหารอากาศ</Text>
-                    </View>
-                  </View>
+        {/* เพิ่มโลโก้ที่นี่ */}
+        <View style={styles.logoTextContainer}>
+          <Image style={styles.logo} 
+                 src="./logo/logo.png" 
+                 alt="โลโก้" 
+          />
+          <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+            <Text style={styles.textRight}>แผนกธุรการ</Text>
+            <Text style={styles.textRight}>กองโรงงานสรรพาวุธ 5</Text>
+            <Text style={styles.textRight}>กรมสรรพาวุธทหารอากาศ</Text>
+          </View>
+        </View>
         <Text style={styles.heading}>ข้อมูลการซ่อมบำรุงรถยนต์</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, styles.boldText,{ width: '20%' }]}>ยี่ห้อรถ</Text>
-            <Text style={[styles.tableCell, styles.boldText,{ width: '10%' }]}>รุ่น</Text>
-            <Text style={[styles.tableCell, styles.boldText,{ width: '15%' }]}>ทะเบียน</Text>
-            <Text style={[styles.tableCell, styles.boldText,{ width: '40%' }]}>รายละเอียดการซ่อมบำรุง</Text>
-            <Text style={[styles.tableCell, styles.boldText,{ width: '25%' }]}>สถานะของรถ</Text>
-            <Text style={[styles.tableCell, styles.boldText,{ width: '25%' }]}>วันที่ / เวลา</Text>
+            <Text style={[styles.tableCell, styles.boldText, { width: '20%' }]}>ยี่ห้อรถ</Text>
+            <Text style={[styles.tableCell, styles.boldText, { width: '10%' }]}>รุ่น</Text>
+            <Text style={[styles.tableCell, styles.boldText, { width: '15%' }]}>ทะเบียน</Text>
+            <Text style={[styles.tableCell, styles.boldText, { width: '40%' }]}>รายละเอียดการซ่อมบำรุง</Text>
+            {/* <Text style={[styles.tableCell, styles.boldText, { width: '25%' }]}>สถานะของรถ</Text> */}
+            <Text style={[styles.tableCell, styles.boldText, { width: '25%' }]}>วันที่ / เวลา</Text>
           </View>
-          {vehicles.map((vehicle) => (
-            <View style={styles.tableRow} key={vehicle._id}>
-              <Text style={[styles.tableCell,{ width: '20%' }]}>{vehicle.name}</Text>
-              <Text style={[styles.tableCell,{ width: '10%' }]}>{vehicle.model}</Text>
-              <Text style={[styles.tableCell,{ width: '15%' }]}>{vehicle.license_plate}</Text>
-              <Text style={[styles.tableCell,{ width: '40%' }]}>{vehicle.description || 'N/A'}</Text>
-              <Text style={[styles.tableCell,{ width: '25%' }]}>{vehicle.status}</Text>
-              <Text style={[styles.tableCell,{ width: '25%' }]}>
-                {vehicle.updatedAt ? new Date(vehicle.updatedAt).toLocaleString() : 'N/A'}
+          {maintenance.map((record) => (
+            <View style={styles.tableRow} key={record._id}>
+              <Text style={[styles.tableCell, { width: '20%' }]}>{record.vehicleId.name}</Text>
+              <Text style={[styles.tableCell, { width: '10%' }]}>{record.vehicleId.model}</Text>
+              <Text style={[styles.tableCell, { width: '15%' }]}>{record.vehicleId.license_plate}</Text>
+              <Text style={[styles.tableCell, { width: '40%' }]}>{record.description || 'N/A'}</Text>
+              {/* <Text style={[styles.tableCell, { width: '25%' }]}>{record.vehicleId.status}</Text> */}
+              <Text style={[styles.tableCell, { width: '25%' }]}>
+                {record.updatedAt ? new Date(record.updatedAt).toLocaleString() : 'N/A'}
               </Text>
             </View>
           ))}

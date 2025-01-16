@@ -31,6 +31,7 @@ const MissionList = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
   const [updatedMission, setUpdatedMission] = useState({});
+  const [isRequesting, setIsRequesting] = useState(false);   // เบิกน้ำมัน
 
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [vehicles, setVehicles] = useState([]);
@@ -75,7 +76,7 @@ const MissionList = () => {
     fetchVehicles();
   }, []);
 
-  // ดูให้หน่อยดิ้
+ 
   const handleVehicleSelect = (vehicleId) => {
     const vehicle = vehicles.find(v => v._id === vehicleId);
     setSelectedVehicle(vehicle);  
@@ -83,6 +84,8 @@ const MissionList = () => {
   };
 
   const handleFuelRequestClick = (mission) => {
+    setIsRequesting(true);
+
     const fuelData = {
       userId: mission.assigned_user_id._id,  // ส่ง userId แทน name
       vehicleId: mission.assigned_vehicle_id._id, // ส่ง vehicleId แทน name
@@ -115,8 +118,13 @@ const MissionList = () => {
         text: 'There was an error while requesting fuel.',
         icon: 'error',
       });
+    })
+    .finally(() => {
+      setIsRequesting(false); // คืนสถานะปุ่มเมื่อการดำเนินการเสร็จสิ้น
     });
-};
+  };
+
+
 
   
 
@@ -498,12 +506,13 @@ const MissionList = () => {
                   <Button
                     variant="outlined"
                     color="primary"
+                    disabled={isRequesting}
                     onClick={() => {
                       handleFuelRequestClick(mission);
                       handleGoToFuel();  // เปลี่ยนไปที่หน้า fuel เมื่อทำการบันทึกการเบิกน้ำมันสำเร็จ
                     }}
                   >
-                    เบิกน้ำมัน
+                     {isRequesting ? 'กำลังขอเบิกน้ำมัน...' : 'ขอเบิกน้ำมัน'}
                   </Button>
 
 

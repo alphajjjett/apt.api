@@ -48,44 +48,48 @@ const ReturnInformation = () => {
 
   const handleEditDescription = (vehicle) => {
     setSelectedVehicle(vehicle);
-    setNewDescription(vehicle.description || '');
     setEditModalOpen(true); // เปิด Modal แก้ไขคำอธิบาย
   };
 
   const handleSaveDescription = async () => {
     try {
       const token = localStorage.getItem('token');
-      const updatedVehicle = { ...selectedVehicle, description: newDescription };
-
-      await axios.put(
-        `http://localhost:5000/api/vehicles/${selectedVehicle._id}`,
-        { description: newDescription },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+  
+      // สร้างข้อมูลการบำรุงรักษาใหม่ใน maintenance
+      const maintenanceData = {
+        vehicleId: selectedVehicle._id,
+        description: newDescription, // เก็บคำอธิบายการบำรุงรักษา
+      };
+  
+      await axios.post('http://localhost:5000/api/maintenance', maintenanceData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      // อัปเดตข้อมูลใน state
       setReturns((prevReturns) =>
         prevReturns.map((ret) => {
           if (ret.vehicle._id === selectedVehicle._id) {
-            return { ...ret, vehicle: updatedVehicle };
+            return { ...ret, vehicle: { ...ret.vehicle, description: newDescription } };
           }
           return ret;
         })
       );
-
+  
       setEditModalOpen(false); // ปิด Modal
       Swal.fire({
         title: 'Success',
-        text: 'Description updated successfully!',
+        text: 'Maintenance description saved successfully!',
         icon: 'success',
       });
     } catch (error) {
       Swal.fire({
         title: 'Error',
-        text: 'There was an error updating the description.',
+        text: 'There was an error saving the maintenance description.',
         icon: 'error',
       });
     }
   };
+  
 
   const handleConfirm = async (returnId, vehicleId) => {
     try {

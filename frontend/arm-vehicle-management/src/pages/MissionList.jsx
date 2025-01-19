@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Button, TextField, Dialog, DialogActions, DialogContent, 
-  DialogTitle,IconButton
+  DialogTitle,IconButton,TablePagination
         } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -14,6 +14,7 @@ import TodayIcon from '@mui/icons-material/Today';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import Modal from 'react-bootstrap/Modal';
+
 
 const MySwal = withReactContent(Swal);
 
@@ -31,6 +32,8 @@ const MissionList = () => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [vehicles, setVehicles] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -174,10 +177,15 @@ const MissionList = () => {
     });
   };
   
-  
-  
-  
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  
 
   const handleStatusChange = async (missionId, newStatus) => {
     const token = localStorage.getItem('token');
@@ -419,7 +427,9 @@ const MissionList = () => {
           <TableCell>No.</TableCell>
           <TableCell>ภารกิจ</TableCell>
           {/* <TableCell align="left">Description</TableCell> */}
+          {(isAdmin)&&(
           <TableCell align="left">หมายเลขประจำตัว</TableCell>
+          )}
           <TableCell align="left">ชื่อผู้จอง</TableCell>
           <TableCell align="left">วันที่จอง</TableCell>
           <TableCell align="left">วันที่คืน</TableCell>
@@ -440,7 +450,7 @@ const MissionList = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-          {filteredMissions.map((mission, index) => (
+      {filteredMissions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((mission, index) => (
             <TableRow key={mission._id}>
               <TableCell align="left">
                 {index + 1}
@@ -448,11 +458,13 @@ const MissionList = () => {
               <TableCell component="th" scope="row">
                 {mission.mission_name}
               </TableCell>
+              {(isAdmin)&&(
               <TableCell align="left">
                 {mission.assigned_user_id
                   ? mission.assigned_user_id.selfid
                   : 'N/A'}
               </TableCell>
+              )}
               <TableCell align="left">
                 {mission.assigned_user_id
                   ? mission.assigned_user_id.name
@@ -488,7 +500,7 @@ const MissionList = () => {
               </TableCell>
 
               <TableCell align="left">
-                {new Date(mission.updatedAt).toLocaleDateString()}
+                {new Date(mission.updatedAt).toLocaleString()}
               </TableCell>
               
               {/* Show the status dropdown if the user is an admin */}
@@ -568,6 +580,15 @@ const MissionList = () => {
           ))}
         </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[10]}
+          component="div"
+          count={missions.length} 
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
 
       {/* Edit Dialog */}

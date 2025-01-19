@@ -73,26 +73,25 @@ const styles = StyleSheet.create({
   }
 });
 
+const FuelPrintAll = ({ vehicles, users, fuelRecords }) => {
+  const totalFuel = fuelRecords.reduce((total, record) => total + record.fuelCapacity, 0);  // Calculate total fuel
 
-
-const PrintAll = ({ vehicles, users, fuelRecords }) => {
-  const totalFuel = fuelRecords.reduce((total, fuelRecord) => total + fuelRecord.fuelCapacity, 0);
   return (
     <Document>
       <Page style={styles.page}>
         <View style={styles.section}>
           {/* เพิ่มโลโก้ที่นี่ */}
-                    <View style={styles.logoTextContainer}>
-                      <Image style={styles.logo} 
-                            src="./logo/logo.png" 
-                            alt="โลโก้" 
-                      />
-                      <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                        <Text style={styles.textRight}>แผนกธุรการ</Text>
-                        <Text style={styles.textRight}>กองโรงงานสรรพาวุธ 5</Text>
-                        <Text style={styles.textRight}>กรมสรรพาวุธทหารอากาศ</Text>
-                      </View>
-                    </View>
+          <View style={styles.logoTextContainer}>
+            <Image style={styles.logo} 
+              src="./logo/logo.png" 
+              alt="โลโก้" 
+            />
+            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+              <Text style={styles.textRight}>แผนกธุรการ</Text>
+              <Text style={styles.textRight}>กองโรงงานสรรพาวุธ 5</Text>
+              <Text style={styles.textRight}>กรมสรรพาวุธทหารอากาศ</Text>
+            </View>
+          </View>
           <Text style={styles.heading}>ข้อมูลการเบิกเชื้อเพลิง</Text>
           <View style={styles.table}>
             <View style={styles.tableRow}>
@@ -102,23 +101,24 @@ const PrintAll = ({ vehicles, users, fuelRecords }) => {
               <Text style={[styles.tableCell, styles.boldText, { width: '25%' }]}>ชื่อผู้จอง</Text>
               <Text style={[styles.tableCell, styles.boldText, { width: '25%' }]}>เชื้อเพลิงที่เบิก (ลิตร)</Text>
             </View>
-            {fuelRecords.map((fuelRecord) => {
-              const vehicle = vehicles.find(v => v._id === fuelRecord.vehicleId);
-              const user = users.find(u => u._id === fuelRecord.userId);
+            {fuelRecords.map((record) => {
+              const vehicle = vehicles.find(v => v._id === record.vehicleId);
+              const user = users.find(u => u._id === record.userId);
               return vehicle && user ? (
-                <View style={styles.tableRow} key={fuelRecord._id}>
+                <View style={styles.tableRow} key={record._id}>
                   <Text style={[styles.tableCell, { width: '25%' }]}>{vehicle.name}</Text>
                   <Text style={[styles.tableCell, { width: '25%' }]}>{vehicle.license_plate}</Text>
                   <Text style={[styles.tableCell, { width: '25%' }]}>{user.selfid}</Text>
                   <Text style={[styles.tableCell, { width: '25%' }]}>{user.name}</Text>
-                  <Text style={[styles.tableCell, { width: '25%' }]}>{fuelRecord.fuelCapacity}</Text>
+                  <Text style={[styles.tableCell, { width: '25%' }]}>{record.fuelCapacity} ลิตร</Text>
                 </View>
               ) : null;
             })}
           </View>
           <View style={styles.separator}>
-              <Text style={[styles.boldText, { textAlign: 'right', marginTop: 10 }]}> 
-                ยอดการเบิกทั้งหมด: {totalFuel} ลิตร</Text>
+            <Text style={[styles.boldText, { textAlign: 'right', marginTop: 10 }]}> 
+              ยอดการเบิกทั้งหมด: {totalFuel} ลิตร
+            </Text>
           </View>
         </View>
       </Page>
@@ -126,4 +126,4 @@ const PrintAll = ({ vehicles, users, fuelRecords }) => {
   );
 };
 
-export default PrintAll;
+export default FuelPrintAll;

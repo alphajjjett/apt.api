@@ -82,9 +82,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const Print = ({ vehicle, user, fuelRecord }) => {
+const Print = ({ vehicle, user, record }) => {
   // ตรวจสอบให้แน่ใจว่า fuelRecord มีข้อมูลที่จำเป็น
-  const totalFuel = fuelRecord ? parseFloat(fuelRecord.fuelCapacity) : 0; // ใช้ข้อมูลจาก fuelRecord ที่ส่งเข้ามา
+  const totalFuel = record ? parseFloat(record.fuelCapacity) : 0; // ใช้ข้อมูลจาก fuelRecord ที่ส่งเข้ามา
 
   return (
     <Document>
@@ -127,7 +127,7 @@ const Print = ({ vehicle, user, fuelRecord }) => {
           <View style={[styles.table, styles.tableHeader]}>
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, styles.boldText, { width: '50%' }]}>หมายเลขประจำตัวผู้เบิก</Text>
-              <Text style={[styles.tableCell, styles.boldText, { width: '50%' }]}>ชื่อผู้จอง</Text>
+              <Text style={[styles.tableCell, styles.boldText, { width: '50%' }]}>ชื่อผู้เบิก</Text>
               <Text style={[styles.tableCell, styles.boldText, { width: '50%' }]}>เชื้อเพลิงที่เบิก (ลิตร)</Text>
             </View>
           </View>
@@ -136,7 +136,9 @@ const Print = ({ vehicle, user, fuelRecord }) => {
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, { width: '50%' }]}>{user.selfid}</Text>
               <Text style={[styles.tableCell, { width: '50%' }]}>{user.name}</Text>
-              <Text style={[styles.tableCell, { width: '50%' }]}>{fuelRecord ? fuelRecord.fuelCapacity : 'N/A'}</Text> {/* แสดงข้อมูลจาก fuelRecord */}
+              <Text style={[styles.tableCell, { width: '50%' }]}>
+                {record ? record.fuelCapacity : 'N/A'}
+              </Text> 
             </View>
           </View>
 

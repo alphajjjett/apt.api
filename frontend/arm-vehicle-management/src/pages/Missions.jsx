@@ -167,7 +167,7 @@ const CreateMission = () => {
         {/* Modal for vehicle selection */}
         <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
           <Modal.Header closeButton>
-            <Modal.Title>Select a Vehicle</Modal.Title>
+            <Modal.Title>เลือกรถ</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

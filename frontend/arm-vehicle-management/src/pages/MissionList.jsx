@@ -589,7 +589,7 @@ const MissionList = () => {
                   onClick={() => setIsEditing(!isEditing)}
                   edge="end"
                   color="primary"
-                  disabled={selectedMission.status === 'in-progress' || selectedMission.status === 'completed'}
+                  disabled={(selectedMission.status === 'in-progress' || selectedMission.status === 'completed') && !isAdmin}
                 >
                   <EditIcon />
                 </IconButton>

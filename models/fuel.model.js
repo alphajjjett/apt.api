@@ -18,6 +18,11 @@ const fuelSchema = new mongoose.Schema({
   fuelDate: { 
     type: Date, 
     default: Date.now 
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'completed'], // กำหนดค่า enum สำหรับ status
+    default: 'pending' // กำหนดค่าเริ่มต้นเป็น pending
   }
 });
 

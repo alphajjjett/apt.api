@@ -4,7 +4,7 @@ const {
         getFuelRecords,
         createFuelRecord,
         deleteFuelRecord,
-        updateFuelRecord
+        updateFuelRecordWithStatus
 } = require('../controllers/fuel.controller');
 
 // Get all fuel records
@@ -13,7 +13,7 @@ router.get('/', getFuelRecords);
 // Create new fuel record
 router.post('/:missionId', createFuelRecord);
 
-router.put('/:id', updateFuelRecord);
+router.put('/:id', updateFuelRecordWithStatus);
 
 
 // Delete fuel record by ID

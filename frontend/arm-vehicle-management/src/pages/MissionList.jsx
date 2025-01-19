@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import { 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
+  Paper, Button, TextField, Dialog, DialogActions, DialogContent, 
+  DialogTitle,IconButton
+        } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DescriptionIcon from '@mui/icons-material/Description';
+import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
+import EditIcon from '@mui/icons-material/Edit';
+import TodayIcon from '@mui/icons-material/Today';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import MenuItem from '@mui/material/MenuItem';
-import { Select } from '@mui/material';
 import Modal from 'react-bootstrap/Modal';
 
 const MySwal = withReactContent(Swal);
@@ -32,7 +27,7 @@ const MissionList = () => {
   const [selectedMission, setSelectedMission] = useState(null);
   const [updatedMission, setUpdatedMission] = useState({});
   const [isRequesting, setIsRequesting] = useState(false);   // เบิกน้ำมัน
-
+  const [isEditing, setIsEditing] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [vehicles, setVehicles] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -50,6 +45,8 @@ const MissionList = () => {
         const response = await axios.get('http://localhost:5000/api/missions', {
           headers: { Authorization: `Bearer ${token}` },
         });
+        setSelectedMission(response.data);
+        setUpdatedMission(response.data);
         setMissions(response.data);
       } catch (error) {
         setError('Failed to fetch missions');
@@ -84,49 +81,58 @@ const MissionList = () => {
   };
 
   const handleFuelRequestClick = (mission) => {
-    setIsRequesting(true);
-
-    const fuelData = {
-      userId: mission.assigned_user_id._id,  // ส่ง userId แทน name
-      vehicleId: mission.assigned_vehicle_id._id, // ส่ง vehicleId แทน name
-      fuelCapacity: 0,  // จำนวนเชื้อเพลิงที่เบิก (หากต้องการ)
-      fuelDate: new Date(mission.start_date),  // ใช้วันที่ของ mission
-      fuelStatus: 'pending',   
-    };
-    
-    const token = localStorage.getItem('token');
-    console.log('Fuel Request Data:', fuelData);
-    console.log('Mission ID:', mission._id);
-    
-    axios.post(`http://localhost:5000/api/fuel/${mission._id}`, fuelData, {
-      headers: {
-        Authorization: `Bearer ${token}`, 
+    Swal.fire({
+      title: 'เบิกเชื้อเพลิง',
+      input: 'number',
+      inputLabel: 'จำนวน(ลิตร)',
+      inputAttributes: {
+        min: 0,  // จำนวนเชื้อเพลิงไม่ต่ำกว่า 0
+      },
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+      preConfirm: (fuelCapacity) => {
+        if (!fuelCapacity || fuelCapacity <= 0) {
+          Swal.showValidationMessage('Please enter a valid fuel capacity');
+          return false;
+        }
+        
+        const fuelData = {
+          userId: mission.assigned_user_id._id,  // ส่ง userId แทน name
+          vehicleId: mission.assigned_vehicle_id._id, // ส่ง vehicleId แทน name
+          fuelCapacity: fuelCapacity,  // จำนวนเชื้อเพลิงที่กรอก
+          fuelDate: new Date(mission.start_date),  // ใช้วันที่ของ mission
+          status: 'pending',   
+        };
+  
+        const token = localStorage.getItem('token');
+        
+        return axios.post(`http://localhost:5000/api/fuel/${mission._id}`, fuelData, {
+          headers: {
+            Authorization: `Bearer ${token}`, 
+          }
+        })
+        .then((response) => {
+          Swal.fire({
+            title: 'Fuel Request Success',
+            text: 'The fuel request has been successfully recorded.',
+            icon: 'success',
+          })
+          .then(() => {
+            handleGoToFuel();  // เพิ่มฟังก์ชันนี้เพื่อไปที่หน้า FuelPage หลังจากการทำรายการเสร็จ
+          });
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          Swal.fire({
+            title: 'Error',
+            text: 'There was an error while requesting fuel.',
+            icon: 'error',
+          });
+        });
       }
-    })
-    .then((response) => {
-      console.log('Fuel Request Success:', response.data);
-      Swal.fire({
-        title: 'Fuel Request Success',
-        text: 'The fuel request has been successfully recorded.',
-        icon: 'success',
-      });
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      Swal.fire({
-        title: 'Error',
-        text: 'There was an error while requesting fuel.',
-        icon: 'error',
-      });
-    })
-    .finally(() => {
-      setIsRequesting(false); // คืนสถานะปุ่มเมื่อการดำเนินการเสร็จสิ้น
     });
   };
-
-
-
-  
 
   const handleReturnClick = (mission) => {
     const returnData = {
@@ -161,6 +167,9 @@ const MissionList = () => {
         title: 'Error',
         text: 'There was an error while returning the vehicle.',
         icon: 'error',
+      })
+      .finally(() => {
+      setIsRequesting(false); // คืนสถานะปุ่มเมื่อการดำเนินการเสร็จสิ้น
       });
     });
   };
@@ -380,21 +389,22 @@ const MissionList = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-center mb-6" >ข้อมูลภารกิจ</h2>
+    <div className=" mx-auto p-6 bg-white shadow-lg rounded-lg w-full">
+      <h2 className="text-2xl font-bold text-center mb-6" >ข้อมูลการจองรถ</h2>
 
       
 
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
-          <h3 className="text-xl font-semibold">ยอดข้อมูลภารกิจ</h3>
-          <p className="text-gray-600 text-2xl">{filteredMissions.length}</p>
+          <h3 className="text-xl font-semibold">ยอดการจองรถ</h3>
+          <p className="text-gray-600 text-2xl">{missions.length} คัน</p>
         </div>
       </div>
+      
 
       {/* Search box */}
       <TextField
-        label="Search by Self ID"
+        label="ค้นหาด้วย หมายเลขประจำตัว"
         variant="outlined"
         fullWidth
         value={searchQuery}
@@ -406,13 +416,14 @@ const MissionList = () => {
         <Table sx={{ minWidth: 650 }} aria-label="mission table">
         <TableHead>
         <TableRow>
+          <TableCell>No.</TableCell>
           <TableCell>ภารกิจ</TableCell>
           {/* <TableCell align="left">Description</TableCell> */}
-          <TableCell align="left">หมายเลขประจำตัวผู้จอง</TableCell>
+          <TableCell align="left">หมายเลขประจำตัว</TableCell>
           <TableCell align="left">ชื่อผู้จอง</TableCell>
           <TableCell align="left">วันที่จอง</TableCell>
           <TableCell align="left">วันที่คืน</TableCell>
-          <TableCell align="left">ยี่ห้อรถ</TableCell>
+          <TableCell align="left">รถที่จอง</TableCell>
           <TableCell align="left">สถานะ</TableCell>
           <TableCell align="left">อัพเดทล่าสุด</TableCell>
           {(isAdmin) && (
@@ -429,8 +440,11 @@ const MissionList = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-          {filteredMissions.map((mission) => (
+          {filteredMissions.map((mission, index) => (
             <TableRow key={mission._id}>
+              <TableCell align="left">
+                {index + 1}
+              </TableCell>
               <TableCell component="th" scope="row">
                 {mission.mission_name}
               </TableCell>
@@ -455,8 +469,24 @@ const MissionList = () => {
                 ({mission.assigned_vehicle_id?.license_plate || 'N/A'})
               </TableCell>
               <TableCell align="left">
-                {mission.status}
+                    {mission.status === 'pending' ? (
+                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
+                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
+                        รออนุมัติ
+                      </span>
+                    ) : mission.status === 'in-progress' ? (
+                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
+                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
+                        อยู่ระหว่างภารกิจ
+                      </span>
+                    ) : mission.status === 'completed' ? (
+                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
+                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
+                        สำเร็จ
+                      </span>
+                    ) : null}
               </TableCell>
+
               <TableCell align="left">
                 {new Date(mission.updatedAt).toLocaleDateString()}
               </TableCell>
@@ -464,72 +494,72 @@ const MissionList = () => {
               {/* Show the status dropdown if the user is an admin */}
               {isAdmin && (
                 <TableCell align="left">
-                  <Select
-                    value={mission.status}
-                    onChange={(e) => handleStatusChange(mission._id, e.target.value)}
-                  >
-                    <MenuItem value="pending">Pending</MenuItem>
-                    <MenuItem value="in-progress">In Progress</MenuItem>
-                    <MenuItem value="completed">Completed</MenuItem>
-                  </Select>
-                </TableCell>
+                <Button
+                  onClick={() => {
+                    handleStatusChange(mission._id, 'in-progress'); // เปลี่ยนสถานะเป็น in-progress
+                  }}
+                  variant="contained"
+                  color="primary"
+                  disabled={mission.status === 'completed' || mission.status === 'in-progress'} // disabled ถ้าสถานะเป็น completed หรือ in-progress
+                >
+                  {mission.status === 'in-progress' ? 'อนุมัติเรียบร้อย' : 'อนุมัติ'}
+                </Button>
+              </TableCell>
               )}
               
               {/* Show edit/delete actions based on admin or assigned user permissions */}
               {(isAdmin || mission.assigned_user_id?.selfid === JSON.parse(atob(localStorage.getItem('token').split('.')[1])).selfid) && (
                 <TableCell align="left">
-                  <Button
-                    variant="outlined"
-                    color="primary"
+                  {/* รายละเอียด */}
+                  <IconButton
+                    edge="end"
+                    color="info"
+                    style={{ marginRight: '2px' }}
                     onClick={() => handleEditClick(mission)}
-                    disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
+                    // disabled={mission.status !== 'pending' && !isAdmin} 
                   >
-                    รายละเอียด
-                  </Button>
-                  {/* ปุ่มสำหรับไปยังหน้า fuel
-                  <Button
-                     variant="outlined"
-                    color="primary"
-                    onClick={handleGoToFuel}
-                  >
-                    เบิกน้ำมัน
-                  </Button> */}
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => handleDelete(mission._id)}
-                    disabled={mission.status !== 'pending' && !isAdmin} // Disable if status is not 'pending'
-                  >
-                    ลบข้อมูล
-                  </Button>
+                    <DescriptionIcon />
+                  </IconButton>
 
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    disabled={isRequesting}
+                  {/* ลบข้อมูล */}
+                  <IconButton
+                    edge="end"
+                    color="error"
+                    style={{ marginRight: '2px' }}
+                    onClick={() => handleDelete(mission._id)}
+                    disabled={mission.status !== 'pending' && !isAdmin} 
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+
+                  <IconButton
+                    edge="end"
+                    color="secondary"
+                    style={{ marginRight: '2px' }}
+                    disabled={isRequesting || mission.status === 'in-progress' || mission.status === 'completed'}
                     onClick={() => {
                       handleFuelRequestClick(mission);
-                      handleGoToFuel();  // เปลี่ยนไปที่หน้า fuel เมื่อทำการบันทึกการเบิกน้ำมันสำเร็จ
                     }}
                   >
-                     {isRequesting ? 'กำลังขอเบิกน้ำมัน...' : 'ขอเบิกน้ำมัน'}
-                  </Button>
-
+                    <LocalGasStationIcon />
+                    {isRequesting}
+                  </IconButton>
 
 
                   {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
                   {isAdmin && new Date() >= new Date(mission.end_date) && (
-                    <Button
+                    <IconButton
                       variant="outlined"
                       color="success"
+                      style={{ marginRight: '2px' }}
                       onClick={() => {
                         handleReturnClick(mission);
                         handleGoToReturn(); 
                       }}
                       disabled={mission.status === 'completed' || (!isAdmin && mission.status !== 'pending')}
                     >
-                      คืนรถ
-                    </Button>
+                      <TodayIcon/>
+                    </IconButton>
                   )}
                 </TableCell>
               )}
@@ -541,68 +571,126 @@ const MissionList = () => {
       </TableContainer>
 
       {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-      <DialogTitle>ข้อมูลการจอง</DialogTitle>
-        <DialogContent>
-          {selectedMission && (
-            <div>
-              <p><strong>ภารกิจ:</strong> {selectedMission.mission_name}</p>
-              <p><strong>รายละเอียดภารกิจ:</strong> {selectedMission.description}</p>
-              <p><strong>ผู้จอง:</strong> {selectedMission.assigned_user_id?.name || 'N/A'}</p>
-              <p><strong>วันที่จอง:</strong> {new Date(selectedMission.start_date).toLocaleDateString()}</p>
-              <p><strong>วันที่คืน:</strong> {new Date(selectedMission.end_date).toLocaleDateString()}</p>
-              <p><strong>ยี่ห้อรถ:</strong> {selectedMission.assigned_vehicle_id?.name || 'N/A'} ({selectedMission.assigned_vehicle_id?.license_plate || 'N/A'})</p>
-              {/* <p><strong>จำนวนเชื้อเพลิงที่เบิก:</strong> {selectedMission.assigned_vehicle_id?.fuel_capacity || 'N/A'} </p> */}
-              {/* <p><strong>สถานะ:</strong> {selectedMission.status}</p> */}
-              {/* <p><strong>Last Updated:</strong> {new Date(selectedMission.updatedAt).toLocaleDateString()}</p> */}
-            </div>
+      <Dialog open={editDialogOpen} onClose={() => {
+        setEditDialogOpen(false);
+        setIsEditing(false);
+        }}
+        maxWidth="sm" // กำหนดขนาดให้กว้างขึ้น (เช่น 'sm', 'md', 'lg', 'xl')
+        fullWidth // ทำให้ Dialog ใช้พื้นที่เต็ม width ของ container
+        >
+          {/* Title ของข้อมูลภารกิจ */}
+          <DialogTitle style={{ position: 'relative'  }}>
+            ข้อมูลการจอง
+            {/* IconButton สำหรับการแก้ไข */}
+            <DialogActions style={{ padding: '0 20px 20px', 
+                            position: 'absolute', right: 0, top: 0,
+                            marginTop: '10px' }}>
+              <IconButton
+                  onClick={() => setIsEditing(!isEditing)}
+                  edge="end"
+                  color="primary"
+                  disabled={selectedMission.status === 'in-progress' || selectedMission.status === 'completed'}
+                >
+                  <EditIcon />
+                </IconButton>
+
+            </DialogActions>
+          </DialogTitle>
+
+          <DialogContent>
+            {selectedMission && (
+              <div>
+                <p><strong>ภารกิจ:</strong> {selectedMission.mission_name}</p>
+                <p><strong>รายละเอียดภารกิจ:</strong> {selectedMission.description}</p>
+                <p><strong>ผู้จอง:</strong> {selectedMission.assigned_user_id?.name || 'N/A'}</p>
+                <p><strong>วันที่จอง:</strong> {new Date(selectedMission.start_date).toLocaleDateString()}</p>
+                <p><strong>วันที่คืน:</strong> {new Date(selectedMission.end_date).toLocaleDateString()}</p>
+                <p><strong>ยี่ห้อรถ:</strong> {selectedMission.assigned_vehicle_id?.name || 'N/A'} ({selectedMission.assigned_vehicle_id?.license_plate || 'N/A'})</p>
+                <p><strong>ยี่ห้อรถ:</strong> {selectedMission.assigned_vehicle_id?.fuel_type || 'N/A'}</p>
+              </div>
+            )}
+          </DialogContent>
+          {/* ฟอร์มแก้ไขข้อมูลการจอง */}
+          {isEditing && (
+            <>
+              <DialogTitle>แก้ไขข้อมูลการจอง</DialogTitle>
+              <DialogContent>
+                <div style={{ padding: '5px 0' }}>
+                  <TextField
+                    label="ชื่อภารกิจ"
+                    variant="outlined"
+                    fullWidth
+                    name="mission_name"
+                    value={updatedMission.mission_name || ''}
+                    onChange={handleEditChange}
+                    style={{ marginBottom: '20px' }}
+                  />
+
+                  <TextField
+                    label="รายละเอียดภารกิจ"
+                    variant="outlined"
+                    fullWidth
+                    name="description"
+                    value={updatedMission.description || ''}
+                    onChange={handleEditChange}
+                    style={{ marginBottom: '20px' }}
+                  />
+                  
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setShowModal(true)} 
+                    fullWidth
+                  >
+                    {selectedVehicle
+                      ? `${selectedVehicle.name} (${selectedVehicle.license_plate})` 
+                      : 'เปลี่ยนรถ'}
+                  </Button>
+                </div>
+              </DialogContent>
+              
+              {/* ปุ่มบันทึก และแก้ไขข้อมูลการจอง (ให้อยู่ข้างกัน) */}
+              <DialogActions style={{ padding: '0 20px 20px', display: 'flex', justifyContent: 'space-between' }}>
+              <Button
+              onClick={() => {
+                setEditDialogOpen(false);
+                setIsEditing(false);
+
+              }} 
+              color="error"
+              variant="contained"
+              style={{
+                width: '100%', 
+                color: 'white', 
+                fontWeight: 'bold', 
+                borderRadius: '8px',
+                padding: '12px',
+              }}
+            >
+              ปิด
+            </Button>
+
+                <Button onClick={handleSubmitEdit} 
+                color="success" 
+                variant="contained"
+                style={{
+                  width: '100%', 
+                  color: 'white', 
+                  fontWeight: 'bold', 
+                  borderRadius: '8px',
+                  padding: '12px',
+                }}
+                
+                >
+                  บันทึก
+                </Button>
+              </DialogActions>
+            </>
           )}
-        </DialogContent>
+        </Dialog>
 
-        <DialogTitle>แก้ไขข้อมูลการจอง</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="ชื่อภารกิจ"
-            variant="outlined"
-            fullWidth
-            name="mission_name"
-            value={updatedMission.mission_name || ''}
-            onChange={handleEditChange}
-            style={{ marginBottom: '10px', marginTop:'10px' }}
-          />
-          <TextField
-            label="รายละเอียดภารกิจ"
-            variant="outlined"
-            fullWidth
-            name="description"
-            value={updatedMission.description || ''}
-            onChange={handleEditChange}
-            style={{ marginBottom: '10px', marginTop:'5px' }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setShowModal(true)} // เปิด modal สำหรับเลือก vehicle
-            style={{ marginTop: '10px' }}
-          >
-            {selectedVehicle
-              ? `${selectedVehicle.name} (${selectedVehicle.license_plate})`  // แสดงรถที่ถูกเลือก
-              : 'Select Vehicle'}
-          </Button>
 
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} color="secondary">
-            ยกเลิก
-          </Button>
-          <Button onClick={handleSubmitEdit} color="primary">
-            บันทึก
-          </Button>
-        </DialogActions>
 
-      </Dialog>
-
-      
         {/* Modal for vehicle selection */}
         <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg" style={{ zIndex: 3000 }} >
           <Modal.Header closeButton>
@@ -620,14 +708,16 @@ const MissionList = () => {
                   <div className="text-sm text-gray-500">รุ่น: {vehicle.model}</div>
                   <div className="text-sm text-gray-500">ทะเบียน: {vehicle.license_plate}</div>
                   <div className="text-sm text-gray-500">เชื้อเพลิง: {vehicle.fuel_type}</div>
-                  <div className="text-sm text-gray-500">ข้อมูลซ่อมบำรุงล่าสุด: {vehicle.description}</div>
+                  {/* <div className="text-sm text-gray-500">ข้อมูลซ่อมบำรุงล่าสุด: {vehicle.description}</div> */}
                 </div>
               ))}
             </div>
           </Modal.Body>
           <Modal.Footer>
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => {
+                setShowModal(false)
+              }}
               className="bg-gray-500 text-white py-2 px-4 rounded"
             >
               ยกเลิก

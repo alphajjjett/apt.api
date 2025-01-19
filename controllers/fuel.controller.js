@@ -8,7 +8,7 @@ const getFuelRecords = async (req, res) => {
     } catch (error) {
       res.status(400).json({ message: 'Error retrieving fuel records', error });
     }
-  };
+};
 
 // Create new fuel record
 const createFuelRecord = async (req, res) => {
@@ -21,6 +21,7 @@ const createFuelRecord = async (req, res) => {
         vehicleId,      // ObjectId ของรถ
         fuelCapacity,   // จำนวนเชื้อเพลิงที่เบิก
         fuelDate: new Date(),  // กำหนดวันที่ปัจจุบัน
+        status: 'pending'  // กำหนดสถานะเริ่มต้นเป็น pending
       });
   
       await fuelRecord.save();
@@ -28,26 +29,32 @@ const createFuelRecord = async (req, res) => {
     } catch (error) {
       res.status(400).json({ message: 'Error creating fuel record', error });
     }
-  };
-  
+};
 
+const updateFuelRecordWithStatus = async (req, res) => {
+  const { id } = req.params;
+  const { fuelCapacity, status } = req.body;
 
-  const updateFuelRecord = async (req, res) => {
-    const { id } = req.params;
-    const { fuelCapacity } = req.body; 
-  
-    try {
+  try {
       const updatedFuel = await Fuel.findByIdAndUpdate(id, 
-        { fuelCapacity,
-          fuelDate: new Date()
-         }, 
-        { new: true }); 
-      res.json(updatedFuel);  
-    } catch (error) {
-      res.status(500).json({ error: 'Error updating fuel record' });
-    }
-  };
-  
+          { 
+              fuelCapacity,
+              fuelDate: new Date(),
+              status
+          },
+          { new: true }
+      );
+
+      if (!updatedFuel) {
+          return res.status(404).json({ message: 'Fuel record not found' });
+      }
+
+      res.json(updatedFuel);
+  } catch (error) {
+      res.status(500).json({ error: 'Error updating fuel record with status' });
+  }
+};
+
 
 // Delete fuel record by ID
 const deleteFuelRecord = async (req, res) => {
@@ -64,6 +71,11 @@ const deleteFuelRecord = async (req, res) => {
     } catch (error) {
       res.status(400).json({ message: 'Error deleting fuel record', error });
     }
-  };
+};
 
-module.exports = { getFuelRecords,createFuelRecord,deleteFuelRecord,updateFuelRecord};
+module.exports = { 
+  getFuelRecords,
+  createFuelRecord,
+  deleteFuelRecord,
+  updateFuelRecordWithStatus  // เพิ่มฟังก์ชันสำหรับการอัปเดตสถานะ
+};

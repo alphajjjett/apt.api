@@ -90,10 +90,10 @@ const NavigationBar = () => {
                 className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
               >
                 <NavDropdown.Item as={Link} to="/missions" className="text-black hover:bg-gray-200">
-                  สร้างภารกิจ
+                  สร้างข้อมูลการจองรถ
                 </NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/missionslist" className="text-black hover:bg-gray-200">
-                  ข้อมูลภารกิจ
+                  ข้อมูลการจอง
                 </NavDropdown.Item>
               </NavDropdown>
 
@@ -107,7 +107,7 @@ const NavigationBar = () => {
                 )}
                 <NavDropdown.Item as={Link} to="/vehicle" className="text-black hover:bg-gray-200">ข้อมูลรถ</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/maintenance" className="text-black hover:bg-gray-200">ข้อมูลซ่อมบำรุง</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/fuel" className="text-black hover:bg-gray-200">ข้อมูลการเบิกน้ำมัน</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/fuel" className="text-black hover:bg-gray-200">ข้อมูลการเบิกเชื้อเพลิง</NavDropdown.Item>
               </NavDropdown>
 
               <NavDropdown

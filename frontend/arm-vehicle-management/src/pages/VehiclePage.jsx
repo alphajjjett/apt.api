@@ -1,24 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-
+import {Table,TableBody,TableCell,TableContainer,TableHead,
+        TableRow,Paper,Select,MenuItem,Button,TextField,Dialog,
+        DialogActions,DialogContent,DialogTitle} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 const MySwal = withReactContent(Swal);
 
 const VehicleList = () => {
@@ -208,7 +197,26 @@ const VehicleList = () => {
                 <TableCell align="left">{vehicle.model}</TableCell>
                 <TableCell align="left">{vehicle.license_plate}</TableCell>
                 <TableCell align="left">{vehicle.fuel_type}</TableCell>
-                <TableCell align="left">{vehicle.status}</TableCell>
+                {/* <TableCell align="left">{vehicle.status}</TableCell> */}
+
+                <TableCell align="left">
+                                    {vehicle.status === 'maintenance' ? (
+                                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
+                                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
+                                        ซ่อมบำรุง
+                                      </span>
+                                    ) : vehicle.status === 'in-use' ? (
+                                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
+                                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
+                                        อยู่ระหว่างการใช้งาน
+                                      </span>
+                                    ) : vehicle.status === 'available' ? (
+                                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
+                                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
+                                        พร้อมใช้งาน
+                                      </span>
+                                    ) : null}
+                              </TableCell>
                 {/* <TableCell align="left">{vehicle.description}</TableCell> */}
                 {(isAdmin) && (
                   <>
@@ -229,14 +237,14 @@ const VehicleList = () => {
                         onClick={() => handleEditClick(vehicle)}
                         style={{ marginRight: '10px' }}
                       >
-                        แก้ไขข้อมูลรถ
+                        <EditIcon/>แก้ไขข้อมูลรถ
                       </Button>
                       <Button
                         variant="outlined"
                         color="error"
                         onClick={() => handleDelete(vehicle._id)}
                       >
-                        ลบข้อมูล
+                        <DeleteIcon/>ลบข้อมูล
                       </Button>
                     </TableCell>
                   </>

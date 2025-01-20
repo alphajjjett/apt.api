@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Box, TextField } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button,TablePagination} from '@mui/material';
+import HandymanIcon from '@mui/icons-material/Handyman';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 const ReturnInformation = () => {
   const [returns, setReturns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  
-  // State สำหรับเปิด/ปิด Modal แก้ไข description
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  
-  // State สำหรับเปิด/ปิด Modal ดูรายละเอียด
-  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
-  
-  const [newDescription, setNewDescription] = useState('');
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [selectedReturn, setSelectedReturn] = useState(null);
+  const [page, setPage] = useState(0); // Page state
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page state
 
   useEffect(() => {
     const fetchReturns = async () => {
@@ -46,51 +40,91 @@ const ReturnInformation = () => {
     fetchReturns();
   }, []);
 
-  const handleEditDescription = (vehicle) => {
-    setSelectedVehicle(vehicle);
-    setEditModalOpen(true); // เปิด Modal แก้ไขคำอธิบาย
-  };
+// ยืนยันการซ่อมบำรุง
+const handleMaintenace = async (returnId, vehicleId) => {
+  try {
+    const token = localStorage.getItem('token');
 
-  const handleSaveDescription = async () => {
-    try {
-      const token = localStorage.getItem('token');
-  
-      // สร้างข้อมูลการบำรุงรักษาใหม่ใน maintenance
-      const maintenanceData = {
-        vehicleId: selectedVehicle._id,
-        description: newDescription, // เก็บคำอธิบายการบำรุงรักษา
-      };
-  
-      await axios.post('http://localhost:5000/api/maintenance', maintenanceData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-  
-      // อัปเดตข้อมูลใน state
+    // แสดง Swal เพื่อให้กรอก description สำหรับการบำรุงรักษา
+    const { value: description } = await Swal.fire({
+      title: 'สาเหตุการซ่อมบำรุง',
+      input: 'textarea',
+      inputPlaceholder: 'ใส่รายละเอียด',
+      inputAttributes: {
+        'aria-label': ''
+      },
+      showCancelButton: true,
+      confirmButtonText: 'บันทึก',
+      cancelButtonText: 'ยกเลิก',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'กรุณาใส่ข้อมูล!';
+        }
+      }
+    });
+
+    if (description) {
+      // อัปเดตสถานะการคืนรถเป็น 'completed'
+      await axios.put(
+        `http://localhost:5000/api/return/${returnId}`,
+        { returnStatus: 'completed' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setReturns((prevReturns) =>
+        prevReturns.map((ret) =>
+          ret._id === returnId ? { ...ret, returnStatus: 'completed' } : ret
+        )
+      );
+
+      // อัปเดตสถานะของรถเป็น 'available'
+      await axios.put(
+        `http://localhost:5000/api/vehicles/${vehicleId}`,
+        { status: 'maintenance' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
       setReturns((prevReturns) =>
         prevReturns.map((ret) => {
-          if (ret.vehicle._id === selectedVehicle._id) {
-            return { ...ret, vehicle: { ...ret.vehicle, description: newDescription } };
+          if (ret._id === returnId) {
+            return {
+              ...ret,
+              vehicle: { ...ret.vehicle, status: 'maintenance' },
+            };
           }
           return ret;
         })
       );
-  
-      setEditModalOpen(false); // ปิด Modal
+
+      // อัปเดตข้อมูลการบำรุงรักษา
+      const maintenanceData = {
+        vehicleId: vehicleId,
+        description: description, // คำอธิบายการบำรุงรักษาจาก Swal
+      };
+
+      await axios.post('http://localhost:5000/api/maintenance', maintenanceData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       Swal.fire({
         title: 'Success',
-        text: 'Maintenance description saved successfully!',
+        text: 'Return status updated to completed, vehicle status set to maintenance, and maintenance description saved.',
         icon: 'success',
       });
-    } catch (error) {
-      Swal.fire({
-        title: 'Error',
-        text: 'There was an error saving the maintenance description.',
-        icon: 'error',
-      });
     }
-  };
-  
+  } catch (error) {
+    Swal.fire({
+      title: 'Error',
+      text: 'There was an error updating the return status, vehicle status, or saving the maintenance description.',
+      icon: 'error',
+    });
+  }
+};
 
+
+
+  
+  // ยืนยันการคืนรถ
   const handleConfirm = async (returnId, vehicleId) => {
     try {
       const token = localStorage.getItem('token');
@@ -109,7 +143,7 @@ const ReturnInformation = () => {
 
       await axios.put(
         `http://localhost:5000/api/vehicles/${vehicleId}`,
-        { status: 'maintenance' },
+        { status: 'available' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -118,7 +152,7 @@ const ReturnInformation = () => {
           if (ret._id === returnId) {
             return {
               ...ret,
-              vehicle: { ...ret.vehicle, status: 'maintenance' },
+              vehicle: { ...ret.vehicle, status: 'available' },
             };
           }
           return ret;
@@ -139,10 +173,17 @@ const ReturnInformation = () => {
     }
   };
 
-  const handleViewDetails = (returnData) => {
-    setSelectedReturn(returnData);
-    setDetailsModalOpen(true); // เปิด Modal ดูรายละเอียด
+   // Handle page change
+   const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
+
+  // Handle rows per page change
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -153,139 +194,98 @@ const ReturnInformation = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="mx-auto p-6 bg-white shadow-lg rounded-lg w-full">
       <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลการคืนรถ</h2>
+      <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
+        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
+          <h3 className="text-xl font-semibold">ข้อมูลการคืน</h3>
+          <p className="text-gray-600 text-2xl">{returns.length}</p>
+        </div>
+      </div>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ภารกิจ</TableCell>
-              <TableCell>หมายเลขประจำตัวผู้จอง</TableCell>
-              <TableCell>ชื่อผู้จอง</TableCell>
-              <TableCell>ยี่ห้อรถ</TableCell>
-              <TableCell>ทะเบียน</TableCell>
-              <TableCell>วันที่คืน</TableCell>
-              <TableCell>วันที่ตรวจซ่อม</TableCell>
-              <TableCell>สถานะ</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>No.</TableCell>
+              <TableCell align="left">ภารกิจ</TableCell>
+              {(isAdmin)&&(
+              <TableCell align="left">หมายเลขประจำตัวผู้จอง</TableCell>
+              )}
+              <TableCell align="left">ชื่อผู้จอง</TableCell>
+              <TableCell align="left">ยี่ห้อรถ</TableCell>
+              <TableCell align="left">ทะเบียน</TableCell>
+              <TableCell align="left">วันที่คืน</TableCell>
+              <TableCell align="left">วันที่ตรวจซ่อม</TableCell>
+              <TableCell align="left">สถานะ</TableCell>
+              {(isAdmin)&&(
+              <TableCell align="left">Actions</TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
-            {returns.map((ret) => (
+            {returns.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((ret,index) => (
               <TableRow key={ret._id}>
-                <TableCell>{ret.mission.mission_name}</TableCell>
-                <TableCell>{ret.user.selfid}</TableCell>
-                <TableCell>{ret.user.name}</TableCell>
-                <TableCell>{ret.vehicle.name}</TableCell>
-                <TableCell>{ret.vehicle.license_plate}</TableCell>
-                <TableCell>{new Date(ret.bookingDate).toLocaleDateString()}</TableCell>
-                <TableCell>{new Date(ret.returnDate).toLocaleDateString()}</TableCell>
-                <TableCell>{ret.returnStatus}</TableCell>
-                <TableCell>
-                {isAdmin && (
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleEditDescription(ret.vehicle)}
-                    disabled={ret.returnStatus === 'completed'}
-                  >
-                    {ret.returnStatus === 'completed' ? 'คืนรถเรียบร้อย' : 'ใส่ข้อมูลหลังตรวจสอบรถ'}
-                  </Button>
+                <TableCell align="left">{index + 1}</TableCell>
+                <TableCell align="left" >{ret.mission.mission_name}</TableCell>
+                {(isAdmin)&&(
+                <TableCell align="left">{ret.user.selfid}</TableCell>
                 )}
-                {ret.returnStatus !== 'completed' && isAdmin && (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleConfirm(ret._id, ret.vehicle._id)}
-                  >
-                    ยืนยัน
-                  </Button>
-                )}
-                  <Button
-                    variant="outlined"
-                    color="info"
-                    onClick={() => handleViewDetails(ret)}
-                  >
-                    รายละเอียด
-                  </Button>
-                </TableCell>
+                <TableCell align="left">{ret.user.name}</TableCell>
+                <TableCell align="left">{ret.vehicle.name}</TableCell>
+                <TableCell align="left">{ret.vehicle.license_plate}</TableCell>
+                <TableCell align="left">{new Date(ret.bookingDate).toLocaleDateString()}</TableCell>
+                <TableCell align="left">{new Date(ret.returnDate).toLocaleDateString()}</TableCell>
+                 <TableCell align="left">
+                                    {ret.returnStatus === 'pending' ? (
+                                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
+                                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
+                                        รออนุมัติ
+                                      </span>
+                                    ) : ret.returnStatus === 'completed' ? (
+                                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
+                                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
+                                        สำเร็จ
+                                      </span>
+                                    ) : null}
+                  </TableCell>
+                  {(isAdmin)&&(
+                  <TableCell align="left">
+                      <div>
+                        <Button
+                          variant="outlined"
+                          color="success"
+                          onClick={() => handleConfirm(ret._id, ret.vehicle._id)}
+                          disabled={ret.returnStatus === 'completed'}
+                          style={{ marginRight: '10px' }} // เว้นระยะห่างระหว่างปุ่ม
+                        >
+                          <CheckBoxIcon/>พร้อมใช้งาน
+                        </Button>
+
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => handleMaintenace(ret._id, ret.vehicle._id)}
+                          disabled={ret.returnStatus === 'completed'}
+                        >
+                          <HandymanIcon/>ซ่อมบำรุง
+                        </Button>
+                      </div>
+                  </TableCell>
+                  )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[10]}
+          component="div"
+          count={returns.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
-
-      {/* Modal สำหรับดูรายละเอียดการคืนรถ */}
-      <Modal open={detailsModalOpen} onClose={() => setDetailsModalOpen(false)}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 600,
-            bgcolor: 'background.paper',
-            borderRadius: '8px',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          {selectedReturn ? (
-            <>
-              <h3>ข้อมูลการคืนรถ</h3>
-              <p><strong>ภารกิจ:</strong> {selectedReturn.mission.mission_name}</p>
-              <p><strong>ผู้จอง:</strong> {selectedReturn.user.name}</p>
-              <p><strong>ยี่ห้อรถ:</strong> {selectedReturn.vehicle.name}</p>
-              <p><strong>ทะเบียน:</strong> {selectedReturn.vehicle.license_plate}</p>
-              <p><strong>วันที่จอง:</strong> {new Date(selectedReturn.bookingDate).toLocaleDateString()}</p>
-              <p><strong>วันที่คืน:</strong> {new Date(selectedReturn.returnDate).toLocaleDateString()}</p>
-              <p><strong>สถานะ:</strong> {selectedReturn.returnStatus}</p>
-            </>
-          ) : (
-            <p>No details available.</p>
-          )}
-          <Button onClick={() => setDetailsModalOpen(false)} color="secondary" sx={{ mt: 2 }}>Close</Button>
-        </Box>
-      </Modal>
-
-      {/* Modal สำหรับแก้ไข description */}
-      <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            borderRadius: '8px',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <h3>ใส่ข้อมูลหลังการตรวจสอบ</h3>
-          <TextField
-            label="รายละเอียดการตรวจสอบ"
-            fullWidth
-            multiline
-            rows={4}
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-          />
-          <Box mt={2} display="flex" justifyContent="space-between">
-            <Button 
-              onClick={() => setEditModalOpen(false)} 
-              color="secondary">
-                ยกเลิก
-              </Button>
-            <Button 
-              onClick={handleSaveDescription} 
-              color="primary">
-                บันทึก
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
     </div>
   );
 };

@@ -161,6 +161,8 @@ const Dashboard = () => {
           </div>
         </div>
 
+        
+
     <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
       {/* Dashboard Card (Graph Section) */}
       <div className="bg-white p-8 rounded-lg shadow-md w-full lg:w-2/3 max-w-4xl mb-6">

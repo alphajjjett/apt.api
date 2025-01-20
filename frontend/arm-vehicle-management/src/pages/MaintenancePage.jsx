@@ -151,6 +151,7 @@ const MaintenancePage = () => {
                   {maintenance.vehicleId ? maintenance.vehicleId.license_plate : 'N/A'}
                 </TableCell>
                 <TableCell align="right">{maintenance.description || 'N/A'}</TableCell>
+                {isAdmin && 
                 <TableCell align="right">
                   {isAdmin && maintenance.vehicleId ? maintenance.vehicleId.status === 'maintenance' ? (
                     <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
@@ -168,7 +169,7 @@ const MaintenancePage = () => {
                       พร้อมใช้งาน
                     </span>
                   ) : null : null}
-                </TableCell>
+                </TableCell>}
                 <TableCell align="right">
                   {maintenance.updatedAt ? new Date(maintenance.updatedAt).toLocaleString() : 'N/A'}
                 </TableCell>

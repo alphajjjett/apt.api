@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import {Table,TableBody,TableCell,TableContainer,TableHead,
         TableRow,Paper,Select,MenuItem,Button,TextField,Dialog,
-        DialogActions,DialogContent,DialogTitle} from '@mui/material';
+        DialogActions,DialogContent,DialogTitle,TablePagination} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 const MySwal = withReactContent(Swal);
@@ -19,6 +19,8 @@ const VehicleList = () => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [updatedVehicle, setUpdatedVehicle] = useState({});
   const [isAdmin, setIsAdmin] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,6 +97,17 @@ const VehicleList = () => {
     setUpdatedVehicle({ ...updatedVehicle, [name]: value });
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+
+
   const handleSubmitEdit = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -156,7 +169,7 @@ const VehicleList = () => {
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
           <h3 className="text-xl font-semibold">จำนวนรถ</h3>
-          <p className="text-gray-600 text-2xl">{filteredVehicles.length} คัน</p>
+          <p className="text-gray-600 text-2xl">{vehicles.length} คัน</p>
         </div>
       </div>
 
@@ -174,6 +187,7 @@ const VehicleList = () => {
         <Table sx={{ minWidth: 650 }} aria-label="vehicle table">
           <TableHead>
             <TableRow>
+              <TableCell>No.</TableCell>
               <TableCell>ยี่ห้อรถ</TableCell>
               <TableCell align="left">รุ่น</TableCell>
               <TableCell align="left">เลขทะเบียนรถ</TableCell>
@@ -189,8 +203,9 @@ const VehicleList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredVehicles.map((vehicle) => (
+            {filteredVehicles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((vehicle,index) => (
               <TableRow key={vehicle._id}>
+                <TableCell align="left">{index + 1}</TableCell>
                 <TableCell component="th" scope="row">
                   {vehicle.name}
                 </TableCell>
@@ -253,6 +268,15 @@ const VehicleList = () => {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+                  rowsPerPageOptions={[10]}
+                  component="div"
+                  count={vehicles.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
       </TableContainer>
 
       {/* Edit Dialog */}

@@ -108,14 +108,14 @@ const handleMaintenace = async (returnId, vehicleId) => {
 
       Swal.fire({
         title: 'Success',
-        text: 'Return status updated to completed, vehicle status set to maintenance, and maintenance description saved.',
+        text: 'อัพเดทสถานะเรียบร้อย',
         icon: 'success',
       });
     }
   } catch (error) {
     Swal.fire({
       title: 'Error',
-      text: 'There was an error updating the return status, vehicle status, or saving the maintenance description.',
+      text: 'เกิดข้อผิดพลาดในการพอัพเดท',
       icon: 'error',
     });
   }
@@ -161,13 +161,13 @@ const handleMaintenace = async (returnId, vehicleId) => {
 
       Swal.fire({
         title: 'Success',
-        text: 'Return status updated to completed and vehicle status set to maintenance.',
+        text: 'อัพเดทสถานะเรียบร้อย',
         icon: 'success',
       });
     } catch (error) {
       Swal.fire({
         title: 'Error',
-        text: 'There was an error updating the return status and vehicle status.',
+        text: 'เกิดข้อผิดพลาดในการพอัพเดท',
         icon: 'error',
       });
     }

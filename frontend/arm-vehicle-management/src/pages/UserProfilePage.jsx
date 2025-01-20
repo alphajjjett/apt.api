@@ -59,7 +59,7 @@ const UserProfilePage = () => {
       MySwal.fire({
         icon: "success",
         title: "Profile Updated!",
-        text: "Your profile has been successfully updated.",
+        text: "อัพเดทโปรไฟล์สำเร็จ",
         confirmButtonText: "OK",
       });
     } catch (error) {
@@ -67,8 +67,8 @@ const UserProfilePage = () => {
       MySwal.fire({
         icon: "error",
         title: "Error!",
-        text: "There was an issue updating your profile.",
-        confirmButtonText: "Try Again",
+        text: "เกิดข้อผิดพลาดในการอัพเดทโปรไฟล์",
+        confirmButtonText: "ลองอีกครั้ง",
       });
     }
   };
@@ -111,8 +111,8 @@ const UserProfilePage = () => {
       MySwal.fire({
         icon: "error",
         title: "Upload Failed!",
-        text: "There was an issue uploading your profile image.",
-        confirmButtonText: "Try Again",
+        text: "เกิดข้อผิดพลาดในการอัพโหลด",
+        confirmButtonText: "ลองอีกครั้ง",
       });
     }
   };
@@ -141,7 +141,7 @@ const UserProfilePage = () => {
       MySwal.fire({
         icon: "success",
         title: "Profile Updated!",
-        text: "Your profile has been successfully updated.",
+        text: "อัพเดทรูปโปรไฟล์สำเร็จ",
         confirmButtonText: "OK",
       });
     } catch (error) {
@@ -149,8 +149,8 @@ const UserProfilePage = () => {
       MySwal.fire({
         icon: "error",
         title: "Error!",
-        text: "There was an issue updating your profile.",
-        confirmButtonText: "Try Again",
+        text: "เกิดข้อผิดพลาดในการอัพเดท",
+        confirmButtonText: "ลองอีกครั้ง",
       });
     }
   };

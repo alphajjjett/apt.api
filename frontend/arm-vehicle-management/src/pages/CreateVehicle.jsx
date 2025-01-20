@@ -45,8 +45,8 @@ const VehiclePage = () => {
       await axios.post('http://localhost:5000/api/vehicles/create', vehicleData, config);
       MySwal.fire({
         icon: 'success',
-        title: 'Vehicle created successfully',
-        text: 'Your vehicle has been created successfully.',
+        title: 'Created successfully',
+        text: 'สร้างข้อมูลรถเรียบร้อย',
         confirmButtonText: 'OK'
       });
       // alert('Vehicle created successfully');

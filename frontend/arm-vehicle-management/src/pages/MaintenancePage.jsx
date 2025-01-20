@@ -87,13 +87,13 @@ const MaintenancePage = () => {
       setEditModalOpen(false);
       MySwal.fire({
         title: 'Success',
-        text: 'Maintenance description updated successfully.',
+        text: 'อัพเดทข้อมูลซ่อมบำรุงเรียบร้อย',
         icon: 'success',
       });
     } catch (error) {
       MySwal.fire({
         title: 'Error',
-        text: 'There was an error updating the description.',
+        text: 'ไม่สามารถอัพเดทข้อมูลซ่อมบำรุงได้',
         icon: 'error',
       });
     }

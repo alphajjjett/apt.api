@@ -46,16 +46,16 @@ const Users = () => {
 
   const handleCreateAdmin = () => {
     MySwal.fire({
-      title: 'เพิ่ม Admin',
+      title: 'เพิ่มแอดมิน',
       html:
-        '<input id="swal-input1" class="swal2-input" placeholder="Name">' +
+        '<input id="swal-input1" class="swal2-input" placeholder="ชื่อ-สกุล">' +
         '<input id="swal-input2" class="swal2-input" placeholder="Email">' +
-        '<input id="swal-input3" class="swal2-input" placeholder="Password" type="password">' +
-        '<input id="swal-input4" class="swal2-input" placeholder="Description">',
+        '<input id="swal-input3" class="swal2-input" placeholder="รหัสผ่าน" type="password">' +
+        '<input id="swal-input4" class="swal2-input" placeholder="ตำแหน่ง">',
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: 'Create',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: 'สร้าง',
+      cancelButtonText: 'ยกเลิก',
       preConfirm: () => {
         const name = document.getElementById('swal-input1').value;
         const email = document.getElementById('swal-input2').value;
@@ -63,7 +63,7 @@ const Users = () => {
         const description = document.getElementById('swal-input4').value;
         
         if (!name || !email || !password) {
-          MySwal.showValidationMessage('Please enter all required fields');
+          MySwal.showValidationMessage('กรุณากรอกข้อมูลให้ครบ');
           return;
         }
   
@@ -79,9 +79,9 @@ const Users = () => {
             { name, email, password, description },
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          MySwal.fire('Created!', 'New admin has been created.', 'success');
+          MySwal.fire('Created!', 'สร้างแอดมินสำเร็จ', 'success');
         } catch (error) {
-          MySwal.fire('Error', 'Failed to create admin.', 'error');
+          MySwal.fire('Error', 'เกิดข้อผิดพลาดในการสร้างแอดมิน.', 'error');
         }
       }
     });
@@ -130,11 +130,11 @@ const Users = () => {
   const handleDeleteUser = async (userId) => {
     MySwal.fire({
       title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      text: "ไม่สามารถกู้ข้อมูลกลับได้!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
+      confirmButtonText: "ใช่, ลบข้อมูล",
+      cancelButtonText: "ยกเลิก",
       reverseButtons: true
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -146,21 +146,21 @@ const Users = () => {
   
           MySwal.fire({
             title: "Deleted!",
-            text: "The user has been deleted.",
+            text: "ข้อมูลถูกลบเรียบร้อย",
             icon: "success"
           });
         } catch (error) {
           setError('Failed to delete user');
           MySwal.fire({
             title: "Error",
-            text: "There was an error deleting the user.",
+            text: "เกิดข้อผิดพลาดในการลบข้อมูล",
             icon: "error"
           });
         }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         MySwal.fire({
-          title: "Cancelled",
-          text: "The user is safe :)",
+          title: "Cancel",
+          text: "ยกเลิกการลบ",
           icon: "error"
         });
       }
@@ -185,14 +185,14 @@ const Users = () => {
       setEditingUserId(null);
       MySwal.fire({
         title: "Updated!",
-        text: "User details have been updated.",
+        text: "อัพเดทข้อมูลสำเร็จ",
         icon: "success"
       });
     } catch (error) {
       setError('Failed to update user');
       MySwal.fire({
         title: "Error",
-        text: "There was an error updating the user.",
+        text: "เกิดข้อผิดพลาดในการอัพเดท",
         icon: "error"
       });
     }

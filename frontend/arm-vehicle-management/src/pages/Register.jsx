@@ -34,7 +34,7 @@ const Register = () => {
       
       localStorage.setItem('token', response.data.token);
       Swal.fire({
-        title: 'สำเร็จ!',
+        title: 'Create Success!',
         text: 'สมัครสมาชิกสำเร็จ!',
         icon: 'success',
         confirmButtonText: 'ตกลง'
@@ -46,8 +46,8 @@ const Register = () => {
     } catch (err) {
       console.error(err);
       Swal.fire({
-        title: 'ผิดพลาด!',
-        text: 'การสมัครสมาชิกล้มเหลว กรุณาลองใหม่อีกครั้ง.',
+        title: 'Fail to Create!',
+        text: 'เกิดข้อผิดพลาดการสมัครสมาชิก กรุณาลองใหม่อีกครั้ง.',
         icon: 'error',
         confirmButtonText: 'ตกลง'
       });

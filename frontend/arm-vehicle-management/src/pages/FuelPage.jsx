@@ -77,13 +77,13 @@ const FuelPage = () => {
 
       Swal.fire({
         title: 'Success!',
-        text: 'Fuel record status updated successfully',
+        text: 'อัพเดทสถานะสำเร็จ',
         icon: 'success',
       });
     } catch (error) {
       Swal.fire({
         title: 'Error!',
-        text: 'Failed to update fuel record status',
+        text: 'ไม่สามารถอัพเดทสถานะ',
         icon: 'error',
       });
     }

@@ -37,9 +37,9 @@ const Login = () => {
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',
-        text: 'Invalid email or password',
+        text: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
         confirmButtonColor: '#d33',
-        confirmButtonText: 'Try Again',
+        confirmButtonText: 'ลองอีกครั้ง',
       });
     }
   };

@@ -118,7 +118,7 @@ const MissionList = () => {
         .then((response) => {
           Swal.fire({
             title: 'Fuel Request Success',
-            text: 'The fuel request has been successfully recorded.',
+            text: 'เบิกเชื้อเพลิงสำเร็จ',
             icon: 'success',
           })
           .then(() => {
@@ -129,7 +129,7 @@ const MissionList = () => {
           console.error('Error:', error);
           Swal.fire({
             title: 'Error',
-            text: 'There was an error while requesting fuel.',
+            text: 'เกิดข้อผิดพลาดในกาเบิกเชื้อเพลิง',
             icon: 'error',
           });
         });
@@ -160,7 +160,7 @@ const MissionList = () => {
       console.log('Return Success:', response.data);
       Swal.fire({
         title: 'Return Success',
-        text: 'The vehicle has been successfully returned.',
+        text: 'คืนรถสำเร็จ',
         icon: 'success',
       });
     })
@@ -168,7 +168,7 @@ const MissionList = () => {
       console.error('Error:', error);
       Swal.fire({
         title: 'Error',
-        text: 'There was an error while returning the vehicle.',
+        text: 'เกิดข้อผิดพลาดในการคืนรถ',
         icon: 'error',
       })
       .finally(() => {
@@ -226,7 +226,7 @@ const MissionList = () => {
   
       Swal.fire({
         title: 'Success!',
-        text: 'Mission status and vehicle status updated successfully',
+        text: 'อัพเดทสถานะสำเร็จ',
         icon: 'success',
         confirmButtonText: 'OK',
       });
@@ -235,7 +235,7 @@ const MissionList = () => {
   
       Swal.fire({
         title: 'Error!',
-        text: 'Failed to update mission or vehicle status',
+        text: 'เกิดข้อผิดพลาดในการอัพเดทสถานะ',
         icon: 'error',
         confirmButtonText: 'OK',
       });
@@ -266,11 +266,11 @@ const MissionList = () => {
     // If authorized, show the confirmation dialog
     MySwal.fire({
       title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      text: "ไม่สามารถกู้ข้อมูลกลับได้!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
+      confirmButtonText: "ใช่, ลบข้อมูล",
+      cancelButtonText: "ยกเลิก",
       reverseButtons: true
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -286,20 +286,20 @@ const MissionList = () => {
   
           MySwal.fire({
             title: "Deleted!",
-            text: "The mission has been deleted.",
+            text: "ข้อมูลถูกลบเรียบร้อย",
             icon: "success"
           });
         } catch (error) {
           MySwal.fire({
             title: "Error",
-            text: "There was an error deleting the mission.",
+            text: "เกิดข้อผิดพลาดในการลบข้อมูล",
             icon: "error"
           });
         }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         MySwal.fire({
-          title: "Cancelled",
-          text: "Your mission is safe :)",
+          title: "Cancel",
+          text: "ยกเลิกการลบ",
           icon: "error"
         });
       }

@@ -58,9 +58,10 @@ const Dashboard = () => {
         // แยกข้อมูลตามสถานะ (pending, completed)
         const pendingCount = fuelRecords.filter(fuel => fuel.status === 'pending').length;
         const completedCount = fuelRecords.filter(fuel => fuel.status === 'completed').length;
+        const cancelCount = fuelRecords.filter(fuel => fuel.status === 'cancel').length;
   
         // เซ็ตข้อมูลที่แยกแล้วไปยัง state fuelData
-        setFuelData({ pending: pendingCount, completed: completedCount });
+        setFuelData({ pending: pendingCount, completed: completedCount, cancel: cancelCount });
       } catch (error) {
         setError('Failed to fetch fuel data');
       }
@@ -77,12 +78,13 @@ const Dashboard = () => {
       const status = mission.status;
 
       if (!grouped[day]) {
-        grouped[day] = { completed: 0, pending: 0, inProgress: 0 };
+        grouped[day] = { completed: 0, pending: 0, inProgress: 0, cancel: 0 };
       }
 
       if (status === 'completed') grouped[day].completed++;
       if (status === 'pending') grouped[day].pending++;
       if (status === 'in-progress') grouped[day].inProgress++;
+      if (status === 'cancel') grouped[day].cancel++;
     });
 
     return grouped;
@@ -122,14 +124,15 @@ const Dashboard = () => {
       Object.values(groupedMissions).reduce((acc, day) => acc + day.completed, 0),
       Object.values(groupedMissions).reduce((acc, day) => acc + day.pending, 0),
       Object.values(groupedMissions).reduce((acc, day) => acc + day.inProgress, 0),
+      Object.values(groupedMissions).reduce((acc, day) => acc + day.cancel, 0),
     ],
     options: {
       chart: {
         type: 'pie',
         height: 250,
       },
-      labels: ['สำเร็จ', 'รออนุมัติ', 'อยู่ระหว่างภารกิจ'],
-      colors: ['#28a745', '#ffc107', '#dc3545'],
+      labels: ['สำเร็จ', 'รออนุมัติ', 'อยู่ระหว่างภารกิจ', 'ไม่อนุมัติ'],
+      colors: ['#28a745', '#ffc107', '#89cff0', '#dc3545'],
       responsive: [
         {
           breakpoint: 480,
@@ -147,14 +150,14 @@ const Dashboard = () => {
   };
 
   const fuelStatusData = {
-    series: [fuelData?.completed || 0,fuelData?.pending   || 0], // ใช้ข้อมูลเชื้อเพลิงที่แยกสถานะ 
+    series: [fuelData?.completed || 0,fuelData?.pending   || 0,fuelData?.cancel   || 0], // ใช้ข้อมูลเชื้อเพลิงที่แยกสถานะ 
     options: {
       chart: {
         type: 'pie',
         height: 250,
       },
-      labels: [ 'สำเร็จ','รออนุมัติ'],
-      colors: ['#28a745','#ffc107'],
+      labels: [ 'สำเร็จ','รออนุมัติ','ไม่อนุมัติ'],
+      colors: ['#28a745','#ffc107','#dc3545'],
       responsive: [
         {
           breakpoint: 480,
@@ -176,12 +179,16 @@ const Dashboard = () => {
   const lineChartData = {
     series: [
       {
-        name: 'Vehicles Available',
+        name: 'รถพร้อมใช้งาน',
         data: Object.keys(groupedMissions).map((day) => data?.available || 0),
       },
       {
-        name: 'Missions Completed',
+        name: 'ภารกิจอนุมัติ',
         data: Object.keys(groupedMissions).map((day) => groupedMissions[day]?.completed || 0),
+      },
+      {
+        name: 'ไม่อนุมัติจอนุมัติ',
+        data: Object.keys(groupedMissions).map((day) => groupedMissions[day]?.cancel || 0),
       },
     ],
     options: {
@@ -196,7 +203,7 @@ const Dashboard = () => {
       xaxis: {
         categories: Object.keys(groupedMissions),
       },
-      colors: ['#28a745', '#ffc107'],
+      colors: ['#28a745', '#ffc107','#dc3545'],
     },
   };
 
@@ -229,7 +236,7 @@ const Dashboard = () => {
           <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <CardContent sx={{ flexGrow: 1 }}>
               <Typography variant="h5" component="div" gutterBottom>
-                สถานะภารกิจ
+                สถานะการจอง
               </Typography>
               <ApexCharts
                 options={missionStatusData.options}

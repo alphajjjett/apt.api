@@ -1,12 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { jwtDecode } from 'jwt-decode'; 
-import {Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,IconButton,Button,TablePagination, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from '@mui/material';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import PrintMaintenance from '../components/print/MaintenancePrintAll'
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import EditIcon from '@mui/icons-material/Edit';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Button,
+  TablePagination,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import PrintMaintenance from "../components/print/MaintenancePrintAll";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import EditIcon from "@mui/icons-material/Edit";
 
 const MySwal = withReactContent(Swal);
 
@@ -18,32 +34,36 @@ const MaintenancePage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [editModalOpen, setEditModalOpen] = useState(false); // เปิด Modal
-  const [editDescription, setEditDescription] = useState(''); // ข้อมูล description ที่จะถูกแก้ไข
+  const [editDescription, setEditDescription] = useState(""); // ข้อมูล description ที่จะถูกแก้ไข
   const [currentMaintenanceId, setCurrentMaintenanceId] = useState(null); // บันทึก id ของการซ่อมบำรุงที่กำลังแก้ไข
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      setError('No token found');
+      setError("No token found");
       setLoading(false);
       return;
     }
 
     try {
       const decodedToken = jwtDecode(token);
-      setIsAdmin(decodedToken.role === 'admin');
+      setIsAdmin(decodedToken.role === "admin");
     } catch (err) {
-      setError('Failed to decode token');
+      setError("Failed to decode token");
     }
 
     const fetchMaintenance = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/maintenance', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:5000/api/maintenance",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setMaintenanceRecords(response.data);
       } catch (error) {
-        setError('Failed to fetch maintenance records');
+        setError("Failed to fetch maintenance records");
       } finally {
         setLoading(false);
       }
@@ -69,7 +89,7 @@ const MaintenancePage = () => {
 
   const handleSaveDescription = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await axios.put(
         `http://localhost:5000/api/maintenance/${currentMaintenanceId}`,
         { description: editDescription },
@@ -86,25 +106,39 @@ const MaintenancePage = () => {
 
       setEditModalOpen(false);
       MySwal.fire({
-        title: 'Success',
-        text: 'อัพเดทข้อมูลซ่อมบำรุงเรียบร้อย',
-        icon: 'success',
+        title: "Success",
+        text: "อัพเดทข้อมูลซ่อมบำรุงเรียบร้อย",
+        icon: "success",
       });
     } catch (error) {
       MySwal.fire({
-        title: 'Error',
-        text: 'ไม่สามารถอัพเดทข้อมูลซ่อมบำรุงได้',
-        icon: 'error',
+        title: "Error",
+        text: "ไม่สามารถอัพเดทข้อมูลซ่อมบำรุงได้",
+        icon: "error",
       });
     }
   };
+
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredData = maintenanceRecords.filter((maintenance) =>
+    maintenance.vehicleId
+      ? maintenance.vehicleId.license_plate
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      : false
+  );
 
   if (loading) return <p>Loading maintenance data...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลการซ่อมบำรุง</h2>
+      <h2 className="text-2xl font-bold text-center mb-6">
+        ข้อมูลการซ่อมบำรุง
+      </h2>
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
           <h3 className="text-xl font-semibold">ยอดการซ่อมบำรุง</h3>
@@ -122,6 +156,15 @@ const MaintenancePage = () => {
           </PDFDownloadLink>
         </Button>
       </div>
+      <div className="flex flex-col mb-4">
+        <input
+          className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mt-3"
+          type="text"
+          placeholder="ค้นหาด้วยหมายเลขทะเบียน"
+          value={searchQuery}
+          onChange={handleSearch}
+        />
+      </div>
 
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="maintenance table">
@@ -138,53 +181,72 @@ const MaintenancePage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {maintenanceRecords.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((maintenance, index) => (
-              <TableRow key={maintenance._id}>
-                <TableCell align="left">{index + 1}</TableCell>
-                <TableCell component="th" scope="row">
-                  {maintenance.vehicleId ? maintenance.vehicleId.name : 'N/A'}
-                </TableCell>
-                <TableCell align="right">
-                  {maintenance.vehicleId ? maintenance.vehicleId.model : 'N/A'}
-                </TableCell>
-                <TableCell align="right">
-                  {maintenance.vehicleId ? maintenance.vehicleId.license_plate : 'N/A'}
-                </TableCell>
-                <TableCell align="right">{maintenance.description || 'N/A'}</TableCell>
-                {isAdmin && 
-                <TableCell align="right">
-                  {isAdmin && maintenance.vehicleId ? maintenance.vehicleId.status === 'maintenance' ? (
-                    <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
-                      <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
-                      ซ่อมบำรุง
-                    </span>
-                  ) : maintenance.vehicleId.status === 'in-use' ? (
-                    <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
-                      <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
-                      อยู่ระหว่างการใช้งาน
-                    </span>
-                  ) : maintenance.vehicleId.status === 'available' ? (
-                    <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
-                      <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
-                      พร้อมใช้งาน
-                    </span>
-                  ) : null : null}
-                </TableCell>}
-                <TableCell align="right">
-                  {maintenance.updatedAt ? new Date(maintenance.updatedAt).toLocaleString() : 'N/A'}
-                </TableCell>
-                {isAdmin && (
-                  <TableCell align="right">
-                    <IconButton
-                      edge="end"
-                      color="primary" 
-                      onClick={() => handleEditDescription(maintenance._id, maintenance.description)}>
-                        <EditIcon/>
-                    </IconButton>
+            {filteredData
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((maintenance, index) => (
+                <TableRow key={maintenance._id}>
+                  <TableCell align="left">{index + 1}</TableCell>
+                  <TableCell component="th" scope="row">
+                    {maintenance.vehicleId ? maintenance.vehicleId.name : "N/A"}
                   </TableCell>
-                )}
-              </TableRow>
-            ))}
+                  <TableCell align="right">
+                    {maintenance.vehicleId
+                      ? maintenance.vehicleId.model
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {maintenance.vehicleId
+                      ? maintenance.vehicleId.license_plate
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {maintenance.description || "N/A"}
+                  </TableCell>
+                  {isAdmin && (
+                    <TableCell align="right">
+                      {isAdmin && maintenance.vehicleId ? (
+                        maintenance.vehicleId.status === "maintenance" ? (
+                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
+                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
+                            ซ่อมบำรุง
+                          </span>
+                        ) : maintenance.vehicleId.status === "in-use" ? (
+                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
+                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
+                            อยู่ระหว่างการใช้งาน
+                          </span>
+                        ) : maintenance.vehicleId.status === "available" ? (
+                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
+                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
+                            พร้อมใช้งาน
+                          </span>
+                        ) : null
+                      ) : null}
+                    </TableCell>
+                  )}
+                  <TableCell align="right">
+                    {maintenance.updatedAt
+                      ? new Date(maintenance.updatedAt).toLocaleString()
+                      : "N/A"}
+                  </TableCell>
+                  {isAdmin && (
+                    <TableCell align="right">
+                      <IconButton
+                        edge="end"
+                        color="primary"
+                        onClick={() =>
+                          handleEditDescription(
+                            maintenance._id,
+                            maintenance.description
+                          )
+                        }
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
         <TablePagination

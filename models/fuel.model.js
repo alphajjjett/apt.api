@@ -21,7 +21,7 @@ const fuelSchema = new mongoose.Schema({
   },
   status: { 
     type: String, 
-    enum: ['pending', 'completed'], // กำหนดค่า enum สำหรับ status
+    enum: ['pending', 'completed','cancel'], // กำหนดค่า enum สำหรับ status
     default: 'pending' // กำหนดค่าเริ่มต้นเป็น pending
   }
 });

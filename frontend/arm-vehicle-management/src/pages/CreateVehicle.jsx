@@ -56,7 +56,7 @@ const VehiclePage = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg font-noto">
       {/* Create New Vehicle Form */}
       {isAdmin && (
         <div>

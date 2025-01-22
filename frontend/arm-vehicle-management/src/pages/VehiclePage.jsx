@@ -11,8 +11,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  // Select,
-  // MenuItem,
+  ThemeProvider,
   Button,
   TextField,
   Dialog,
@@ -23,6 +22,7 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import theme from '../css/theme'
 const MySwal = withReactContent(Swal);
 
 const VehicleList = () => {
@@ -193,7 +193,7 @@ const VehicleList = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg font-noto">
       <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลรถ</h2>
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
@@ -201,7 +201,7 @@ const VehicleList = () => {
           <p className="text-gray-600 text-2xl">{vehicles.length} คัน</p>
         </div>
       </div>
-
+      <ThemeProvider theme={theme}>
       {/* Search box */}
       <TextField
         label="ค้นหา โดย เลขทะเบียนรถ"
@@ -363,8 +363,9 @@ const VehicleList = () => {
               บักทึก
             </Button>
           </DialogActions>
-        </Dialog>
+        </Dialog> 
       )}
+      </ThemeProvider>
     </div>
   );
 };

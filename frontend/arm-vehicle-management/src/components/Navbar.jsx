@@ -67,7 +67,7 @@ const NavigationBar = () => {
   }, []);
 
   return (
-    <Navbar expand="lg" variant="dark" className="bg-gray-800">
+    <Navbar expand="lg" variant="dark" className="bg-gray-800 font-noto">
       <Container>
         <Navbar.Brand as={Link} to="/main" className="text-white flex items-center space-x-3">
           <img src="./logo/logo.png" className="h-14" alt="apd5 logo" />
@@ -140,9 +140,11 @@ const NavigationBar = () => {
                     โปรไฟล์
                   </NavDropdown.Item>
                 )}
+                {isAdmin && (
                 <NavDropdown.Item as={Link} to="/dashboard" className="text-black hover:bg-gray-200">
                   แดชบอร์ด
                 </NavDropdown.Item>
+                )}
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout} className="text-black hover:bg-gray-200">
                   ออกจากระบบ

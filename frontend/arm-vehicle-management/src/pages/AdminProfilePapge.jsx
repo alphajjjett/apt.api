@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom"; // นำเข้า useNavigate
-import { jwtDecode } from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "axios";
@@ -17,7 +17,7 @@ const AdminProfilePage = () => {
   const [editableName, setEditableName] = useState("");
   const [editableEmail, setEditableEmail] = useState("");
   const [editableDescription, setEditableDescription] = useState("");
-  const [profileImage, setProfileImage] = useState(null); 
+  const [profileImage, setProfileImage] = useState(null);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -31,7 +31,7 @@ const AdminProfilePage = () => {
       name: editableName,
       email: editableEmail,
       description: editableDescription,
-      profileImage: admin.profileImage, 
+      profileImage: admin.profileImage,
     };
 
     try {
@@ -82,7 +82,7 @@ const AdminProfilePage = () => {
   const handleImageUpload = async () => {
     const formData = new FormData();
     formData.append("file", profileImage);
-    formData.append("id" , id)
+    formData.append("id", id);
 
     try {
       const response = await axios.post(
@@ -96,7 +96,7 @@ const AdminProfilePage = () => {
         }
       );
 
-      const imageUrl = response.data.path; 
+      const imageUrl = response.data.path;
       await handleSaveProfileImage(imageUrl);
     } catch (error) {
       MySwal.fire({
@@ -113,7 +113,7 @@ const AdminProfilePage = () => {
       name: editableName,
       email: editableEmail,
       description: editableDescription,
-      profileImage: imageUrl, 
+      profileImage: imageUrl,
     };
 
     try {
@@ -148,12 +148,15 @@ const AdminProfilePage = () => {
 
   const fetchAdminData = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/admins/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });  
-      setAdmin(response.data); 
+      const response = await axios.get(
+        `http://localhost:5000/api/admins/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setAdmin(response.data);
     } catch (error) {
       console.error("Error fetching admin data", error);
     } finally {
@@ -174,8 +177,8 @@ const AdminProfilePage = () => {
 
       try {
         const decodedToken = jwtDecode(token);
-        console.log("Decoded Token:", decodedToken);  
-        console.log("Profile ID: ", id);  
+        console.log("Decoded Token:", decodedToken);
+        console.log("Profile ID: ", id);
 
         if (decodedToken.exp < Date.now() / 1000) {
           setError("Token has expired, please login again");
@@ -195,10 +198,10 @@ const AdminProfilePage = () => {
             email: decodedToken.email,
             role: decodedToken.role,
             description: decodedToken.description || "",
-            profileImage: decodedToken.profileImage || "", 
+            profileImage: decodedToken.profileImage || "",
           };
           setAdmin(adminData);
-          console.log("Admin data:", adminData); 
+          console.log("Admin data:", adminData);
         }
       } catch (error) {
         setError("Error decoding token or fetching admin data");
@@ -216,60 +219,22 @@ const AdminProfilePage = () => {
     };
   }, [id]);
 
-  console.log("admin detail is ===========>", admin)
+  console.log("admin detail is ===========>", admin);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-700">โปรไฟล์ แอดมิน</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg font-noto">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-700">
+        โปรไฟล์ แอดมิน
+      </h2>
       {admin && (
         <div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">ชื่อ-นามสกุล:</label>
-            {isEditing ? (
-              <input
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                type="text"
-                value={editableName}
-                onChange={(e) => setEditableName(e.target.value)}
-              />
-            ) : (
-              <span>{admin.name}</span>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">Email:</label>
-            {isEditing ? (
-              <input
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                type="email"
-                value={editableEmail}
-                onChange={(e) => setEditableEmail(e.target.value)}
-              />
-            ) : (
-              <span>{admin.email}</span>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">บทบาท:</label> 
-            <span>{admin.role}</span>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">ตำแหน่ง:</label>
-            {isEditing ? (
-              <textarea
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                value={editableDescription}
-                onChange={(e) => setEditableDescription(e.target.value)}
-              />
-            ) : (
-              <span>{admin.description}</span>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">รูปโปรไฟล์:</label>
+            <label className="block text-sm font-medium text-gray-600">
+              รูปโปรไฟล์:
+            </label>
             {isEditing ? (
               <>
                 <input
@@ -301,6 +266,56 @@ const AdminProfilePage = () => {
               </div>
             )}
           </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">
+              ชื่อ-นามสกุล:
+            </label>
+            {isEditing ? (
+              <input
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                type="text"
+                value={editableName}
+                onChange={(e) => setEditableName(e.target.value)}
+              />
+            ) : (
+              <span>{admin.name}</span>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">
+              Email:
+            </label>
+            {isEditing ? (
+              <input
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                type="email"
+                value={editableEmail}
+                onChange={(e) => setEditableEmail(e.target.value)}
+              />
+            ) : (
+              <span>{admin.email}</span>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">
+              บทบาท:
+            </label>
+            <span>{admin.role}</span>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">
+              ตำแหน่ง:
+            </label>
+            {isEditing ? (
+              <textarea
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                value={editableDescription}
+                onChange={(e) => setEditableDescription(e.target.value)}
+              />
+            ) : (
+              <span>{admin.description}</span>
+            )}
+          </div>
         </div>
       )}
 
@@ -330,8 +345,8 @@ const AdminProfilePage = () => {
 
       {/* ปุ่มกลับไปยังหน้าผู้ใช้ */}
       <button
-        className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-        onClick={() => navigate('/users')} // เปลี่ยนเส้นทาง
+        className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 ml-3"
+        onClick={() => navigate("/users")} // เปลี่ยนเส้นทาง
       >
         กลับไปยังหน้าข้อมูลผู้ใช้
       </button>

@@ -56,7 +56,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100 py-6">
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 py-6 font-noto">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg">
         <h2 className="text-3xl font-bold text-center mb-6">สมัครสมาชิก</h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}

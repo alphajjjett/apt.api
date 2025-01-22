@@ -17,6 +17,7 @@ import {
   DialogTitle,
   IconButton,
   TablePagination,
+  ThemeProvider 
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -28,6 +29,7 @@ import withReactContent from "sweetalert2-react-content";
 import Modal from "react-bootstrap/Modal";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import BookingPrint from "../components/print/BookingPrint";
+import theme from '../css/theme'
 
 const MySwal = withReactContent(Swal);
 
@@ -435,7 +437,7 @@ const MissionList = () => {
   }
 
   return (
-    <div className=" mx-auto p-6 bg-white shadow-lg rounded-lg w-full">
+    <div className=" mx-auto p-6 bg-white shadow-lg rounded-lg w-full font-noto">
       <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลการจองรถ</h2>
 
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
@@ -444,7 +446,7 @@ const MissionList = () => {
           <p className="text-gray-600 text-2xl">{missions.length} คัน</p>
         </div>
       </div>
-
+      <ThemeProvider theme={theme}>
       {/* Search box */}
       <TextField
         label="ค้นหาด้วย หมายเลขประจำตัว"
@@ -673,7 +675,7 @@ const MissionList = () => {
         fullWidth // ทำให้ Dialog ใช้พื้นที่เต็ม width ของ container
       >
         {/* Title ของข้อมูลภารกิจ */}
-        <DialogTitle style={{ position: "relative" }}>
+        <DialogTitle style={{ position: "relative", fontSize: "30px",textAlign: "center" }}>
           ข้อมูลการจอง
           {/* IconButton สำหรับการแก้ไข */}
           <DialogActions
@@ -700,7 +702,7 @@ const MissionList = () => {
           </DialogActions>
         </DialogTitle>
 
-        <DialogContent>
+        <DialogContent sx={{ fontFamily: 'Noto Sans Thai, sans-serif' }}>
           {selectedMission && (
             <div>
               <p>
@@ -880,6 +882,7 @@ const MissionList = () => {
           </button>
         </Modal.Footer>
       </Modal>
+    </ThemeProvider>
     </div>
   );
 };

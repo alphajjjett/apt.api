@@ -94,7 +94,7 @@ const CreateMission = () => {
   };
 
   return (
-    <div className=" max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
+    <div className=" max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg font-noto">
       <h2 className="text-2xl font-bold text-center mb-4">สร้างข้อมูลการจอง</h2>
       {error && <p className="text-red-600 text-center mb-4">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">

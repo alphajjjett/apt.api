@@ -229,7 +229,7 @@ const UserProfilePage = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="user-profile-container bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto mt-10">
+    <div className="user-profile-container bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto mt-10 font-noto">
       <h2 className="text-3xl font-bold mb-6 text-gray-900 text-center">โปรไฟล์ส่วนตัว</h2>
       {user && (
         <div>

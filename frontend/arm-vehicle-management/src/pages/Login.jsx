@@ -53,7 +53,7 @@ const handleLogin = async (e) => {
   };
 
   return (
-    <div className="container min-h-screen flex items-center justify-center rounded-lg">
+    <div className="container min-h-screen flex items-center justify-center rounded-lg font-noto">
       <div className="w-full max-w-sm p-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 

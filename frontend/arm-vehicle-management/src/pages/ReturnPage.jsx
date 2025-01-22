@@ -11,9 +11,11 @@ import {
   Paper,
   Button,
   TablePagination,
+  ThemeProvider
 } from "@mui/material";
 import HandymanIcon from "@mui/icons-material/Handyman";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import theme from '../css/theme'
 
 const ReturnInformation = () => {
   const [returns, setReturns] = useState([]);
@@ -215,7 +217,8 @@ const ReturnInformation = () => {
   }
 
   return (
-    <div className="mx-auto p-6 bg-white shadow-lg rounded-lg w-full">
+    <ThemeProvider theme={theme}>
+    <div className="mx-auto p-6 bg-white shadow-lg rounded-lg w-full font-noto">
       <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลการคืนรถ</h2>
       <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
         <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
@@ -232,7 +235,6 @@ const ReturnInformation = () => {
           className="p-2 border border-gray-300 rounded-lg w-full"
         />
       </div>
-
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -330,6 +332,7 @@ const ReturnInformation = () => {
         />
       </TableContainer>
     </div>
+    </ThemeProvider>
   );
 };
 

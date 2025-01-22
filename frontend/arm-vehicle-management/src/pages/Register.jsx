@@ -39,7 +39,7 @@ const Register = () => {
         icon: 'success',
         confirmButtonText: 'ตกลง'
       }).then(() => {
-        navigate('/dashboard'); // Navigate to dashboard after registration
+        navigate('/main'); 
         window.location.reload();
       });
       

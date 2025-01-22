@@ -69,7 +69,7 @@ const NavigationBar = () => {
   return (
     <Navbar expand="lg" variant="dark" className="bg-gray-800">
       <Container>
-        <Navbar.Brand as={Link} to="/dashboard" className="text-white flex items-center space-x-3">
+        <Navbar.Brand as={Link} to="/main" className="text-white flex items-center space-x-3">
           <img src="./logo/logo.png" className="h-14" alt="apd5 logo" />
           <div className="flex flex-col items-start">
             <span className="text-2xl font-semibold">ระบบจองรถการปฏิบัติราชการ</span>
@@ -80,7 +80,7 @@ const NavigationBar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           {isLoggedIn && (
             <Nav className="ml-auto flex items-center space-x-6">
-              <Nav.Link as={Link} to="/dashboard" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
+              <Nav.Link as={Link} to="/main" className="text-white hover:bg-gray-700 px-4 py-2 rounded-md">
                 หน้าหลัก
               </Nav.Link>
 

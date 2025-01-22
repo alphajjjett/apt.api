@@ -1,52 +1,55 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2'; // Import Swal
+import Swal from 'sweetalert2'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user'); // Default to user role
+  const [role, setRole] = useState('user'); 
   const navigate = useNavigate();
 
-  // Handle login for both user and admin
-  const handleLogin = async (e) => {
-    e.preventDefault();
-  
-    try {
-      const apiUrl = role === 'admin'
-        ? 'http://localhost:5000/api/auth/login' // Admin login route
-        : 'http://localhost:5000/api/users/login'; // User login route
-  
-      const response = await axios.post(apiUrl, { email, password });
-      localStorage.setItem('token', response.data.token);
-      
-      // Success alert using Swal
-      Swal.fire({
-        icon: 'success',
-        title: 'Login Successful!',
-        text: `Welcome ${role === 'admin' ? 'Admin' : 'User'}!`,
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Go to Dashboard',
-      }).then(() => {
-        navigate('/dashboard'); // Navigate to the dashboard upon successful login
-        window.location.reload(); // Reload the page to reflect the login status
-      });
-    } catch (err) {
-      // Error alert using Swal
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Failed',
-        text: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
-        confirmButtonColor: '#d33',
-        confirmButtonText: 'ลองอีกครั้ง',
-      });
-    }
-  };
+ // Handle login for both user and admin
+const handleLogin = async (e) => {
+  e.preventDefault();
 
-  // Handle navigate to the register page
+  try {
+    const apiUrl = role === 'admin'
+      ? 'http://localhost:5000/api/auth/login' 
+      : 'http://localhost:5000/api/users/login'; 
+
+    const response = await axios.post(apiUrl, { email, password });
+    localStorage.setItem('token', response.data.token);
+
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Login Successful!',
+      text: `Welcome ${role === 'admin' ? 'Admin' : 'User'}!`,
+      confirmButtonColor: '#3085d6',
+    }).then(() => {
+      if (role === 'admin') {
+        navigate('/dashboard'); 
+      } else {
+        navigate('/main'); 
+      }
+      window.location.reload(); 
+    });
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Login Failed',
+      text: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'ลองอีกครั้ง',
+    });
+  }
+};
+
+
+ 
   const goToRegister = () => {
-    navigate('/register'); // Navigate to the registration page
+    navigate('/register');
   };
 
   return (

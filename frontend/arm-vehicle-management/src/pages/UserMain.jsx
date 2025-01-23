@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Grid, Typography, Card, CardContent,ThemeProvider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
@@ -11,11 +11,30 @@ import TodayIcon from "@mui/icons-material/Today";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import dayjs from "dayjs";
+import { jwtDecode } from "jwt-decode";
 import theme from '../css/theme'
 
 const UserMain = () => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      setError("No token");
+      return; 
+    }
+  
+    try {
+      const decodedToken = jwtDecode(token);
+      setIsAdmin(decodedToken.role === "admin");
+    } catch (err) {
+      setError("Invalid token");
+    }
+  }, [error]);
 
   return (
     <div className="mx-auto p-6 bg-white shadow-lg rounded-lg w-full max-w-7xl">
@@ -27,6 +46,7 @@ const UserMain = () => {
             ส่วนการจองรถ
           </Typography>
           <Grid container spacing={4} justifyContent="center">
+            {!isAdmin && (
             <Grid item xs={12} sm={6} md={6}>
               <Button
                 variant="contained"
@@ -43,6 +63,7 @@ const UserMain = () => {
                 เริ่มการจองรถ
               </Button>
             </Grid>
+            )}
 
             <Grid item xs={12} sm={6} md={6}>
               <Button

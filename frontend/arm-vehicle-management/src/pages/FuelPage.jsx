@@ -80,7 +80,7 @@ const FuelPage = () => {
     const { role } = JSON.parse(atob(token.split(".")[1]));
     setIsAdmin(role === "admin");
     fetchData();
-  }, []);
+  }, [error]);
 
   const handleStatusChange = async (fuelRecordId, newStatus) => {
     try {

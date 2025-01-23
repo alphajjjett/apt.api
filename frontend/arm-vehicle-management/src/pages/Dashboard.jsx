@@ -120,7 +120,7 @@ const Dashboard = () => {
         height: 250,
       },
       labels: ["พร้อมใช้งาน", "กำลังใช้งาน", "ซ่อมบำรุง"],
-      colors: ["#28a745", "#ffc107", "#dc3545"],
+      colors: ["#28a745", "#ffc107", "#89cff0"],
       responsive: [
         {
           breakpoint: 480,
@@ -217,7 +217,7 @@ const Dashboard = () => {
         ),
       },
       {
-        name: "ไม่อนุมัติจอนุมัติ",
+        name: "ภารกิจไม่อนุมัติ",
         data: Object.keys(groupedMissions).map(
           (day) => groupedMissions[day]?.cancel || 0
         ),

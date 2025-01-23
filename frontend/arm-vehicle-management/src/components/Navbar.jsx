@@ -89,9 +89,11 @@ const NavigationBar = () => {
                 id="missions-dropdown"
                 className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
               >
+                {!isAdmin&&(
                 <NavDropdown.Item as={Link} to="/missions" className="text-black hover:bg-gray-200">
                   สร้างข้อมูลการจองรถ
                 </NavDropdown.Item>
+                )}
                 <NavDropdown.Item as={Link} to="/missionslist" className="text-black hover:bg-gray-200">
                   ข้อมูลการจอง
                 </NavDropdown.Item>

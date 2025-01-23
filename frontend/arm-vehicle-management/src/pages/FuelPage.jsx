@@ -82,20 +82,24 @@ const FuelPage = () => {
     fetchData();
   }, [error]);
 
-  const handleStatusChange = async (fuelRecordId, newStatus, currentFuelCapacity) => {
+  const handleStatusChange = async (
+    fuelRecordId,
+    newStatus,
+    currentFuelCapacity
+  ) => {
     try {
       let updatedFuelCapacity = currentFuelCapacity;
-  
+
       // ถ้าสถานะใหม่เป็น 'cancel' ให้เคลียร์ค่า fuelCapacity เป็น 0
       if (newStatus === "cancel") {
         updatedFuelCapacity = 0;
       }
-  
+
       await axios.put(`http://localhost:5000/api/fuel/${fuelRecordId}`, {
         status: newStatus,
-        fuelCapacity: updatedFuelCapacity, 
+        fuelCapacity: updatedFuelCapacity,
       });
-  
+
       const token = localStorage.getItem("token");
       const response = await axios.get("http://localhost:5000/api/fuel", {
         headers: {
@@ -103,13 +107,13 @@ const FuelPage = () => {
         },
       });
       setFuelRecords(response.data);
-  
+
       const totalFuel = response.data.reduce(
         (total, record) => total + record.fuelCapacity,
         0
       );
       setTotalFuelCapacity(totalFuel);
-  
+
       Swal.fire({
         title: "Success!",
         text: "อัพเดทสถานะสำเร็จ",
@@ -123,7 +127,6 @@ const FuelPage = () => {
       });
     }
   };
-  
 
   // Handle page change
   const handleChangePage = (event, newPage) => {
@@ -162,6 +165,7 @@ const FuelPage = () => {
           </div>
         </div>
         <div className="mb-3">
+          {isAdmin&&
           <PDFDownloadLink
             document={
               <FuelPrintAll
@@ -179,6 +183,7 @@ const FuelPage = () => {
               </Button>
             )}
           </PDFDownloadLink>
+          }
           <div className="flex flex-col mb-4">
             <input
               className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mt-3"

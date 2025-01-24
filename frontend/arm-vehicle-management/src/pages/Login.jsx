@@ -6,48 +6,74 @@ import Swal from 'sweetalert2';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user'); 
   const navigate = useNavigate();
 
- // Handle login for both user and admin
-const handleLogin = async (e) => {
-  e.preventDefault();
-
-  try {
-    const apiUrl = role === 'admin'
-      ? 'http://localhost:5000/api/auth/login' 
-      : 'http://localhost:5000/api/users/login'; 
-
-    const response = await axios.post(apiUrl, { email, password });
-    localStorage.setItem('token', response.data.token);
-
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Login Successful!',
-      text: `Welcome ${role === 'admin' ? 'Admin' : 'User'}!`,
-      confirmButtonColor: '#3085d6',
-    }).then(() => {
-      if (role === 'admin') {
-        navigate('/dashboard'); 
-      } else {
-        navigate('/main'); 
+  // Handle login for both user and admin
+  const handleLogin = async (e) => {
+    e.preventDefault();
+  
+    try {
+      // เริ่มต้นการตรวจสอบจาก API ของ users
+      let apiUrl = 'http://localhost:5000/api/users/login';
+      let response = await axios.post(apiUrl, { email, password });
+  
+      // ถ้า login สำเร็จ ดึง token และ role จาก response
+      let { token, role } = response.data;
+      localStorage.setItem('token', token);
+  
+      // แสดงข้อความแจ้งเตือนเมื่อ login สำเร็จ
+      Swal.fire({
+        icon: 'success',
+        title: 'Login Successful!',
+        text: `ยินดีต้อนรับ User!`,
+        confirmButtonColor: '#3085d6',
+      }).then(() => {
+        if (role === 'admin') {
+          navigate('/dashboard'); // ถ้าเป็น admin ให้ไปหน้า dashboard
+        } else {
+          navigate('/main'); // ถ้าเป็น user ให้ไปหน้า main
+        }
+        window.location.reload();
+      });
+  
+    } catch (userError) {
+      // ถ้า login ของ user ล้มเหลว ลองตรวจสอบใน admin API
+      try {
+        const apiUrl = 'http://localhost:5000/api/admins/login';
+        const response = await axios.post(apiUrl, { email, password });
+  
+        // ดึง token และ role จาก response ของ admin
+        const { token, role } = response.data;
+        localStorage.setItem('token', token);
+  
+        // แสดงข้อความแจ้งเตือนเมื่อ login สำเร็จ
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful!',
+          text: `ยินต้อนรับ Admin!`,
+          confirmButtonColor: '#3085d6',
+        }).then(() => {
+          if (role === 'admin') {
+            navigate('/dashboard'); // ถ้าเป็น admin ให้ไปหน้า dashboard
+          } else {
+            navigate('/main'); // ถ้าเป็น user ให้ไปหน้า main
+          }
+          window.location.reload();
+        });
+      } catch (adminError) {
+        // ถ้า login ล้มเหลวในทั้ง users และ admins ให้แสดงข้อความแจ้งเตือนล้มเหลว
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'ลองอีกครั้ง',
+        });
       }
-      window.location.reload(); 
-    });
-  } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Login Failed',
-      text: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'ลองอีกครั้ง',
-    });
-  }
-};
+    }
+  };
+  
 
-
- 
   const goToRegister = () => {
     navigate('/register');
   };
@@ -80,19 +106,6 @@ const handleLogin = async (e) => {
               required
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
-
-          <div className="mb-6">
-            <label htmlFor="role" className="block text-gray-700 mb-2">Role</label>
-            <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
           </div>
 
           <button

@@ -17,7 +17,7 @@ const Login = () => {
       let response = await axios.post(apiUrl, { email, password });
   
 
-      let { token, role } = response.data;
+      let { token} = response.data;
       localStorage.setItem('token', token);
   
 
@@ -27,11 +27,7 @@ const Login = () => {
         text: `ยินดีต้อนรับ User!`,
         confirmButtonColor: '#3085d6',
       }).then(() => {
-        if (role === 'admin') {
-          navigate('/dashboard');
-        } else {
           navigate('/main'); 
-        }
         window.location.reload();
       });
   
@@ -40,7 +36,7 @@ const Login = () => {
         const apiUrl = 'http://localhost:5000/api/admins/login';
         const response = await axios.post(apiUrl, { email, password });
   
-        const { token, role } = response.data;
+        const { token} = response.data;
         localStorage.setItem('token', token);
   
         // แสดงข้อความแจ้งเตือนเมื่อ login สำเร็จ
@@ -50,11 +46,7 @@ const Login = () => {
           text: `ยินต้อนรับ Admin!`,
           confirmButtonColor: '#3085d6',
         }).then(() => {
-          if (role === 'admin') {
             navigate('/dashboard'); // ถ้าเป็น admin ให้ไปหน้า dashboard
-          } else {
-            navigate('/main'); // ถ้าเป็น user ให้ไปหน้า main
-          }
           window.location.reload();
         });
       } catch (adminError) {

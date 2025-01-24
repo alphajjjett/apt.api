@@ -8,20 +8,19 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  // Handle login for both user and admin
+
   const handleLogin = async (e) => {
     e.preventDefault();
   
     try {
-      // เริ่มต้นการตรวจสอบจาก API ของ users
       let apiUrl = 'http://localhost:5000/api/users/login';
       let response = await axios.post(apiUrl, { email, password });
   
-      // ถ้า login สำเร็จ ดึง token และ role จาก response
+
       let { token, role } = response.data;
       localStorage.setItem('token', token);
   
-      // แสดงข้อความแจ้งเตือนเมื่อ login สำเร็จ
+
       Swal.fire({
         icon: 'success',
         title: 'Login Successful!',
@@ -29,20 +28,18 @@ const Login = () => {
         confirmButtonColor: '#3085d6',
       }).then(() => {
         if (role === 'admin') {
-          navigate('/dashboard'); // ถ้าเป็น admin ให้ไปหน้า dashboard
+          navigate('/dashboard');
         } else {
-          navigate('/main'); // ถ้าเป็น user ให้ไปหน้า main
+          navigate('/main'); 
         }
         window.location.reload();
       });
   
     } catch (userError) {
-      // ถ้า login ของ user ล้มเหลว ลองตรวจสอบใน admin API
       try {
         const apiUrl = 'http://localhost:5000/api/admins/login';
         const response = await axios.post(apiUrl, { email, password });
   
-        // ดึง token และ role จาก response ของ admin
         const { token, role } = response.data;
         localStorage.setItem('token', token);
   
@@ -79,7 +76,9 @@ const Login = () => {
   };
 
   return (
-    <div className="container min-h-screen flex items-center justify-center rounded-lg font-noto">
+    <div className="container min-h-screen flex items-center 
+                    justify-center rounded-lg font-noto"
+                    >
       <div className="w-full max-w-sm p-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 

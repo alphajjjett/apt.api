@@ -12,12 +12,17 @@ import {
   Paper,
   TablePagination,
   ThemeProvider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import FuelPrint from "../components/print/FuelPrint";
 import FuelPrintAll from "../components/print/FuelPrintAll";
 import theme from "../css/theme";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const FuelPage = () => {
   const [fuelRecords, setFuelRecords] = useState([]);
@@ -29,6 +34,10 @@ const FuelPage = () => {
   const [totalFuelCapacity, setTotalFuelCapacity] = useState(0);
   const [page, setPage] = useState(0); // Page state
   const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page state
+
+  // State for dialog
+  const [openDetailDialog, setOpenDetailDialog] = useState(false);
+  const [selectedFuelRecord, setSelectedFuelRecord] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -82,15 +91,10 @@ const FuelPage = () => {
     fetchData();
   }, [error]);
 
-  const handleStatusChange = async (
-    fuelRecordId,
-    newStatus,
-    currentFuelCapacity
-  ) => {
+  const handleStatusChange = async (fuelRecordId, newStatus, currentFuelCapacity) => {
     try {
       let updatedFuelCapacity = currentFuelCapacity;
 
-      // ถ้าสถานะใหม่เป็น 'cancel' ให้เคลียร์ค่า fuelCapacity เป็น 0
       if (newStatus === "cancel") {
         updatedFuelCapacity = 0;
       }
@@ -128,14 +132,12 @@ const FuelPage = () => {
     }
   };
 
-  // Handle page change
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  // Handle rows per page change
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.tcarget.value, 10));
+    setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
@@ -145,10 +147,28 @@ const FuelPage = () => {
 
   const filteredFuelRecords = searchQuery
     ? fuelRecords.filter((record) => {
-        const user = users.find((u) => u._id === record.userId);
-        return user?.selfid?.toLowerCase().includes(searchQuery.toLowerCase());
-      })
+      const user = users.find((u) => u._id === record.userId);
+      return user?.selfid?.toLowerCase().includes(searchQuery.toLowerCase());
+    })
     : fuelRecords;
+
+  const handleOpenDetailDialog = (fuelRecord) => {
+    const vehicle = vehicles.find((v) => v._id === fuelRecord.vehicleId);
+    const user = users.find((u) => u._id === fuelRecord.userId);
+
+    setSelectedFuelRecord({
+      ...fuelRecord,
+      vehicle,
+      user,
+    });
+
+    setOpenDetailDialog(true);
+  };
+
+  const handleCloseDetailDialog = () => {
+    setOpenDetailDialog(false);
+    setSelectedFuelRecord(null);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -165,24 +185,24 @@ const FuelPage = () => {
           </div>
         </div>
         <div className="mb-3">
-          {isAdmin&&
-          <PDFDownloadLink
-            document={
-              <FuelPrintAll
-                vehicles={vehicles}
-                users={users}
-                fuelRecords={fuelRecords}
-              />
-            }
-            fileName="AllFuel.pdf"
-          >
-            {({ loading }) => (
-              <Button variant="outlined" color="primary" disabled={loading}>
-                <PictureAsPdfIcon />
-                {loading ? "กำลังโหลด..." : "ดาวน์โหลดข้อมูลทั้งหมด"}
-              </Button>
-            )}
-          </PDFDownloadLink>
+          {isAdmin &&
+            <PDFDownloadLink
+              document={
+                <FuelPrintAll
+                  vehicles={vehicles}
+                  users={users}
+                  fuelRecords={fuelRecords}
+                />
+              }
+              fileName="Fuel_all_data.pdf"
+            >
+              {({ loading }) => (
+                <Button variant="outlined" color="primary" disabled={loading}>
+                  <PictureAsPdfIcon />
+                  {loading ? "กำลังโหลด..." : "ดาวน์โหลดข้อมูลทั้งหมด"}
+                </Button>
+              )}
+            </PDFDownloadLink>
           }
           <div className="flex flex-col mb-4">
             <input
@@ -207,16 +227,15 @@ const FuelPage = () => {
                 <TableCell align="left">วันที่อนุมัติ</TableCell>
                 <TableCell align="left">สถานะ</TableCell>
                 {isAdmin && <TableCell align="left">Action</TableCell>}
-                <TableCell align="left">ดาวน์โหลดข้อมูล</TableCell>
+                {/* <TableCell align="left">ดาวน์โหลดข้อมูล</TableCell> */}
+                <TableCell align="left">รายละเอียด</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredFuelRecords
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((record, index) => {
-                  const vehicle = vehicles.find(
-                    (v) => v._id === record.vehicleId
-                  );
+                  const vehicle = vehicles.find((v) => v._id === record.vehicleId);
                   const user = users.find((u) => u._id === record.userId);
                   return (
                     <TableRow key={record._id}>
@@ -248,93 +267,124 @@ const FuelPage = () => {
                         ) : record.status === "completed" ? (
                           <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
                             <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
-                            อนุมัติ
+                            อนุมัติแล้ว
                           </span>
-                        ) : record.status === "cancel" ? (
-                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-red-600 text-red-600">
-                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-red-600"></span>
-                            ไม่อนุมัติ
+                        ) : (
+                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-red-400 text-red-400">
+                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-red-400"></span>
+                            ยกเลิก
                           </span>
-                        ) : null}
+                        )}
                       </TableCell>
                       {isAdmin && (
-                        <TableCell>
+                        <TableCell align="left">
                           <Button
-                            variant="contained"
-                            color="primary"
+                            variant="outlined"
                             onClick={() =>
-                              handleStatusChange(record._id, "completed")
-                            }
-                            disabled={
-                              record.status === "completed" ||
-                              record.status === "cancel"
+                              handleStatusChange(
+                                record._id,
+                                record.status === "completed"
+                                  ? "pending"
+                                  : "completed",
+                                record.fuelCapacity
+                              )
                             }
                           >
                             {record.status === "completed"
-                              ? "อนุมัติเรียบร้อย"
+                              ? "ยกเลิกการอนุมัติ"
                               : "อนุมัติ"}
-                          </Button>
-                          <Button
-                            variant="contained"
-                            color="error"
-                            onClick={() =>
-                              handleStatusChange(record._id, "cancel")
-                            }
-                            disabled={
-                              record.status === "cancel" ||
-                              record.status === "completed"
-                            }
-                            style={{ marginLeft: "10px" }}
-                          >
-                            {record.status === "completed"
-                              ? "ไม่อนุมัติ"
-                              : "ไม่อนุมัติ"}
                           </Button>
                         </TableCell>
                       )}
-                      <TableCell>
-                        {record.status === "completed" && (
-                          <PDFDownloadLink
-                            document={
-                              <FuelPrint
-                                record={record}
-                                vehicle={vehicle}
-                                user={user}
-                              />
-                            }
-                            fileName={`Fuel_Record_${record._id}.pdf`}
-                          >
-                            {({ loading }) => (
-                              <>
-                                <Button
-                                  variant="outlined"
-                                  color="primary"
-                                  disabled={loading}
-                                >
-                                  <PictureAsPdfIcon />
-                                  {loading ? "กำลังโหลด..." : "ดาวน์โหลดข้อมูล"}
-                                </Button>
-                              </>
-                            )}
-                          </PDFDownloadLink>
-                        )}
+                      {/* <TableCell align="left">
+                        <PDFDownloadLink
+                          document={
+                            <FuelPrint
+                              fuelRecord={record}
+                              vehicle={vehicle}
+                              user={user}
+                            />
+                          }
+                          fileName={`Fuel_${record._id}.pdf`}
+                        >
+                          {({ loading }) =>
+                            loading ? "กำลังโหลด..." : "ดาวน์โหลด"
+                          }
+                        </PDFDownloadLink>
+                      </TableCell> */}
+                      <TableCell align="left">
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleOpenDetailDialog(record)}
+                        >
+                          <DescriptionIcon /> แสดงรายละเอียด
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
                 })}
             </TableBody>
           </Table>
-          <TablePagination
-            rowsPerPageOptions={[10]}
-            component="div"
-            count={fuelRecords.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
         </TableContainer>
+
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 50]}
+          component="div"
+          count={filteredFuelRecords.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </div>
+
+      {/* Detail Dialog */}
+      <Dialog
+        open={openDetailDialog}
+        onClose={handleCloseDetailDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>รายละเอียดการเบิกเชื้อเพลิง</DialogTitle>
+        <DialogContent>
+          {selectedFuelRecord && (
+            <div>
+              <p><strong>รถที่เบิก: </strong>{selectedFuelRecord.vehicle ? selectedFuelRecord.vehicle.name : 'ไม่พบข้อมูล'}</p>
+              <p><strong>เลขทะเบียนรถ: </strong>{selectedFuelRecord.vehicle ? selectedFuelRecord.vehicle.license_plate : 'ไม่พบข้อมูล'}</p>
+              <p><strong>หมายเลขประจำตัว: </strong>{selectedFuelRecord.user ? selectedFuelRecord.user.selfid : 'ไม่พบข้อมูล'}</p>
+              <p><strong>ผู้เบิก: </strong>{selectedFuelRecord.user ? selectedFuelRecord.user.name : 'ไม่พบข้อมูล'}</p>
+              <p><strong>จำนวนเชื้อเพลิง: </strong>{selectedFuelRecord.fuelCapacity} ลิตร</p>
+              <p><strong>วันที่เบิก: </strong>{new Date(selectedFuelRecord.fuelDate).toLocaleString()}</p>
+              <p><strong>สถานะ: </strong>{selectedFuelRecord.status}</p>
+              <TableCell align="left">
+                <PDFDownloadLink
+                  document={
+                    <FuelPrint
+                      fuelRecord={selectedFuelRecord}
+                      vehicle={selectedFuelRecord.vehicle}
+                      user={selectedFuelRecord.user}
+                    />
+                  }
+                  fileName={`Fuel_${selectedFuelRecord._id}.pdf`}
+                >
+
+                  {({ loading }) => (
+                    <Button variant="outlined" color="primary" disabled={loading}>
+                      <PictureAsPdfIcon />
+                      {loading ? "กำลังโหลด..." : "ดาวน์โหลดข้อมูล"}
+                    </Button>
+                  )}
+                </PDFDownloadLink>
+              </TableCell>
+            </div>
+
+          )}
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDetailDialog} color="primary">ปิด</Button>
+        </DialogActions>
+      </Dialog>
     </ThemeProvider>
   );
 };

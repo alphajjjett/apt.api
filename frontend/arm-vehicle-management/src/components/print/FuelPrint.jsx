@@ -82,9 +82,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const Print = ({ vehicle, user, record }) => {
+const Print = ({ vehicle, user, fuelRecord }) => {
   // ตรวจสอบให้แน่ใจว่า fuelRecord มีข้อมูลที่จำเป็น
-  const totalFuel = record ? parseFloat(record.fuelCapacity) : 0; // ใช้ข้อมูลจาก fuelRecord ที่ส่งเข้ามา
+  const totalFuel = fuelRecord ? parseFloat(fuelRecord.fuelCapacity) : 0; // ใช้ข้อมูลจาก fuelRecord ที่ส่งเข้ามา
 
   return (
     <Document>
@@ -137,7 +137,7 @@ const Print = ({ vehicle, user, record }) => {
               <Text style={[styles.tableCell, { width: '50%' }]}>{user.selfid}</Text>
               <Text style={[styles.tableCell, { width: '50%' }]}>{user.name}</Text>
               <Text style={[styles.tableCell, { width: '50%' }]}>
-                {record ? record.fuelCapacity : 'N/A'}
+                {fuelRecord ? fuelRecord.fuelCapacity : 'N/A'}
               </Text> 
             </View>
           </View>

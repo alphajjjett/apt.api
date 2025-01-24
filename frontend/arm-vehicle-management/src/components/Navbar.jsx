@@ -40,7 +40,7 @@ const NavigationBar = () => {
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
-        setIsAdmin(decodedToken.role === 'admin'); 
+        setIsAdmin(decodedToken.role === 'admin');
 
         const fetchProfileImage = async () => {
           try {
@@ -56,7 +56,7 @@ const NavigationBar = () => {
         };
 
         if (decodedToken.profileImage) {
-          setProfileImage(decodedToken.profileImage); 
+          setProfileImage(decodedToken.profileImage);
         } else {
           fetchProfileImage();
         }
@@ -69,7 +69,11 @@ const NavigationBar = () => {
   return (
     <Navbar expand="lg" variant="dark" className="bg-gray-800 font-noto">
       <Container>
-        <Navbar.Brand as={Link} to="/main" className="text-white flex items-center space-x-3">
+        <Navbar.Brand
+          as={isLoggedIn ? Link : 'span'} // ถ้าไม่มี token จะไม่เป็นลิงก์
+          to={isLoggedIn ? "/main" : "#"} // ถ้าไม่มี token จะไม่ไปที่ /main
+          className="text-white flex items-center space-x-3"
+        >
           <img src="./logo/logo.png" className="h-14" alt="apd5 logo" />
           <div className="flex flex-col items-start">
             <span className="text-2xl font-semibold">ระบบจองรถการปฏิบัติราชการ</span>
@@ -89,10 +93,10 @@ const NavigationBar = () => {
                 id="missions-dropdown"
                 className="text-white hover:bg-gray-700 px-4 py-2 rounded-md"
               >
-                {!isAdmin&&(
-                <NavDropdown.Item as={Link} to="/missions" className="text-black hover:bg-gray-200">
-                  สร้างข้อมูลการจองรถ
-                </NavDropdown.Item>
+                {!isAdmin && (
+                  <NavDropdown.Item as={Link} to="/missions" className="text-black hover:bg-gray-200">
+                    สร้างข้อมูลการจองรถ
+                  </NavDropdown.Item>
                 )}
                 <NavDropdown.Item as={Link} to="/missionslist" className="text-black hover:bg-gray-200">
                   ข้อมูลการจอง
@@ -143,9 +147,9 @@ const NavigationBar = () => {
                   </NavDropdown.Item>
                 )}
                 {isAdmin && (
-                <NavDropdown.Item as={Link} to="/dashboard" className="text-black hover:bg-gray-200">
-                  แดชบอร์ด
-                </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/dashboard" className="text-black hover:bg-gray-200">
+                    แดชบอร์ด
+                  </NavDropdown.Item>
                 )}
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout} className="text-black hover:bg-gray-200">

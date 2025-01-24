@@ -277,41 +277,34 @@ const FuelPage = () => {
                         )}
                       </TableCell>
                       {isAdmin && (
-                        <TableCell align="left">
-                          <Button
-                            variant="outlined"
-                            onClick={() =>
-                              handleStatusChange(
-                                record._id,
-                                record.status === "completed"
-                                  ? "pending"
-                                  : "completed",
-                                record.fuelCapacity
-                              )
-                            }
-                          >
-                            {record.status === "completed"
-                              ? "ยกเลิกการอนุมัติ"
-                              : "อนุมัติ"}
-                          </Button>
-                        </TableCell>
-                      )}
-                      {/* <TableCell align="left">
-                        <PDFDownloadLink
-                          document={
-                            <FuelPrint
-                              fuelRecord={record}
-                              vehicle={vehicle}
-                              user={user}
-                            />
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          onClick={() =>
+                            handleStatusChange(record._id, "completed")
                           }
-                          fileName={`Fuel_${record._id}.pdf`}
+                          disabled={record.status === "completed" || record.status === "cancel"}
                         >
-                          {({ loading }) =>
-                            loading ? "กำลังโหลด..." : "ดาวน์โหลด"
+                          {record.status === "completed"
+                            ? "อนุมัติเรียบร้อย"
+                            : "อนุมัติ"}
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() =>
+                            handleStatusChange(record._id, "cancel")
                           }
-                        </PDFDownloadLink>
-                      </TableCell> */}
+                          disabled={record.status === "cancel" || record.status === "completed"}
+                          style={{ marginLeft: "10px" }}
+                        >
+                          {record.status === "completed"
+                            ? "ไม่อนุมัติ"
+                            : "ไม่อนุมัติ"}
+                        </Button>
+                      </TableCell>
+                    )}
                       <TableCell align="left">
                         <Button
                           variant="outlined"

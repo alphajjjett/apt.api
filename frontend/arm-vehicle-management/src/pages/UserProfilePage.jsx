@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "axios";
-// import "../styles/UserProfilePage.css"; 
+
 
 const MySwal = withReactContent(Swal);
 

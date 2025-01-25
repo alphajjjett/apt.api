@@ -16,6 +16,7 @@ const AdminProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editableName, setEditableName] = useState("");
   const [editableEmail, setEditableEmail] = useState("");
+  const [editablePassword, setEditablePassword] = useState("");
   const [editableDescription, setEditableDescription] = useState("");
   const [profileImage, setProfileImage] = useState(null);
 
@@ -24,6 +25,7 @@ const AdminProfilePage = () => {
     setEditableName(admin.name);
     setEditableEmail(admin.email);
     setEditableDescription(admin.description || "");
+    setEditablePassword(admin.password);
   };
 
   const handleSaveClick = async () => {
@@ -33,6 +35,9 @@ const AdminProfilePage = () => {
       description: editableDescription,
       profileImage: admin.profileImage,
     };
+    if (editablePassword) {
+      updatedAdmin.password = editablePassword;
+    }
 
     try {
       const response = await axios.put(
@@ -196,6 +201,7 @@ const AdminProfilePage = () => {
           const adminData = {
             name: decodedToken.name,
             email: decodedToken.email,
+            password: decodedToken.password,
             role: decodedToken.role,
             description: decodedToken.description || "",
             profileImage: decodedToken.profileImage || "",
@@ -217,9 +223,7 @@ const AdminProfilePage = () => {
     return () => {
       isMounted = false;
     };
-  }, [id]);
-
-  console.log("admin detail is ===========>", admin);
+  }, [id]); 
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -294,6 +298,19 @@ const AdminProfilePage = () => {
               />
             ) : (
               <span>{admin.email}</span>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">รหัสผ่าน:</label>
+            {isEditing ? (
+              <input
+                type="password"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                value={editablePassword}
+                onChange={(e) => setEditablePassword(e.target.value)}
+              />
+            ) : (
+              <span>••••••••</span> 
             )}
           </div>
           <div className="mb-4">

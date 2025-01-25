@@ -232,7 +232,7 @@ const FuelPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredFuelRecords
+              {filteredFuelRecords.reverse()
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((record, index) => {
                   const vehicle = vehicles.find((v) => v._id === record.vehicleId);
@@ -321,7 +321,7 @@ const FuelPage = () => {
         </TableContainer>
 
         <TablePagination
-          rowsPerPageOptions={[10, 25, 50]}
+          rowsPerPageOptions={[10, 25, 50, 100]}
           component="div"
           count={filteredFuelRecords.length}
           rowsPerPage={rowsPerPage}

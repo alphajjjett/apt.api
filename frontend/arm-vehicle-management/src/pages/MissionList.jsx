@@ -17,7 +17,7 @@ import {
   DialogTitle,
   IconButton,
   TablePagination,
-  ThemeProvider 
+  ThemeProvider,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -29,7 +29,7 @@ import withReactContent from "sweetalert2-react-content";
 import Modal from "react-bootstrap/Modal";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import BookingPrint from "../components/print/BookingPrint";
-import theme from '../css/theme'
+import theme from "../css/theme";
 
 const MySwal = withReactContent(Swal);
 
@@ -447,442 +447,454 @@ const MissionList = () => {
         </div>
       </div>
       <ThemeProvider theme={theme}>
-      {/* Search box */}
-      <TextField
-        label="ค้นหาด้วย หมายเลขประจำตัว"
-        variant="outlined"
-        fullWidth
-        value={searchQuery}
-        onChange={handleSearch}
-        style={{ marginBottom: "20px" }}
-      />
+        {/* Search box */}
+        <TextField
+          label="ค้นหาด้วย หมายเลขประจำตัว"
+          variant="outlined"
+          fullWidth
+          value={searchQuery}
+          onChange={handleSearch}
+          style={{ marginBottom: "20px" }}
+        />
 
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="mission table">
-          <TableHead>
-            <TableRow>
-              <TableCell>No.</TableCell>
-              <TableCell>ภารกิจ</TableCell>
-              {/* <TableCell align="left">Description</TableCell> */}
-              {isAdmin && <TableCell align="left">หมายเลขประจำตัว</TableCell>}
-              <TableCell align="left">ชื่อผู้จอง</TableCell>
-              <TableCell align="left">วันที่จอง</TableCell>
-              <TableCell align="left">วันที่คืน</TableCell>
-              <TableCell align="left">รถที่จอง</TableCell>
-              <TableCell align="left">สถานะ</TableCell>
-              <TableCell align="left">อัพเดทล่าสุด</TableCell>
-              {isAdmin && <TableCell align="left">เปลี่ยนสถานะ</TableCell>}
-              {/* เพิ่มการตรวจสอบเงื่อนไข assigned_user_id.selfid ด้วย */}
-              {(isAdmin ||
-                filteredMissions.some(
-                  (mission) =>
-                    mission.assigned_user_id?.selfid ===
-                    JSON.parse(
-                      atob(localStorage.getItem("token")?.split(".")[1])
-                    ).selfid
-                )) && <TableCell align="left">Actions</TableCell>}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredMissions
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((mission, index) => (
-                <TableRow key={mission._id}>
-                  <TableCell align="left">{index + 1}</TableCell>
-                  <TableCell component="th" scope="row">
-                    {mission.mission_name}
-                  </TableCell>
-                  {isAdmin && (
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="mission table">
+            <TableHead>
+              <TableRow>
+                <TableCell>No.</TableCell>
+                <TableCell>ภารกิจ</TableCell>
+                {/* <TableCell align="left">Description</TableCell> */}
+                {isAdmin && <TableCell align="left">หมายเลขประจำตัว</TableCell>}
+                <TableCell align="left">ชื่อผู้จอง</TableCell>
+                <TableCell align="left">วันที่จอง</TableCell>
+                <TableCell align="left">วันที่คืน</TableCell>
+                <TableCell align="left">รถที่จอง</TableCell>
+                <TableCell align="left">สถานะ</TableCell>
+                <TableCell align="left">อัพเดทล่าสุด</TableCell>
+                {isAdmin && <TableCell align="left">เปลี่ยนสถานะ</TableCell>}
+                {/* เพิ่มการตรวจสอบเงื่อนไข assigned_user_id.selfid ด้วย */}
+                {(isAdmin ||
+                  filteredMissions.some(
+                    (mission) =>
+                      mission.assigned_user_id?.selfid ===
+                      JSON.parse(
+                        atob(localStorage.getItem("token")?.split(".")[1])
+                      ).selfid
+                  )) && <TableCell align="left">Actions</TableCell>}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredMissions.reverse()
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((mission, index) => (
+                  <TableRow key={mission._id}>
+                    <TableCell align="left">{index + 1}</TableCell>
+                    <TableCell component="th" scope="row">
+                      {mission.mission_name}
+                    </TableCell>
+                    {isAdmin && (
+                      <TableCell align="left">
+                        {mission.assigned_user_id
+                          ? mission.assigned_user_id.selfid
+                          : "N/A"}
+                      </TableCell>
+                    )}
                     <TableCell align="left">
                       {mission.assigned_user_id
-                        ? mission.assigned_user_id.selfid
+                        ? mission.assigned_user_id.name
                         : "N/A"}
                     </TableCell>
-                  )}
-                  <TableCell align="left">
-                    {mission.assigned_user_id
-                      ? mission.assigned_user_id.name
-                      : "N/A"}
-                  </TableCell>
-                  <TableCell align="left">
-                    {new Date(mission.start_date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell align="left">
-                    {new Date(mission.end_date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell align="left">
-                    {mission.assigned_vehicle_id?.name || "N/A"}(
-                    {mission.assigned_vehicle_id?.license_plate || "N/A"})
-                  </TableCell>
-                  <TableCell align="left">
-                    {mission.status === "pending" ? (
-                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
-                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
-                        รออนุมัติ
-                      </span>
-                    ) : mission.status === "in-progress" ? (
-                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
-                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
-                        อยู่ระหว่างภารกิจ
-                      </span>
-                    ) : mission.status === "completed" ? (
-                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
-                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
-                        อนุมัติ
-                      </span>
-                    ) : mission.status === "cancel" ? (
-                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-red-600 text-red-600">
-                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-red-600"></span>
-                        ไม่อนุมัติ
-                      </span>
-                    ) : null}
-                  </TableCell>
-
-                  <TableCell align="left">
-                    {new Date(mission.updatedAt).toLocaleString()}
-                  </TableCell>
-
-                  {/* Show the status dropdown if the user is an admin */}
-                  {isAdmin && (
                     <TableCell align="left">
-                      <Button
-                        onClick={() => {
-                          handleStatusChange(mission._id, "in-progress"); // เปลี่ยนสถานะเป็น in-progress
-                        }}
-                        variant="contained"
-                        color="primary"
-                        disabled={
-                          mission.status === "completed" ||
-                          mission.status === "in-progress" ||
-                          mission.status === "cancel"
-                        } // disabled ถ้าสถานะเป็น completed หรือ in-progress
-                      >
-                        {mission.status === "in-progress"
-                          ? "อนุมัติเรียบร้อย"
-                          : "อนุมัติ"}
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          handleStatusChange(mission._id, "cancel"); // เปลี่ยนสถานะเป็น cancel
-                        }}
-                        variant="contained"
-                        color="error"
-                        disabled={
-                          mission.status === "completed" ||
-                          mission.status === "in-progress" ||
-                          mission.status === "cancel"
-                        } // disabled ถ้าสถานะเป็น completed หรือ in-progress
-                        style={{ marginLeft: "10px" }}
-                      >
-                        {mission.status === "cancel"
-                          ? "ไม่อนุมัติ"
-                          : "ไม่อนุมัติ"}
-                      </Button>
+                      {new Date(mission.start_date).toLocaleDateString()}
                     </TableCell>
-                  )}
-
-                  {/* Show edit/delete actions based on admin or assigned user permissions */}
-                  {(isAdmin ||
-                    mission.assigned_user_id?.selfid ===
-                      JSON.parse(
-                        atob(localStorage.getItem("token").split(".")[1])
-                      ).selfid) && (
                     <TableCell align="left">
-                      {/* รายละเอียด */}
-                      <IconButton
-                        edge="end"
-                        color="info"
-                        style={{ marginRight: "2px" }}
-                        onClick={() => handleEditClick(mission)}
-                        // disabled={mission.status !== 'pending' && !isAdmin}
-                      >
-                        <DescriptionIcon />
-                      </IconButton>
+                      {new Date(mission.end_date).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell align="left">
+                      {mission.assigned_vehicle_id?.name || "N/A"}(
+                      {mission.assigned_vehicle_id?.license_plate || "N/A"})
+                    </TableCell>
+                    <TableCell align="left">
+                      {mission.status === "pending" ? (
+                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
+                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
+                          รออนุมัติ
+                        </span>
+                      ) : mission.status === "in-progress" ? (
+                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
+                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
+                          อยู่ระหว่างภารกิจ
+                        </span>
+                      ) : mission.status === "completed" ? (
+                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
+                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
+                          อนุมัติ
+                        </span>
+                      ) : mission.status === "cancel" ? (
+                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-red-600 text-red-600">
+                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-red-600"></span>
+                          ไม่อนุมัติ
+                        </span>
+                      ) : null}
+                    </TableCell>
 
-                      {/* ลบข้อมูล */}
-                      <IconButton
-                        edge="end"
-                        color="error"
-                        style={{ marginRight: "2px" }}
-                        onClick={() => handleDelete(mission._id)}
-                        disabled={mission.status !== "pending" && !isAdmin}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+                    <TableCell align="left">
+                      {new Date(mission.updatedAt).toLocaleString()}
+                    </TableCell>
 
-                      <IconButton
-                        edge="end"
-                        color="secondary"
-                        style={{ marginRight: "2px" }}
-                        disabled={
-                          isRequesting ||
-                          mission.status === "in-progress" ||
-                          mission.status === "completed" ||
-                          mission.status === "cancel"
-                        }
-                        onClick={() => {
-                          handleFuelRequestClick(mission);
-                        }}
-                      >
-                        <LocalGasStationIcon />
-                        {isRequesting}
-                      </IconButton>
-
-                      {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
-                      {isAdmin && new Date() >= new Date(mission.end_date) && (
-                        <IconButton
-                          variant="outlined"
-                          color="success"
-                          style={{ marginRight: "2px" }}
+                    {/* Show the status dropdown if the user is an admin */}
+                    {isAdmin && (
+                      <TableCell align="left">
+                        <Button
                           onClick={() => {
-                            handleReturnClick(mission);
-                            handleGoToReturn();
+                            handleStatusChange(mission._id, "in-progress"); // เปลี่ยนสถานะเป็น in-progress
                           }}
+                          variant="contained"
+                          color="primary"
                           disabled={
                             mission.status === "completed" ||
-                            mission.status === "cancel" ||
-                            (!isAdmin && mission.status !== "pending")
-                          }
+                            mission.status === "in-progress" ||
+                            mission.status === "cancel"
+                          } // disabled ถ้าสถานะเป็น completed หรือ in-progress
                         >
-                          <TodayIcon />
-                        </IconButton>
-                      )}
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={[10]}
-          component="div"
-          count={missions.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </TableContainer>
+                          {mission.status === "in-progress"
+                            ? "อนุมัติเรียบร้อย"
+                            : "อนุมัติ"}
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            handleStatusChange(mission._id, "cancel"); // เปลี่ยนสถานะเป็น cancel
+                          }}
+                          variant="contained"
+                          color="error"
+                          disabled={
+                            mission.status === "completed" ||
+                            mission.status === "in-progress" ||
+                            mission.status === "cancel"
+                          } // disabled ถ้าสถานะเป็น completed หรือ in-progress
+                          style={{ marginLeft: "10px" }}
+                        >
+                          {mission.status === "cancel"
+                            ? "ไม่อนุมัติ"
+                            : "ไม่อนุมัติ"}
+                        </Button>
+                      </TableCell>
+                    )}
 
-      {/* Edit Dialog */}
-      <Dialog
-        open={editDialogOpen}
-        onClose={() => {
-          setEditDialogOpen(false);
-          setIsEditing(false);
-        }}
-        maxWidth="sm" // กำหนดขนาดให้กว้างขึ้น (เช่น 'sm', 'md', 'lg', 'xl')
-        fullWidth // ทำให้ Dialog ใช้พื้นที่เต็ม width ของ container
-      >
-        {/* Title ของข้อมูลภารกิจ */}
-        <DialogTitle style={{ position: "relative", fontSize: "30px",textAlign: "center" }}>
-          ข้อมูลการจอง
-          {/* IconButton สำหรับการแก้ไข */}
-          <DialogActions
+                    {/* Show edit/delete actions based on admin or assigned user permissions */}
+                    {(isAdmin ||
+                      mission.assigned_user_id?.selfid ===
+                        JSON.parse(
+                          atob(localStorage.getItem("token").split(".")[1])
+                        ).selfid) && (
+                      <TableCell align="left">
+                        {/* รายละเอียด */}
+                        <IconButton
+                          edge="end"
+                          color="info"
+                          style={{ marginRight: "2px" }}
+                          onClick={() => handleEditClick(mission)}
+                          // disabled={mission.status !== 'pending' && !isAdmin}
+                        >
+                          <DescriptionIcon />
+                        </IconButton>
+
+                        {/* ลบข้อมูล */}
+                        <IconButton
+                          edge="end"
+                          color="error"
+                          style={{ marginRight: "2px" }}
+                          onClick={() => handleDelete(mission._id)}
+                          disabled={mission.status !== "pending" && !isAdmin}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+
+                        <IconButton
+                          edge="end"
+                          color="secondary"
+                          style={{ marginRight: "2px" }}
+                          disabled={
+                            isRequesting ||
+                            mission.status === "in-progress" ||
+                            mission.status === "completed" ||
+                            mission.status === "cancel"
+                          }
+                          onClick={() => {
+                            handleFuelRequestClick(mission);
+                          }}
+                        >
+                          <LocalGasStationIcon />
+                          {isRequesting}
+                        </IconButton>
+
+                        {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
+                        {isAdmin &&
+                          new Date() >= new Date(mission.end_date) && (
+                            <IconButton
+                              variant="outlined"
+                              color="success"
+                              style={{ marginRight: "2px" }}
+                              onClick={() => {
+                                handleReturnClick(mission);
+                                handleGoToReturn();
+                              }}
+                              disabled={
+                                mission.status === "completed" ||
+                                mission.status === "cancel" ||
+                                (!isAdmin && mission.status !== "pending")
+                              }
+                            >
+                              <TodayIcon />
+                            </IconButton>
+                          )}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 50, 100]}
+            component="div"
+            count={missions.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
+
+        {/* Edit Dialog */}
+        <Dialog
+          open={editDialogOpen}
+          onClose={() => {
+            setEditDialogOpen(false);
+            setIsEditing(false);
+          }}
+          maxWidth="sm" // กำหนดขนาดให้กว้างขึ้น (เช่น 'sm', 'md', 'lg', 'xl')
+          fullWidth // ทำให้ Dialog ใช้พื้นที่เต็ม width ของ container
+        >
+          {/* Title ของข้อมูลภารกิจ */}
+          <DialogTitle
             style={{
-              padding: "0 20px 20px",
-              position: "absolute",
-              right: 0,
-              top: 0,
-              marginTop: "10px",
+              position: "relative",
+              fontSize: "30px",
+              textAlign: "center",
             }}
           >
-            <IconButton
-              onClick={() => setIsEditing(!isEditing)}
-              edge="end"
-              color="primary"
-              disabled={
-                (selectedMission.status === "in-progress" ||
-                  selectedMission.status === "completed") &&
-                !isAdmin
-              }
-            >
-              <EditIcon />
-            </IconButton>
-          </DialogActions>
-        </DialogTitle>
-
-        <DialogContent sx={{ fontFamily: 'Noto Sans Thai, sans-serif' }}>
-          {selectedMission && (
-            <div>
-              <p>
-                <strong>ภารกิจ:</strong> {selectedMission.mission_name}
-              </p>
-              <p>
-                <strong>รายละเอียดภารกิจ:</strong> {selectedMission.description}
-              </p>
-              <p>
-                <strong>ผู้จอง:</strong>{" "}
-                {selectedMission.assigned_user_id?.name || "N/A"}
-              </p>
-              <p>
-                <strong>วันที่จอง:</strong>{" "}
-                {new Date(selectedMission.start_date).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>วันที่คืน:</strong>{" "}
-                {new Date(selectedMission.end_date).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>ยี่ห้อรถ:</strong>{" "}
-                {selectedMission.assigned_vehicle_id?.name || "N/A"} (
-                {selectedMission.assigned_vehicle_id?.license_plate || "N/A"})
-              </p>
-              <p>
-                <strong>ประเภทเชื้อเพลิง:</strong>{" "}
-                {selectedMission.assigned_vehicle_id?.fuel_type || "N/A"}
-              </p>
-
-              {/* เพิ่ม PDFDownloadLink ที่นี่ */}
-              <PDFDownloadLink
-                document={
-                  <BookingPrint
-                    mission={selectedMission} // ส่ง mission เดี่ยวๆ
-                    vehicle={selectedMission}
-                    user={selectedMission}
-                  />
-                }
-                fileName={`Mission_.pdf`}
-              >
-                {({ loading }) => (
-                  <Button variant="outlined" color="primary" disabled={loading}>
-                    {loading ? "กำลังโหลด..." : "ดาวน์โหลดข้อมูล"}
-                  </Button>
-                )}
-              </PDFDownloadLink>
-            </div>
-          )}
-        </DialogContent>
-        {/* ฟอร์มแก้ไขข้อมูลการจอง */}
-        {isEditing && (
-          <>
-            <DialogTitle>แก้ไขข้อมูลการจอง</DialogTitle>
-            <DialogContent>
-              <div style={{ padding: "5px 0" }}>
-                <TextField
-                  label="ชื่อภารกิจ"
-                  variant="outlined"
-                  fullWidth
-                  name="mission_name"
-                  value={updatedMission.mission_name || ""}
-                  onChange={handleEditChange}
-                  style={{ marginBottom: "20px" }}
-                />
-
-                <TextField
-                  label="รายละเอียดภารกิจ"
-                  variant="outlined"
-                  fullWidth
-                  name="description"
-                  value={updatedMission.description || ""}
-                  onChange={handleEditChange}
-                  style={{ marginBottom: "20px" }}
-                />
-
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setShowModal(true)}
-                  fullWidth
-                >
-                  {selectedVehicle
-                    ? `${selectedVehicle.name} (${selectedVehicle.license_plate})`
-                    : "เปลี่ยนรถ"}
-                </Button>
-              </div>
-            </DialogContent>
-
-            {/* ปุ่มบันทึก และแก้ไขข้อมูลการจอง (ให้อยู่ข้างกัน) */}
+            ข้อมูลการจอง
+            {/* IconButton สำหรับการแก้ไข */}
             <DialogActions
               style={{
                 padding: "0 20px 20px",
-                display: "flex",
-                justifyContent: "space-between",
+                position: "absolute",
+                right: 0,
+                top: 0,
+                marginTop: "10px",
               }}
             >
-              <Button
-                onClick={() => {
-                  setEditDialogOpen(false);
-                  setIsEditing(false);
-                }}
-                color="error"
-                variant="contained"
-                style={{
-                  width: "100%",
-                  color: "white",
-                  fontWeight: "bold",
-                  borderRadius: "8px",
-                  padding: "12px",
-                }}
+              <IconButton
+                onClick={() => setIsEditing(!isEditing)}
+                edge="end"
+                color="primary"
+                disabled={
+                  (selectedMission.status === "in-progress" ||
+                    selectedMission.status === "completed") &&
+                  !isAdmin
+                }
               >
-                ปิด
-              </Button>
-
-              <Button
-                onClick={handleSubmitEdit}
-                color="success"
-                variant="contained"
-                style={{
-                  width: "100%",
-                  color: "white",
-                  fontWeight: "bold",
-                  borderRadius: "8px",
-                  padding: "12px",
-                }}
-              >
-                บันทึก
-              </Button>
+                <EditIcon />
+              </IconButton>
             </DialogActions>
-          </>
-        )}
-      </Dialog>
+          </DialogTitle>
 
-      {/* Modal for vehicle selection */}
-      <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        centered
-        size="lg"
-        style={{ zIndex: 3000 }}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>เลือกรถ</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {vehicles.map((vehicle) => (
-              <div
-                key={vehicle._id}
-                className="border border-gray-300 p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg"
-                onClick={() => handleVehicleSelect(vehicle._id)}
-              >
-                <div className="font-bold text-lg">{vehicle.name}</div>
-                <div className="text-sm text-gray-500">
-                  รุ่น: {vehicle.model}
-                </div>
-                <div className="text-sm text-gray-500">
-                  ทะเบียน: {vehicle.license_plate}
-                </div>
-                <div className="text-sm text-gray-500">
-                  เชื้อเพลิง: {vehicle.fuel_type}
-                </div>
-                {/* <div className="text-sm text-gray-500">ข้อมูลซ่อมบำรุงล่าสุด: {vehicle.description}</div> */}
+          <DialogContent sx={{ fontFamily: "Noto Sans Thai, sans-serif" }}>
+            {selectedMission && (
+              <div>
+                <p>
+                  <strong>ภารกิจ:</strong> {selectedMission.mission_name}
+                </p>
+                <p>
+                  <strong>รายละเอียดภารกิจ:</strong>{" "}
+                  {selectedMission.description}
+                </p>
+                <p>
+                  <strong>ผู้จอง:</strong>{" "}
+                  {selectedMission.assigned_user_id?.name || "N/A"}
+                </p>
+                <p>
+                  <strong>วันที่จอง:</strong>{" "}
+                  {new Date(selectedMission.start_date).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>วันที่คืน:</strong>{" "}
+                  {new Date(selectedMission.end_date).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>ยี่ห้อรถ:</strong>{" "}
+                  {selectedMission.assigned_vehicle_id?.name || "N/A"} (
+                  {selectedMission.assigned_vehicle_id?.license_plate || "N/A"})
+                </p>
+                <p>
+                  <strong>ประเภทเชื้อเพลิง:</strong>{" "}
+                  {selectedMission.assigned_vehicle_id?.fuel_type || "N/A"}
+                </p>
+
+                {/* เพิ่ม PDFDownloadLink ที่นี่ */}
+                <PDFDownloadLink
+                  document={
+                    <BookingPrint
+                      mission={selectedMission} // ส่ง mission เดี่ยวๆ
+                      vehicle={selectedMission}
+                      user={selectedMission}
+                    />
+                  }
+                  fileName={`Mission_.pdf`}
+                >
+                  {({ loading }) => (
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      disabled={loading}
+                    >
+                      {loading ? "กำลังโหลด..." : "ดาวน์โหลดข้อมูล"}
+                    </Button>
+                  )}
+                </PDFDownloadLink>
               </div>
-            ))}
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <button
-            onClick={() => {
-              setShowModal(false);
-            }}
-            className="bg-gray-500 text-white py-2 px-4 rounded"
-          >
-            ยกเลิก
-          </button>
-        </Modal.Footer>
-      </Modal>
-    </ThemeProvider>
+            )}
+          </DialogContent>
+          {/* ฟอร์มแก้ไขข้อมูลการจอง */}
+          {isEditing && (
+            <>
+              <DialogTitle>แก้ไขข้อมูลการจอง</DialogTitle>
+              <DialogContent>
+                <div style={{ padding: "5px 0" }}>
+                  <TextField
+                    label="ชื่อภารกิจ"
+                    variant="outlined"
+                    fullWidth
+                    name="mission_name"
+                    value={updatedMission.mission_name || ""}
+                    onChange={handleEditChange}
+                    style={{ marginBottom: "20px" }}
+                  />
+
+                  <TextField
+                    label="รายละเอียดภารกิจ"
+                    variant="outlined"
+                    fullWidth
+                    name="description"
+                    value={updatedMission.description || ""}
+                    onChange={handleEditChange}
+                    style={{ marginBottom: "20px" }}
+                  />
+
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setShowModal(true)}
+                    fullWidth
+                  >
+                    {selectedVehicle
+                      ? `${selectedVehicle.name} (${selectedVehicle.license_plate})`
+                      : "เปลี่ยนรถ"}
+                  </Button>
+                </div>
+              </DialogContent>
+
+              {/* ปุ่มบันทึก และแก้ไขข้อมูลการจอง (ให้อยู่ข้างกัน) */}
+              <DialogActions
+                style={{
+                  padding: "0 20px 20px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Button
+                  onClick={() => {
+                    setEditDialogOpen(false);
+                    setIsEditing(false);
+                  }}
+                  color="error"
+                  variant="contained"
+                  style={{
+                    width: "100%",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "8px",
+                    padding: "12px",
+                  }}
+                >
+                  ปิด
+                </Button>
+
+                <Button
+                  onClick={handleSubmitEdit}
+                  color="success"
+                  variant="contained"
+                  style={{
+                    width: "100%",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "8px",
+                    padding: "12px",
+                  }}
+                >
+                  บันทึก
+                </Button>
+              </DialogActions>
+            </>
+          )}
+        </Dialog>
+
+        {/* Modal for vehicle selection */}
+        <Modal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          centered
+          size="lg"
+          style={{ zIndex: 3000 }}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>เลือกรถ</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {vehicles.map((vehicle) => (
+                <div
+                  key={vehicle._id}
+                  className="border border-gray-300 p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg"
+                  onClick={() => handleVehicleSelect(vehicle._id)}
+                >
+                  <div className="font-bold text-lg">{vehicle.name}</div>
+                  <div className="text-sm text-gray-500">
+                    รุ่น: {vehicle.model}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    ทะเบียน: {vehicle.license_plate}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    เชื้อเพลิง: {vehicle.fuel_type}
+                  </div>
+                  {/* <div className="text-sm text-gray-500">ข้อมูลซ่อมบำรุงล่าสุด: {vehicle.description}</div> */}
+                </div>
+              ))}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              onClick={() => {
+                setShowModal(false);
+              }}
+              className="bg-gray-500 text-white py-2 px-4 rounded"
+            >
+              ยกเลิก
+            </button>
+          </Modal.Footer>
+        </Modal>
+      </ThemeProvider>
     </div>
   );
 };

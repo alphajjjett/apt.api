@@ -81,7 +81,7 @@ const getAllAdmins = async (req, res) => {
     //   return res.status(403).json({ message: "Unauthorized" });
     // }
 
-    const users = await Admin.find({}, "-password"); 
+    const users = await Admin.find({}, "-password");
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });
@@ -90,7 +90,7 @@ const getAllAdmins = async (req, res) => {
 
 const getAdminById = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -113,8 +113,7 @@ const getAdminById = async (req, res) => {
 
 const updateAdmin = async (req, res) => {
   const { id } = req.params;
-
-  const { name, email, description, profileImage } = req.body;
+  const { name, email, description, profileImage, password } = req.body;
 
   try {
     const admin = await Admin.findById(id);
@@ -126,6 +125,11 @@ const updateAdmin = async (req, res) => {
     admin.email = email || admin.email;
     admin.description = description || admin.description;
     admin.profileImage = profileImage || admin.profileImage;
+
+    if (password) {
+      const hashedPassword  = await bcrypt.hash(password, 10);
+      admin.password = hashedPassword;
+    }
 
     const updatedAdmin = await admin.save();
 
@@ -153,7 +157,9 @@ const deleteAdmin = async (req, res) => {
     res.status(200).json({ message: "Admin deleted successfully" });
   } catch (error) {
     console.error("Error deleting admin:", error);
-    res.status(500).json({ message: "Error deleting admin", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error deleting admin", error: error.message });
   }
 };
 

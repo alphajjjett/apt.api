@@ -254,7 +254,7 @@ const ReturnInformation = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredReturn
+            {filteredReturn.reverse()
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((ret, index) => (
                 <TableRow key={ret._id}>
@@ -322,7 +322,7 @@ const ReturnInformation = () => {
           </TableBody>
         </Table>
         <TablePagination
-          rowsPerPageOptions={[10]}
+          rowsPerPageOptions={[10, 25, 50, 100]}
           component="div"
           count={returns.length}
           rowsPerPage={rowsPerPage}

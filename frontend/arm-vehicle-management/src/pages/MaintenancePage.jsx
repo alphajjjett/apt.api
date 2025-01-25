@@ -188,7 +188,7 @@ const MaintenancePage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredData
+              {filteredData.reverse()
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((maintenance, index) => (
                   <TableRow key={maintenance._id}>
@@ -259,7 +259,7 @@ const MaintenancePage = () => {
             </TableBody>
           </Table>
           <TablePagination
-            rowsPerPageOptions={[10]}
+            rowsPerPageOptions={[10, 25, 50, 100]}
             component="div"
             count={maintenanceRecords.length}
             rowsPerPage={rowsPerPage}

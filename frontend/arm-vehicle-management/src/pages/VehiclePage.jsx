@@ -19,10 +19,12 @@ import {
   DialogContent,
   DialogTitle,
   TablePagination,
+  CircularProgress,
+  Typography
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import theme from '../css/theme'
+import theme from "../css/theme";
 const MySwal = withReactContent(Swal);
 
 const VehicleList = () => {
@@ -189,9 +191,22 @@ const VehicleList = () => {
     }
   };
 
-  if (loading) return <p>Loading vehicles...</p>;
-  if (error) return <p>{error}</p>;
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularProgress />
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Typography variant="h6" color="error">{error}</Typography>
+      </div>
+    );
+  }
+  
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg font-noto">
       <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลรถ</h2>
@@ -202,169 +217,174 @@ const VehicleList = () => {
         </div>
       </div>
       <ThemeProvider theme={theme}>
-      {/* Search box */}
-      <TextField
-        label="ค้นหา โดย เลขทะเบียนรถ"
-        variant="outlined"
-        fullWidth
-        value={searchQuery}
-        onChange={handleSearch}
-        style={{ marginBottom: "20px" }}
-      />
-
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="vehicle table">
-          <TableHead>
-            <TableRow>
-              <TableCell>No.</TableCell>
-              <TableCell>ยี่ห้อรถ</TableCell>
-              <TableCell align="left">รุ่น</TableCell>
-              <TableCell align="left">เลขทะเบียนรถ</TableCell>
-              <TableCell align="left">ประเภทเชื้อเพลง</TableCell>
-              <TableCell align="left">สถานะ</TableCell>
-              {isAdmin && <TableCell align="left">เปลี่ยนสถานะ</TableCell>}
-              {isAdmin && <TableCell align="left">Actions</TableCell>}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredVehicles
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((vehicle, index) => (
-                <TableRow key={vehicle._id}>
-                  <TableCell align="left">{index + 1}</TableCell>
-                  <TableCell component="th" scope="row">
-                    {vehicle.name}
-                  </TableCell>
-                  <TableCell align="left">{vehicle.model}</TableCell>
-                  <TableCell align="left">{vehicle.license_plate}</TableCell>
-                  <TableCell align="left">{vehicle.fuel_type}</TableCell>
-                  <TableCell align="left">
-                    {vehicle.status === "maintenance" ? (
-                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
-                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
-                        ซ่อมบำรุง
-                      </span>
-                    ) : vehicle.status === "in-use" ? (
-                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
-                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
-                        อยู่ระหว่างการใช้งาน
-                      </span>
-                    ) : vehicle.status === "available" ? (
-                      <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
-                        <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
-                        พร้อมใช้งาน
-                      </span>
-                    ) : null}
-                  </TableCell>
-                  {isAdmin && (
-                    <>
-                      <TableCell align="left">
-                        <Button
-                          variant="contained"
-                          color="success"
-                          onClick={() =>
-                            handleStatusChange(vehicle._id, "available")
-                          }
-                          disabled={vehicle.status === "available"}
-                        >
-                          พร้อมใช้งาน
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() =>
-                            handleStatusChange(vehicle._id, "maintenance")
-                          }
-                          disabled={vehicle.status === "maintenance"}
-                          style={{ marginLeft: "10px" }}
-                        >
-                          ซ่อมบำรุง
-                        </Button>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={() => handleEditClick(vehicle)}
-                          style={{ marginRight: "10px" }}
-                        >
-                          <EditIcon />
-                          แก้ไขข้อมูลรถ
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          onClick={() => handleDelete(vehicle._id)}
-                        >
-                          <DeleteIcon />
-                          ลบข้อมูล
-                        </Button>
-                      </TableCell>
-                    </>
-                  )}
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={[10]}
-          component="div"
-          count={vehicles.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+        {/* Search box */}
+        <TextField
+          label="ค้นหา โดย เลขทะเบียนรถ"
+          variant="outlined"
+          fullWidth
+          value={searchQuery}
+          onChange={handleSearch}
+          style={{ marginBottom: "20px" }}
         />
-      </TableContainer>
 
-      {/* Edit Dialog */}
-      {isAdmin && (
-        <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-          <DialogTitle>แก้ไขข้อมูลรถ</DialogTitle>
-          <DialogContent >
-            <TextField
-              label="ยี่ห้อรถ"
-              name="name"
-              value={updatedVehicle.name}
-              onChange={handleEditChange}
-              fullWidth
-              style={{ marginBottom: "10px" }}
-            />
-            <TextField
-              label="รุ่น"
-              name="model"
-              value={updatedVehicle.model}
-              onChange={handleEditChange}
-              fullWidth
-              style={{ marginBottom: "10px" }}
-            />
-            <TextField
-              label="หมายเลขทะเบียน"
-              name="license_plate"
-              value={updatedVehicle.license_plate}
-              onChange={handleEditChange}
-              fullWidth
-              style={{ marginBottom: "10px" }}
-            />
-            <TextField
-              label="ประเภทเชื้อเพลิง"
-              name="fuel_type"
-              value={updatedVehicle.fuel_type}
-              onChange={handleEditChange}
-              fullWidth
-              style={{ marginBottom: "10px" }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setEditDialogOpen(false)} color="secondary">
-              ยกเลิก
-            </Button>
-            <Button onClick={handleSubmitEdit} color="primary">
-              บักทึก
-            </Button>
-          </DialogActions>
-        </Dialog> 
-      )}
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="vehicle table">
+            <TableHead>
+              <TableRow>
+                <TableCell>No.</TableCell>
+                <TableCell>ยี่ห้อรถ</TableCell>
+                <TableCell align="left">รุ่น</TableCell>
+                <TableCell align="left">เลขทะเบียนรถ</TableCell>
+                <TableCell align="left">ประเภทเชื้อเพลง</TableCell>
+                <TableCell align="left">สถานะ</TableCell>
+                {isAdmin && <TableCell align="left">เปลี่ยนสถานะ</TableCell>}
+                {isAdmin && <TableCell align="left">Actions</TableCell>}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredVehicles.reverse()
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((vehicle, index) => (
+                  <TableRow key={vehicle._id}>
+                    <TableCell align="left">{index + 1}</TableCell>
+                    <TableCell component="th" scope="row">
+                      {vehicle.name}
+                    </TableCell>
+                    <TableCell align="left">{vehicle.model}</TableCell>
+                    <TableCell align="left">{vehicle.license_plate}</TableCell>
+                    <TableCell align="left">{vehicle.fuel_type}</TableCell>
+                    <TableCell align="left">
+                      {vehicle.status === "maintenance" ? (
+                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
+                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
+                          ซ่อมบำรุง
+                        </span>
+                      ) : vehicle.status === "in-use" ? (
+                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
+                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
+                          อยู่ระหว่างการใช้งาน
+                        </span>
+                      ) : vehicle.status === "available" ? (
+                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
+                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
+                          พร้อมใช้งาน
+                        </span>
+                      ) : null}
+                    </TableCell>
+                    {isAdmin && (
+                      <>
+                        <TableCell align="left">
+                          <Button
+                            variant="contained"
+                            color="success"
+                            onClick={() =>
+                              handleStatusChange(vehicle._id, "available")
+                            }
+                            disabled={vehicle.status === "available"}
+                          >
+                            พร้อมใช้งาน
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() =>
+                              handleStatusChange(vehicle._id, "maintenance")
+                            }
+                            disabled={vehicle.status === "maintenance"}
+                            style={{ marginLeft: "10px" }}
+                          >
+                            ซ่อมบำรุง
+                          </Button>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => handleEditClick(vehicle)}
+                            style={{ marginRight: "10px" }}
+                          >
+                            <EditIcon />
+                            แก้ไขข้อมูลรถ
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => handleDelete(vehicle._id)}
+                          >
+                            <DeleteIcon />
+                            ลบข้อมูล
+                          </Button>
+                        </TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 50, 100]}
+            component="div"
+            count={vehicles.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
+        {/* Edit Dialog */}
+        {isAdmin && (
+          <Dialog
+            open={editDialogOpen}
+            onClose={() => setEditDialogOpen(false)}
+          >
+            <DialogTitle>แก้ไขข้อมูลรถ</DialogTitle>
+            <DialogContent dividers>
+              <TextField
+                label="ยี่ห้อรถ"
+                name="name"
+                value={updatedVehicle.name}
+                onChange={handleEditChange}
+                fullWidth
+                margin="dense" // เพิ่ม margin ให้มีระยะห่างระหว่าง fields
+              />
+              <TextField
+                label="รุ่น"
+                name="model"
+                value={updatedVehicle.model}
+                onChange={handleEditChange}
+                fullWidth
+                margin="dense"
+              />
+              <TextField
+                label="หมายเลขทะเบียน"
+                name="license_plate"
+                value={updatedVehicle.license_plate}
+                onChange={handleEditChange}
+                fullWidth
+                margin="dense"
+              />
+              <TextField
+                label="ประเภทเชื้อเพลิง"
+                name="fuel_type"
+                value={updatedVehicle.fuel_type}
+                onChange={handleEditChange}
+                fullWidth
+                margin="dense"
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => setEditDialogOpen(false)}
+                color="secondary"
+              >
+                ยกเลิก
+              </Button>
+              <Button onClick={handleSubmitEdit} color="primary">
+                บักทึก
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
       </ThemeProvider>
     </div>
   );

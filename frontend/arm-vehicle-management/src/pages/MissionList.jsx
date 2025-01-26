@@ -484,174 +484,179 @@ const MissionList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredMissions.reverse()
+              {filteredMissions
+                .reverse()
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((mission, index) => (
-                  <TableRow key={mission._id}>
-                    <TableCell align="left">{index + 1}</TableCell>
-                    <TableCell component="th" scope="row">
-                      {mission.mission_name}
-                    </TableCell>
-                    {isAdmin && (
+                .map((mission, index) => {
+                  const UserSelfID =
+                    mission.assigned_user_id?.selfid ===
+                    JSON.parse(
+                      atob(localStorage.getItem("token").split(".")[1])
+                    ).selfid;
+                  return (
+                    <TableRow key={mission._id}>
+                      <TableCell align="left">{index + 1}</TableCell>
+                      <TableCell component="th" scope="row">
+                        {mission.mission_name}
+                      </TableCell>
+                      {isAdmin && (
+                        <TableCell align="left">
+                          {mission.assigned_user_id
+                            ? mission.assigned_user_id.selfid
+                            : "N/A"}
+                        </TableCell>
+                      )}
                       <TableCell align="left">
                         {mission.assigned_user_id
-                          ? mission.assigned_user_id.selfid
+                          ? mission.assigned_user_id.name
                           : "N/A"}
                       </TableCell>
-                    )}
-                    <TableCell align="left">
-                      {mission.assigned_user_id
-                        ? mission.assigned_user_id.name
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell align="left">
-                      {new Date(mission.start_date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell align="left">
-                      {new Date(mission.end_date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell align="left">
-                      {mission.assigned_vehicle_id?.name || "N/A"}(
-                      {mission.assigned_vehicle_id?.license_plate || "N/A"})
-                    </TableCell>
-                    <TableCell align="left">
-                      {mission.status === "pending" ? (
-                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
-                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
-                          รออนุมัติ
-                        </span>
-                      ) : mission.status === "in-progress" ? (
-                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
-                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
-                          อยู่ระหว่างภารกิจ
-                        </span>
-                      ) : mission.status === "completed" ? (
-                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
-                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
-                          อนุมัติ
-                        </span>
-                      ) : mission.status === "cancel" ? (
-                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-red-600 text-red-600">
-                          <span className="w-2.5 h-2.5 mr-2 rounded-full bg-red-600"></span>
-                          ไม่อนุมัติ
-                        </span>
-                      ) : null}
-                    </TableCell>
-
-                    <TableCell align="left">
-                      {new Date(mission.updatedAt).toLocaleString()}
-                    </TableCell>
-
-                    {/* Show the status dropdown if the user is an admin */}
-                    {isAdmin && (
                       <TableCell align="left">
-                        <Button
-                          onClick={() => {
-                            handleStatusChange(mission._id, "in-progress"); // เปลี่ยนสถานะเป็น in-progress
-                          }}
-                          variant="contained"
-                          color="primary"
-                          disabled={
-                            mission.status === "completed" ||
-                            mission.status === "in-progress" ||
-                            mission.status === "cancel"
-                          } // disabled ถ้าสถานะเป็น completed หรือ in-progress
-                        >
-                          {mission.status === "in-progress"
-                            ? "อนุมัติเรียบร้อย"
-                            : "อนุมัติ"}
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            handleStatusChange(mission._id, "cancel"); // เปลี่ยนสถานะเป็น cancel
-                          }}
-                          variant="contained"
-                          color="error"
-                          disabled={
-                            mission.status === "completed" ||
-                            mission.status === "in-progress" ||
-                            mission.status === "cancel"
-                          } // disabled ถ้าสถานะเป็น completed หรือ in-progress
-                          style={{ marginLeft: "10px" }}
-                        >
-                          {mission.status === "cancel"
-                            ? "ไม่อนุมัติ"
-                            : "ไม่อนุมัติ"}
-                        </Button>
+                        {new Date(mission.start_date).toLocaleDateString()}
                       </TableCell>
-                    )}
-
-                    {/* Show edit/delete actions based on admin or assigned user permissions */}
-                    {(isAdmin ||
-                      mission.assigned_user_id?.selfid ===
-                        JSON.parse(
-                          atob(localStorage.getItem("token").split(".")[1])
-                        ).selfid) && (
                       <TableCell align="left">
-                        {/* รายละเอียด */}
-                        <IconButton
-                          edge="end"
-                          color="info"
-                          style={{ marginRight: "2px" }}
-                          onClick={() => handleEditClick(mission)}
-                          // disabled={mission.status !== 'pending' && !isAdmin}
-                        >
-                          <DescriptionIcon />
-                        </IconButton>
-
-                        {/* ลบข้อมูล */}
-                        <IconButton
-                          edge="end"
-                          color="error"
-                          style={{ marginRight: "2px" }}
-                          onClick={() => handleDelete(mission._id)}
-                          disabled={mission.status !== "pending" && !isAdmin}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-
-                        <IconButton
-                          edge="end"
-                          color="secondary"
-                          style={{ marginRight: "2px" }}
-                          disabled={
-                            isRequesting ||
-                            mission.status === "in-progress" ||
-                            mission.status === "completed" ||
-                            mission.status === "cancel"
-                          }
-                          onClick={() => {
-                            handleFuelRequestClick(mission);
-                          }}
-                        >
-                          <LocalGasStationIcon />
-                          {isRequesting}
-                        </IconButton>
-
-                        {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
-                        {isAdmin &&
-                          new Date() >= new Date(mission.end_date) && (
-                            <IconButton
-                              variant="outlined"
-                              color="success"
-                              style={{ marginRight: "2px" }}
-                              onClick={() => {
-                                handleReturnClick(mission);
-                                handleGoToReturn();
-                              }}
-                              disabled={
-                                mission.status === "completed" ||
-                                mission.status === "cancel" ||
-                                (!isAdmin && mission.status !== "pending")
-                              }
-                            >
-                              <TodayIcon />
-                            </IconButton>
-                          )}
+                        {new Date(mission.end_date).toLocaleDateString()}
                       </TableCell>
-                    )}
-                  </TableRow>
-                ))}
+                      <TableCell align="left">
+                        {mission.assigned_vehicle_id?.name || "N/A"}(
+                        {mission.assigned_vehicle_id?.license_plate || "N/A"})
+                      </TableCell>
+                      <TableCell align="left">
+                        {mission.status === "pending" ? (
+                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
+                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
+                            รออนุมัติ
+                          </span>
+                        ) : mission.status === "in-progress" ? (
+                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-orange-400 text-orange-400">
+                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-orange-400"></span>
+                            อยู่ระหว่างภารกิจ
+                          </span>
+                        ) : mission.status === "completed" ? (
+                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-green-400 text-green-400">
+                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-green-400"></span>
+                            อนุมัติ
+                          </span>
+                        ) : mission.status === "cancel" ? (
+                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-red-600 text-red-600">
+                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-red-600"></span>
+                            ไม่อนุมัติ
+                          </span>
+                        ) : null}
+                      </TableCell>
+
+                      <TableCell align="left">
+                        {new Date(mission.updatedAt).toLocaleString()}
+                      </TableCell>
+
+                      {/* Show the status dropdown if the user is an admin */}
+                      {isAdmin && (
+                        <TableCell align="left">
+                          <Button
+                            onClick={() => {
+                              handleStatusChange(mission._id, "in-progress"); // เปลี่ยนสถานะเป็น in-progress
+                            }}
+                            variant="contained"
+                            color="primary"
+                            disabled={
+                              mission.status === "completed" ||
+                              mission.status === "in-progress" ||
+                              mission.status === "cancel"
+                            } // disabled ถ้าสถานะเป็น completed หรือ in-progress
+                          >
+                            {mission.status === "in-progress"
+                              ? "อนุมัติเรียบร้อย"
+                              : "อนุมัติ"}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              handleStatusChange(mission._id, "cancel"); // เปลี่ยนสถานะเป็น cancel
+                            }}
+                            variant="contained"
+                            color="error"
+                            disabled={
+                              mission.status === "completed" ||
+                              mission.status === "in-progress" ||
+                              mission.status === "cancel"
+                            } // disabled ถ้าสถานะเป็น completed หรือ in-progress
+                            style={{ marginLeft: "10px" }}
+                          >
+                            {mission.status === "cancel"
+                              ? "ไม่อนุมัติ"
+                              : "ไม่อนุมัติ"}
+                          </Button>
+                        </TableCell>
+                      )}
+
+                      {/* Show edit/delete actions based on admin or assigned user permissions */}
+                      {(isAdmin ||
+                        UserSelfID) && (
+                        <TableCell align="left">
+                          {/* รายละเอียด */}
+                          <IconButton
+                            edge="end"
+                            color="info"
+                            style={{ marginRight: "2px" }}
+                            onClick={() => handleEditClick(mission)}
+                            // disabled={mission.status !== 'pending' && !isAdmin}
+                          >
+                            <DescriptionIcon />
+                          </IconButton>
+
+                          {/* ลบข้อมูล */}
+                          <IconButton
+                            edge="end"
+                            color="error"
+                            style={{ marginRight: "2px" }}
+                            onClick={() => handleDelete(mission._id)}
+                            disabled={mission.status !== "pending" && !isAdmin}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+
+                          <IconButton
+                            edge="end"
+                            color="secondary"
+                            style={{ marginRight: "2px" }}
+                            disabled={
+                              isRequesting ||
+                              mission.status === "in-progress" ||
+                              mission.status === "completed" ||
+                              mission.status === "cancel"
+                            }
+                            onClick={() => {
+                              handleFuelRequestClick(mission);
+                            }}
+                          >
+                            <LocalGasStationIcon />
+                            {isRequesting}
+                          </IconButton>
+
+                          {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
+                          {isAdmin &&
+                            new Date() >= new Date(mission.end_date) && (
+                              <IconButton
+                                variant="outlined"
+                                color="success"
+                                style={{ marginRight: "2px" }}
+                                onClick={() => {
+                                  handleReturnClick(mission);
+                                  handleGoToReturn();
+                                }}
+                                disabled={
+                                  mission.status === "completed" ||
+                                  mission.status === "cancel" ||
+                                  (!isAdmin && mission.status !== "pending")
+                                }
+                              >
+                                <TodayIcon />
+                              </IconButton>
+                            )}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
           <TablePagination

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import {
   Button,
   Table,
@@ -19,10 +20,13 @@ import {
 } from "@mui/material";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import DeleteIcon from "@mui/icons-material/Delete";
 import FuelPrint from "../components/print/FuelPrint";
 import FuelPrintAll from "../components/print/FuelPrintAll";
 import theme from "../css/theme";
 import DescriptionIcon from "@mui/icons-material/Description";
+
+const MySwal = withReactContent(Swal);
 
 const FuelPage = () => {
   const [fuelRecords, setFuelRecords] = useState([]);
@@ -32,10 +36,8 @@ const FuelPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState(null);
   const [totalFuelCapacity, setTotalFuelCapacity] = useState(0);
-  const [page, setPage] = useState(0); // Page state
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page state
-
-  // State for dialog
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedFuelRecord, setSelectedFuelRecord] = useState(null);
 
@@ -79,7 +81,7 @@ const FuelPage = () => {
         setUsers(userResponse.data);
       } catch (error) {
         setError("Failed to fetch fuel records, vehicles, or users");
-        Swal.fire({
+        MySwal.fire({
           title: "Error!",
           text: "Failed to fetch data from server",
           icon: "error",
@@ -91,7 +93,11 @@ const FuelPage = () => {
     fetchData();
   }, [error]);
 
-  const handleStatusChange = async (fuelRecordId, newStatus, currentFuelCapacity) => {
+  const handleStatusChange = async (
+    fuelRecordId,
+    newStatus,
+    currentFuelCapacity
+  ) => {
     try {
       let updatedFuelCapacity = currentFuelCapacity;
 
@@ -118,15 +124,65 @@ const FuelPage = () => {
       );
       setTotalFuelCapacity(totalFuel);
 
-      Swal.fire({
+      MySwal.fire({
         title: "Success!",
         text: "อัพเดทสถานะสำเร็จ",
         icon: "success",
       });
     } catch (error) {
-      Swal.fire({
+      MySwal.fire({
         title: "Error!",
         text: "ไม่สามารถอัพเดทสถานะ",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleDelete = async (fuelRecordId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const result = await MySwal.fire({
+        title: "คุณแน่ใจหรือไม่?",
+        text: "คุณจะไม่สามารถกู้คืนข้อมูลนี้ได้!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "ใช่, ลบข้อมูล!",
+        cancelButtonText: "ยกเลิก",
+      });
+
+      if (result.isConfirmed) {
+        await axios.delete(`http://localhost:5000/api/fuel/${fuelRecordId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const response = await axios.get("http://localhost:5000/api/fuel", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFuelRecords(response.data);
+
+        const totalFuel = response.data.reduce(
+          (total, record) => total + record.fuelCapacity,
+          0
+        );
+        setTotalFuelCapacity(totalFuel);
+
+        Swal.fire({
+          title: "ลบสำเร็จ!",
+          text: "ข้อมูลถูกลบเรียบร้อยแล้ว",
+          icon: "success",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด!",
+        text: "ไม่สามารถลบข้อมูลได้",
         icon: "error",
       });
     }
@@ -147,9 +203,9 @@ const FuelPage = () => {
 
   const filteredFuelRecords = searchQuery
     ? fuelRecords.filter((record) => {
-      const user = users.find((u) => u._id === record.userId);
-      return user?.selfid?.toLowerCase().includes(searchQuery.toLowerCase());
-    })
+        const user = users.find((u) => u._id === record.userId);
+        return user?.selfid?.toLowerCase().includes(searchQuery.toLowerCase());
+      })
     : fuelRecords;
 
   const handleOpenDetailDialog = (fuelRecord) => {
@@ -185,7 +241,7 @@ const FuelPage = () => {
           </div>
         </div>
         <div className="mb-3">
-          {isAdmin &&
+          {isAdmin && (
             <PDFDownloadLink
               document={
                 <FuelPrintAll
@@ -203,7 +259,7 @@ const FuelPage = () => {
                 </Button>
               )}
             </PDFDownloadLink>
-          }
+          )}
           <div className="flex flex-col mb-4">
             <input
               className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mt-3"
@@ -229,14 +285,23 @@ const FuelPage = () => {
                 {isAdmin && <TableCell align="left">Action</TableCell>}
                 {/* <TableCell align="left">ดาวน์โหลดข้อมูล</TableCell> */}
                 <TableCell align="left">รายละเอียด</TableCell>
+                <TableCell align="left">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredFuelRecords.reverse()
+              {filteredFuelRecords
+                .reverse()
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((record, index) => {
-                  const vehicle = vehicles.find((v) => v._id === record.vehicleId);
+                  const vehicle = vehicles.find(
+                    (v) => v._id === record.vehicleId
+                  );
                   const user = users.find((u) => u._id === record.userId);
+                  const loggedInUserSelfid = JSON.parse(
+                    atob(localStorage.getItem("token")?.split(".")[1])
+                  ).selfid;
+                  const isCurrentUser = user?.selfid === loggedInUserSelfid;
+
                   return (
                     <TableRow key={record._id}>
                       <TableCell align="left">{index + 1}</TableCell>
@@ -277,42 +342,66 @@ const FuelPage = () => {
                         )}
                       </TableCell>
                       {isAdmin && (
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          color="success"
-                          onClick={() =>
-                            handleStatusChange(record._id, "completed")
-                          }
-                          disabled={record.status === "completed" || record.status === "cancel"}
-                        >
-                          {record.status === "completed"
-                            ? "อนุมัติเรียบร้อย"
-                            : "อนุมัติ"}
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={() =>
-                            handleStatusChange(record._id, "cancel")
-                          }
-                          disabled={record.status === "cancel" || record.status === "completed"}
-                          style={{ marginLeft: "10px" }}
-                        >
-                          {record.status === "completed"
-                            ? "ไม่อนุมัติ"
-                            : "ไม่อนุมัติ"}
-                        </Button>
-                      </TableCell>
-                    )}
-                      <TableCell align="left">
-                        <Button
-                          variant="outlined"
-                          onClick={() => handleOpenDetailDialog(record)}
-                        >
-                          <DescriptionIcon /> แสดงรายละเอียด
-                        </Button>
-                      </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            color="success"
+                            onClick={() =>
+                              handleStatusChange(record._id, "completed")
+                            }
+                            disabled={
+                              record.status === "completed" ||
+                              record.status === "cancel"
+                            }
+                          >
+                            {record.status === "completed"
+                              ? "อนุมัติเรียบร้อย"
+                              : "อนุมัติ"}
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() =>
+                              handleStatusChange(record._id, "cancel")
+                            }
+                            disabled={
+                              record.status === "cancel" ||
+                              record.status === "completed"
+                            }
+                            style={{ marginLeft: "10px" }}
+                          >
+                            {record.status === "completed"
+                              ? "ไม่อนุมัติ"
+                              : "ไม่อนุมัติ"}
+                          </Button>
+                        </TableCell>
+                      )}
+                      {(isAdmin || isCurrentUser) && (
+                        <TableCell align="left">
+                          <Button
+                            variant="outlined"
+                            onClick={() => handleOpenDetailDialog(record)}
+                          >
+                            <DescriptionIcon /> แสดงรายละเอียด
+                          </Button>
+                        </TableCell>
+                      )}
+                      {(isAdmin || isCurrentUser) && (
+                        <TableCell align="left">
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => handleDelete(record._id)}
+                            disabled={
+                              (record.status === "cancel" ||
+                                record.status === "completed") &&
+                              !isAdmin
+                            }
+                          >
+                            <DeleteIcon /> ลบข้อมูล
+                          </Button>
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })}
@@ -342,13 +431,42 @@ const FuelPage = () => {
         <DialogContent>
           {selectedFuelRecord && (
             <div>
-              <p><strong>รถที่เบิก: </strong>{selectedFuelRecord.vehicle ? selectedFuelRecord.vehicle.name : 'ไม่พบข้อมูล'}</p>
-              <p><strong>เลขทะเบียนรถ: </strong>{selectedFuelRecord.vehicle ? selectedFuelRecord.vehicle.license_plate : 'ไม่พบข้อมูล'}</p>
-              <p><strong>หมายเลขประจำตัว: </strong>{selectedFuelRecord.user ? selectedFuelRecord.user.selfid : 'ไม่พบข้อมูล'}</p>
-              <p><strong>ผู้เบิก: </strong>{selectedFuelRecord.user ? selectedFuelRecord.user.name : 'ไม่พบข้อมูล'}</p>
-              <p><strong>จำนวนเชื้อเพลิง: </strong>{selectedFuelRecord.fuelCapacity} ลิตร</p>
-              <p><strong>วันที่เบิก: </strong>{new Date(selectedFuelRecord.fuelDate).toLocaleString()}</p>
-              <p><strong>สถานะ: </strong>{selectedFuelRecord.status}</p>
+              <p>
+                <strong>รถที่เบิก: </strong>
+                {selectedFuelRecord.vehicle
+                  ? selectedFuelRecord.vehicle.name
+                  : "ไม่พบข้อมูล"}
+              </p>
+              <p>
+                <strong>เลขทะเบียนรถ: </strong>
+                {selectedFuelRecord.vehicle
+                  ? selectedFuelRecord.vehicle.license_plate
+                  : "ไม่พบข้อมูล"}
+              </p>
+              <p>
+                <strong>หมายเลขประจำตัว: </strong>
+                {selectedFuelRecord.user
+                  ? selectedFuelRecord.user.selfid
+                  : "ไม่พบข้อมูล"}
+              </p>
+              <p>
+                <strong>ผู้เบิก: </strong>
+                {selectedFuelRecord.user
+                  ? selectedFuelRecord.user.name
+                  : "ไม่พบข้อมูล"}
+              </p>
+              <p>
+                <strong>จำนวนเชื้อเพลิง: </strong>
+                {selectedFuelRecord.fuelCapacity} ลิตร
+              </p>
+              <p>
+                <strong>วันที่เบิก: </strong>
+                {new Date(selectedFuelRecord.fuelDate).toLocaleString()}
+              </p>
+              <p>
+                <strong>สถานะ: </strong>
+                {selectedFuelRecord.status}
+              </p>
               <TableCell align="left">
                 <PDFDownloadLink
                   document={
@@ -360,9 +478,12 @@ const FuelPage = () => {
                   }
                   fileName={`Fuel_${selectedFuelRecord._id}.pdf`}
                 >
-
                   {({ loading }) => (
-                    <Button variant="outlined" color="primary" disabled={loading}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      disabled={loading}
+                    >
                       <PictureAsPdfIcon />
                       {loading ? "กำลังโหลด..." : "ดาวน์โหลดข้อมูล"}
                     </Button>
@@ -370,12 +491,12 @@ const FuelPage = () => {
                 </PDFDownloadLink>
               </TableCell>
             </div>
-
           )}
-
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDetailDialog} color="primary">ปิด</Button>
+          <Button onClick={handleCloseDetailDialog} color="primary">
+            ปิด
+          </Button>
         </DialogActions>
       </Dialog>
     </ThemeProvider>

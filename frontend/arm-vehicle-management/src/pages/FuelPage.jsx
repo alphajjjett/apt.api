@@ -21,6 +21,7 @@ import {
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import FuelPrint from "../components/print/FuelPrint";
 import FuelPrintAll from "../components/print/FuelPrintAll";
 import theme from "../css/theme";
@@ -187,6 +188,52 @@ const FuelPage = () => {
       });
     }
   };
+
+  const handleEditFuelCapacity = async (fuelRecordId, currentFuelCapacity) => {
+    try {
+      const { value: newFuelCapacity } = await Swal.fire({
+        title: "แก้ไขปริมาณน้ำมัน",
+        input: "number", // ให้ผู้ใช้ป้อนตัวเลข
+        inputLabel: "ปริมาณน้ำมันใหม่ (ลิตร)",
+        inputValue: currentFuelCapacity, // ค่าเริ่มต้นเป็นค่าเดิมของ fuelCapacity
+        showCancelButton: true,
+        inputValidator: (value) => {
+          if (!value || value <= 0) {
+            return "กรุณากรอกปริมาณน้ำมันที่มากกว่า 0";
+          }
+        },
+      });
+  
+      if (newFuelCapacity) {
+        await axios.put(`http://localhost:5000/api/fuel/${fuelRecordId}`, {
+          fuelCapacity: newFuelCapacity,
+        });
+  
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:5000/api/fuel", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFuelRecords(response.data);
+  
+        Swal.fire({
+          title: "Success!",
+          text: "แก้ไขปริมาณน้ำมันสำเร็จ",
+          icon: "success",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: "ไม่สามารถแก้ไขปริมาณน้ำมันได้",
+        icon: "error",
+      });
+    }
+  };
+  
+  
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -399,6 +446,18 @@ const FuelPage = () => {
                             }
                           >
                             <DeleteIcon /> ลบข้อมูล
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => handleEditFuelCapacity(record._id, record.fuelCapacity)}
+                            disabled={
+                              (record.status === "cancel" ||
+                                record.status === "completed") &&
+                              !isAdmin
+                            }
+                          >
+                            <EditIcon /> แก้ไข
                           </Button>
                         </TableCell>
                       )}

@@ -42,7 +42,7 @@ const MissionList = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
   const [updatedMission, setUpdatedMission] = useState({});
-  const [isRequesting, setIsRequesting] = useState(false); 
+  const [isRequesting, setIsRequesting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [vehicles, setVehicles] = useState([]);
@@ -73,7 +73,7 @@ const MissionList = () => {
       }
     };
 
-    const { role } = JSON.parse(atob(token.split(".")[1])); 
+    const { role } = JSON.parse(atob(token.split(".")[1]));
     setIsAdmin(role === "admin");
     fetchMissions();
   }, [navigate]);
@@ -204,7 +204,7 @@ const MissionList = () => {
 
   const handleStatusChange = async (missionId, newStatus) => {
     const token = localStorage.getItem("token");
-    const { selfid } = JSON.parse(atob(token.split(".")[1])); 
+    const { selfid } = JSON.parse(atob(token.split(".")[1]));
 
     const missionToUpdate = missions.find(
       (mission) => mission._id === missionId
@@ -271,7 +271,7 @@ const MissionList = () => {
 
   const handleDelete = async (missionId) => {
     const token = localStorage.getItem("token");
-    const { selfid } = JSON.parse(atob(token.split(".")[1])); 
+    const { selfid } = JSON.parse(atob(token.split(".")[1]));
 
     const missionToDelete = missions.find(
       (mission) => mission._id === missionId
@@ -336,7 +336,7 @@ const MissionList = () => {
   };
 
   const filteredMissions = missions.filter((mission) => {
-    const selfid = mission.assigned_user_id?.selfid || ""; 
+    const selfid = mission.assigned_user_id?.selfid || "";
     return selfid.includes(searchQuery);
   });
 
@@ -350,7 +350,7 @@ const MissionList = () => {
 
   const handleEditClick = (mission) => {
     const token = localStorage.getItem("token");
-    const { selfid } = JSON.parse(atob(token.split(".")[1])); 
+    const { selfid } = JSON.parse(atob(token.split(".")[1]));
 
     if (mission.assigned_user_id.selfid !== selfid && !isAdmin) {
       MySwal.fire({
@@ -395,10 +395,10 @@ const MissionList = () => {
         missions.map((mission) =>
           mission._id === selectedMission._id
             ? {
-              ...mission,
-              ...updatedMissionWithVehicle,
-              assigned_vehicle_id: selectedVehicle,
-            } 
+                ...mission,
+                ...updatedMissionWithVehicle,
+                assigned_vehicle_id: selectedVehicle,
+              }
             : mission
         )
       );
@@ -410,6 +410,7 @@ const MissionList = () => {
       });
 
       setEditDialogOpen(false);
+      window.location.reload();
     } catch (error) {
       MySwal.fire({
         title: "Error",
@@ -419,23 +420,22 @@ const MissionList = () => {
     }
   };
 
-
   const dateOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Asia/Bangkok'
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Bangkok",
   };
 
   const timeOptions = {
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
   };
 
   const combinedOptions = { ...dateOptions, ...timeOptions };
 
-  const locale = 'th-TH';
+  const locale = "th-TH";
 
   if (loading) return <p>Loading missions...</p>;
 
@@ -472,6 +472,7 @@ const MissionList = () => {
                 <TableCell>ภารกิจ</TableCell>
                 {isAdmin && <TableCell align="left">หมายเลขประจำตัว</TableCell>}
                 <TableCell align="left">ชื่อผู้จอง</TableCell>
+                <TableCell align="left">จำนวนคนที่ไป</TableCell>
                 <TableCell align="left">วันที่จอง</TableCell>
                 <TableCell align="left">วันที่คืน</TableCell>
                 <TableCell align="left">รถที่จอง</TableCell>
@@ -517,11 +518,18 @@ const MissionList = () => {
                           ? mission.assigned_user_id.name
                           : "N/A"}
                       </TableCell>
+                      <TableCell align="left">{mission.quantity} คน</TableCell>
                       <TableCell align="left">
-                        {new Date(mission.start_date).toLocaleDateString(locale, dateOptions)}
+                        {new Date(mission.start_date).toLocaleDateString(
+                          locale,
+                          dateOptions
+                        )}
                       </TableCell>
                       <TableCell align="left">
-                        {new Date(mission.end_date).toLocaleDateString(locale, dateOptions)}
+                        {new Date(mission.end_date).toLocaleDateString(
+                          locale,
+                          dateOptions
+                        )}
                       </TableCell>
                       <TableCell align="left">
                         {mission.assigned_vehicle_id?.name || "N/A"}(
@@ -552,7 +560,10 @@ const MissionList = () => {
                       </TableCell>
 
                       <TableCell align="left">
-                        {new Date(mission.updatedAt).toLocaleString(locale, combinedOptions)}
+                        {new Date(mission.updatedAt).toLocaleString(
+                          locale,
+                          combinedOptions
+                        )}
                       </TableCell>
 
                       {/* Show the status dropdown if the user is an admin */}
@@ -595,70 +606,69 @@ const MissionList = () => {
                       )}
 
                       {/* Show edit/delete actions based on admin or assigned user permissions */}
-                      {(isAdmin ||
-                        UserSelfID) && (
-                          <TableCell align="left">
-                            {/* รายละเอียด */}
-                            <IconButton
-                              edge="end"
-                              color="info"
-                              style={{ marginRight: "2px" }}
-                              onClick={() => handleEditClick(mission)}
-                            >
-                              <DescriptionIcon />
-                            </IconButton>
+                      {(isAdmin || UserSelfID) && (
+                        <TableCell align="left">
+                          {/* รายละเอียด */}
+                          <IconButton
+                            edge="end"
+                            color="info"
+                            style={{ marginRight: "2px" }}
+                            onClick={() => handleEditClick(mission)}
+                          >
+                            <DescriptionIcon />
+                          </IconButton>
 
-                            {/* ลบข้อมูล */}
-                            <IconButton
-                              edge="end"
-                              color="error"
-                              style={{ marginRight: "2px" }}
-                              onClick={() => handleDelete(mission._id)}
-                              disabled={mission.status !== "pending" && !isAdmin}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
+                          {/* ลบข้อมูล */}
+                          <IconButton
+                            edge="end"
+                            color="error"
+                            style={{ marginRight: "2px" }}
+                            onClick={() => handleDelete(mission._id)}
+                            disabled={mission.status !== "pending" && !isAdmin}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
 
-                            <IconButton
-                              edge="end"
-                              color="secondary"
-                              style={{ marginRight: "2px" }}
-                              disabled={
-                                isRequesting ||
-                                mission.status === "in-progress" ||
-                                mission.status === "completed" ||
-                                mission.status === "cancel"
-                              }
-                              onClick={() => {
-                                handleFuelRequestClick(mission);
-                              }}
-                            >
-                              <LocalGasStationIcon />
-                              {isRequesting}
-                            </IconButton>
+                          <IconButton
+                            edge="end"
+                            color="secondary"
+                            style={{ marginRight: "2px" }}
+                            disabled={
+                              isRequesting ||
+                              mission.status === "in-progress" ||
+                              mission.status === "completed" ||
+                              mission.status === "cancel"
+                            }
+                            onClick={() => {
+                              handleFuelRequestClick(mission);
+                            }}
+                          >
+                            <LocalGasStationIcon />
+                            {isRequesting}
+                          </IconButton>
 
-                            {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
-                            {isAdmin &&
-                              new Date() >= new Date(mission.end_date) && (
-                                <IconButton
-                                  variant="outlined"
-                                  color="success"
-                                  style={{ marginRight: "2px" }}
-                                  onClick={() => {
-                                    handleReturnClick(mission);
-                                    handleGoToReturn();
-                                  }}
-                                  disabled={
-                                    mission.status === "completed" ||
-                                    mission.status === "cancel" ||
-                                    (!isAdmin && mission.status !== "pending")
-                                  }
-                                >
-                                  <TodayIcon />
-                                </IconButton>
-                              )}
-                          </TableCell>
-                        )}
+                          {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
+                          {isAdmin &&
+                            new Date() >= new Date(mission.end_date) && (
+                              <IconButton
+                                variant="outlined"
+                                color="success"
+                                style={{ marginRight: "2px" }}
+                                onClick={() => {
+                                  handleReturnClick(mission);
+                                  handleGoToReturn();
+                                }}
+                                disabled={
+                                  mission.status === "completed" ||
+                                  mission.status === "cancel" ||
+                                  (!isAdmin && mission.status !== "pending")
+                                }
+                              >
+                                <TodayIcon />
+                              </IconButton>
+                            )}
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })}
@@ -682,8 +692,8 @@ const MissionList = () => {
             setEditDialogOpen(false);
             setIsEditing(false);
           }}
-          maxWidth="sm" 
-          fullWidth 
+          maxWidth="sm"
+          fullWidth
         >
           {/* Title ของข้อมูลภารกิจ */}
           <DialogTitle
@@ -734,12 +744,22 @@ const MissionList = () => {
                   {selectedMission.assigned_user_id?.name || "N/A"}
                 </p>
                 <p>
+                  <strong>จำนวนคนที่ไป:</strong>{" "}
+                  {selectedMission.quantity || "N/A"} คน
+                </p>
+                <p>
                   <strong>วันที่จอง:</strong>{" "}
-                  {new Date(selectedMission.start_date).toLocaleDateString(locale, dateOptions)}
+                  {new Date(selectedMission.start_date).toLocaleDateString(
+                    locale,
+                    dateOptions
+                  )}
                 </p>
                 <p>
                   <strong>วันที่คืน:</strong>{" "}
-                  {new Date(selectedMission.end_date).toLocaleDateString(locale, dateOptions)}
+                  {new Date(selectedMission.end_date).toLocaleDateString(
+                    locale,
+                    dateOptions
+                  )}
                 </p>
                 <p>
                   <strong>ยี่ห้อรถ:</strong>{" "}
@@ -799,6 +819,18 @@ const MissionList = () => {
                     value={updatedMission.description || ""}
                     onChange={handleEditChange}
                     style={{ marginBottom: "20px" }}
+                  />
+
+                  <TextField
+                    label="เปลี่ยนจำนวนคน"
+                    variant="outlined"
+                    fullWidth
+                    type="number"
+                    name="quantity"
+                    value={updatedMission.quantity || ""}
+                    onChange={handleEditChange}
+                    style={{ marginBottom: "20px" }}
+                    inputProps={{ min: 0 }} 
                   />
 
                   <Button

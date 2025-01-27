@@ -17,6 +17,7 @@ const MySwal = withReactContent(Swal);
 const CreateMission = () => {
   const [missionName, setMissionName] = useState('');
   const [description, setDescription] = useState('');
+  const [quantity, setQuantity] = useState('');
   const [status] = useState('pending');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -69,6 +70,7 @@ const CreateMission = () => {
       const missionData = {
         mission_name: missionName,
         description,
+        quantity,
         status,
         assigned_user_id: userId,
         assigned_vehicle_id: selectedVehicle,
@@ -134,6 +136,17 @@ const CreateMission = () => {
               />
             </div>
           )}
+          <div>
+            <label className="block text-lg font-medium text-gray-700">จำนวนคนที่ไป:</label>
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              min="0" 
+              required
+              className="mt-2 p-2  border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
 
           <div>
             <label className="block text-lg font-medium text-gray-700">วันที่จอง:</label>

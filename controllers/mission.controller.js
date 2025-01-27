@@ -6,7 +6,8 @@ const User = require('../models/user.model'); // สมมติว่าคุ�
 const createMission = async (req, res) => {
   const { mission_name, 
         description, 
-        status, 
+        status,
+        quantity,
         assigned_user_id, 
         assigned_vehicle_id, 
         start_date, end_date } = req.body;
@@ -63,6 +64,7 @@ const createMission = async (req, res) => {
           status: status || 'pending', // กำหนดค่า default สำหรับ status
           assigned_user_id,
           assigned_vehicle_id,
+          quantity,
           start_date: startDate,
           end_date: endDate,
       });
@@ -127,12 +129,12 @@ const updateMissionStatus = async (req, res) => {
   // Update mission controller
 const updateMission = async (req, res) => {
   const { missionId } = req.params;
-  const { mission_name, description, assigned_vehicle_id} = req.body;
+  const { mission_name, description, assigned_vehicle_id,quantity} = req.body;
 
   try {
       const mission = await Mission.findByIdAndUpdate(
           missionId,
-          { mission_name, description, assigned_vehicle_id },
+          { mission_name, description, assigned_vehicle_id,quantity },
           { new: true } 
       );
 

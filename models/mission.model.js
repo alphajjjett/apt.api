@@ -18,6 +18,11 @@ const MissionSchema = new Schema(
             deafault : 'pending'
 
         },
+        quantity : {
+            type  : Number,
+            required : true
+        
+        },
         assigned_vehicle_id : {
             type : Schema.Types.ObjectID,
             ref : 'Vehicle',            

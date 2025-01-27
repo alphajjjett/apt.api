@@ -42,7 +42,7 @@ const MissionList = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
   const [updatedMission, setUpdatedMission] = useState({});
-  const [isRequesting, setIsRequesting] = useState(false); // เบิกน้ำมัน
+  const [isRequesting, setIsRequesting] = useState(false); 
   const [isEditing, setIsEditing] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [vehicles, setVehicles] = useState([]);
@@ -73,7 +73,7 @@ const MissionList = () => {
       }
     };
 
-    const { role } = JSON.parse(atob(token.split(".")[1])); // decode JWT
+    const { role } = JSON.parse(atob(token.split(".")[1])); 
     setIsAdmin(role === "admin");
     fetchMissions();
   }, [navigate]);
@@ -138,7 +138,7 @@ const MissionList = () => {
               text: "เบิกเชื้อเพลิงสำเร็จ",
               icon: "success",
             }).then(() => {
-              handleGoToFuel(); // เพิ่มฟังก์ชันนี้เพื่อไปที่หน้า FuelPage หลังจากการทำรายการเสร็จ
+              handleGoToFuel();
             });
           })
           .catch((error) => {
@@ -204,13 +204,12 @@ const MissionList = () => {
 
   const handleStatusChange = async (missionId, newStatus) => {
     const token = localStorage.getItem("token");
-    const { selfid } = JSON.parse(atob(token.split(".")[1])); // decode token to get selfid of the logged-in user
+    const { selfid } = JSON.parse(atob(token.split(".")[1])); 
 
     const missionToUpdate = missions.find(
       (mission) => mission._id === missionId
     );
 
-    // Check if the current user is the assigned user or an admin
     if (missionToUpdate.assigned_user_id?.selfid !== selfid && !isAdmin) {
       MySwal.fire({
         title: "Not Authorized",
@@ -221,7 +220,6 @@ const MissionList = () => {
     }
 
     try {
-      // Update mission status
       await axios.put(
         `http://localhost:5000/api/missions/${missionId}/status`,
         {
@@ -229,7 +227,6 @@ const MissionList = () => {
         }
       );
 
-      // If status is completed or in-progress, update the vehicle status to in-use
       if (newStatus === "completed" || newStatus === "in-progress") {
         if (missionToUpdate.assigned_vehicle_id) {
           const vehicleId = missionToUpdate.assigned_vehicle_id._id;
@@ -246,7 +243,6 @@ const MissionList = () => {
         }
       }
 
-      // Update the missions state
       setMissions((prevMissions) =>
         prevMissions.map((mission) =>
           mission._id === missionId
@@ -275,14 +271,12 @@ const MissionList = () => {
 
   const handleDelete = async (missionId) => {
     const token = localStorage.getItem("token");
-    const { selfid } = JSON.parse(atob(token.split(".")[1])); // decode token to get selfid of the logged-in user
+    const { selfid } = JSON.parse(atob(token.split(".")[1])); 
 
-    // Find the mission that we are about to delete
     const missionToDelete = missions.find(
       (mission) => mission._id === missionId
     );
 
-    // Check if the mission is assigned to the current user or if the user is admin
     if (missionToDelete.assigned_user_id?.selfid !== selfid && !isAdmin) {
       MySwal.fire({
         title: "Not Authorized",
@@ -292,7 +286,6 @@ const MissionList = () => {
       return;
     }
 
-    // If authorized, show the confirmation dialog
     MySwal.fire({
       title: "Are you sure?",
       text: "ไม่สามารถกู้ข้อมูลกลับได้!",
@@ -343,7 +336,7 @@ const MissionList = () => {
   };
 
   const filteredMissions = missions.filter((mission) => {
-    const selfid = mission.assigned_user_id?.selfid || ""; // Fallback to an empty string if selfid is undefined
+    const selfid = mission.assigned_user_id?.selfid || ""; 
     return selfid.includes(searchQuery);
   });
 
@@ -357,9 +350,8 @@ const MissionList = () => {
 
   const handleEditClick = (mission) => {
     const token = localStorage.getItem("token");
-    const { selfid } = JSON.parse(atob(token.split(".")[1])); // get logged-in user's selfid
+    const { selfid } = JSON.parse(atob(token.split(".")[1])); 
 
-    // Check if the logged-in user is the same as the assigned user for this mission
     if (mission.assigned_user_id.selfid !== selfid && !isAdmin) {
       MySwal.fire({
         title: "Not Authorized",
@@ -393,14 +385,12 @@ const MissionList = () => {
           : selectedMission.assigned_vehicle_id._id,
       };
 
-      // ส่งข้อมูลที่อัปเดตไปยังเซิร์ฟเวอร์
       await axios.put(
         `http://localhost:5000/api/missions/${selectedMission._id}`,
         updatedMissionWithVehicle,
         config
       );
 
-      // อัปเดตสถานะของ mission ใน state พร้อมกับ assigned_vehicle_id ใหม่
       setMissions(
         missions.map((mission) =>
           mission._id === selectedMission._id
@@ -408,12 +398,11 @@ const MissionList = () => {
               ...mission,
               ...updatedMissionWithVehicle,
               assigned_vehicle_id: selectedVehicle,
-            } // อัปเดตข้อมูลรถด้วย
+            } 
             : mission
         )
       );
 
-      // แสดงการแจ้งเตือนการอัปเดตสำเร็จ
       MySwal.fire({
         title: "Updated!",
         text: "Your mission has been updated.",
@@ -481,7 +470,6 @@ const MissionList = () => {
               <TableRow>
                 <TableCell>No.</TableCell>
                 <TableCell>ภารกิจ</TableCell>
-                {/* <TableCell align="left">Description</TableCell> */}
                 {isAdmin && <TableCell align="left">หมายเลขประจำตัว</TableCell>}
                 <TableCell align="left">ชื่อผู้จอง</TableCell>
                 <TableCell align="left">วันที่จอง</TableCell>
@@ -616,7 +604,6 @@ const MissionList = () => {
                               color="info"
                               style={{ marginRight: "2px" }}
                               onClick={() => handleEditClick(mission)}
-                            // disabled={mission.status !== 'pending' && !isAdmin}
                             >
                               <DescriptionIcon />
                             </IconButton>
@@ -695,8 +682,8 @@ const MissionList = () => {
             setEditDialogOpen(false);
             setIsEditing(false);
           }}
-          maxWidth="sm" // กำหนดขนาดให้กว้างขึ้น (เช่น 'sm', 'md', 'lg', 'xl')
-          fullWidth // ทำให้ Dialog ใช้พื้นที่เต็ม width ของ container
+          maxWidth="sm" 
+          fullWidth 
         >
           {/* Title ของข้อมูลภารกิจ */}
           <DialogTitle
@@ -901,7 +888,6 @@ const MissionList = () => {
                   <div className="text-sm text-gray-500">
                     เชื้อเพลิง: {vehicle.fuel_type}
                   </div>
-                  {/* <div className="text-sm text-gray-500">ข้อมูลซ่อมบำรุงล่าสุด: {vehicle.description}</div> */}
                 </div>
               ))}
             </div>

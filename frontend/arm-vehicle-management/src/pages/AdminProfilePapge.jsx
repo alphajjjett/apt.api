@@ -230,7 +230,7 @@ const AdminProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg font-noto">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-700">
+      <h2 className="text-3xl font-bold mb-6 text-gray-900 text-center">
         โปรไฟล์ แอดมิน
       </h2>
       {admin && (

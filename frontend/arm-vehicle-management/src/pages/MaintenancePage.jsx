@@ -133,6 +133,23 @@ const MaintenancePage = () => {
       : false
   );
 
+  const dateOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Bangkok'
+  };
+
+  const timeOptions = {
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  };
+
+  const combinedOptions = { ...dateOptions, ...timeOptions };
+
+  const locale = 'th-TH';
+
   if (loading) return <p>Loading maintenance data...</p>;
   if (error) return <p>{error}</p>;
 
@@ -183,7 +200,7 @@ const MaintenancePage = () => {
                 <TableCell align="right">ทะเบียน</TableCell>
                 <TableCell align="right">รายละเอียดการซ่อมบำรุง</TableCell>
                 {isAdmin && <TableCell align="right">สถานะของรถ</TableCell>}
-                <TableCell align="right">วันที่ / เวลา</TableCell>
+                <TableCell align="left">วันที่ / เวลา</TableCell>
                 {isAdmin && <TableCell align="right">แก้ไข</TableCell>}
               </TableRow>
             </TableHead>
@@ -233,9 +250,9 @@ const MaintenancePage = () => {
                         ) : null}
                       </TableCell>
                     )}
-                    <TableCell align="right">
+                    <TableCell align="left">
                       {maintenance.updatedAt
-                        ? new Date(maintenance.updatedAt).toLocaleString()
+                        ? new Date(maintenance.updatedAt).toLocaleString(locale, combinedOptions)
                         : "N/A"}
                     </TableCell>
                     {isAdmin && (

@@ -405,10 +405,10 @@ const MissionList = () => {
         missions.map((mission) =>
           mission._id === selectedMission._id
             ? {
-                ...mission,
-                ...updatedMissionWithVehicle,
-                assigned_vehicle_id: selectedVehicle,
-              } // อัปเดตข้อมูลรถด้วย
+              ...mission,
+              ...updatedMissionWithVehicle,
+              assigned_vehicle_id: selectedVehicle,
+            } // อัปเดตข้อมูลรถด้วย
             : mission
         )
       );
@@ -429,6 +429,24 @@ const MissionList = () => {
       });
     }
   };
+
+
+  const dateOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Bangkok'
+  };
+
+  const timeOptions = {
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  };
+
+  const combinedOptions = { ...dateOptions, ...timeOptions };
+
+  const locale = 'th-TH';
 
   if (loading) return <p>Loading missions...</p>;
 
@@ -512,10 +530,10 @@ const MissionList = () => {
                           : "N/A"}
                       </TableCell>
                       <TableCell align="left">
-                        {new Date(mission.start_date).toLocaleDateString()}
+                        {new Date(mission.start_date).toLocaleDateString(locale, dateOptions)}
                       </TableCell>
                       <TableCell align="left">
-                        {new Date(mission.end_date).toLocaleDateString()}
+                        {new Date(mission.end_date).toLocaleDateString(locale, dateOptions)}
                       </TableCell>
                       <TableCell align="left">
                         {mission.assigned_vehicle_id?.name || "N/A"}(
@@ -546,7 +564,7 @@ const MissionList = () => {
                       </TableCell>
 
                       <TableCell align="left">
-                        {new Date(mission.updatedAt).toLocaleString()}
+                        {new Date(mission.updatedAt).toLocaleString(locale, combinedOptions)}
                       </TableCell>
 
                       {/* Show the status dropdown if the user is an admin */}
@@ -591,69 +609,69 @@ const MissionList = () => {
                       {/* Show edit/delete actions based on admin or assigned user permissions */}
                       {(isAdmin ||
                         UserSelfID) && (
-                        <TableCell align="left">
-                          {/* รายละเอียด */}
-                          <IconButton
-                            edge="end"
-                            color="info"
-                            style={{ marginRight: "2px" }}
-                            onClick={() => handleEditClick(mission)}
+                          <TableCell align="left">
+                            {/* รายละเอียด */}
+                            <IconButton
+                              edge="end"
+                              color="info"
+                              style={{ marginRight: "2px" }}
+                              onClick={() => handleEditClick(mission)}
                             // disabled={mission.status !== 'pending' && !isAdmin}
-                          >
-                            <DescriptionIcon />
-                          </IconButton>
+                            >
+                              <DescriptionIcon />
+                            </IconButton>
 
-                          {/* ลบข้อมูล */}
-                          <IconButton
-                            edge="end"
-                            color="error"
-                            style={{ marginRight: "2px" }}
-                            onClick={() => handleDelete(mission._id)}
-                            disabled={mission.status !== "pending" && !isAdmin}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
+                            {/* ลบข้อมูล */}
+                            <IconButton
+                              edge="end"
+                              color="error"
+                              style={{ marginRight: "2px" }}
+                              onClick={() => handleDelete(mission._id)}
+                              disabled={mission.status !== "pending" && !isAdmin}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
 
-                          <IconButton
-                            edge="end"
-                            color="secondary"
-                            style={{ marginRight: "2px" }}
-                            disabled={
-                              isRequesting ||
-                              mission.status === "in-progress" ||
-                              mission.status === "completed" ||
-                              mission.status === "cancel"
-                            }
-                            onClick={() => {
-                              handleFuelRequestClick(mission);
-                            }}
-                          >
-                            <LocalGasStationIcon />
-                            {isRequesting}
-                          </IconButton>
+                            <IconButton
+                              edge="end"
+                              color="secondary"
+                              style={{ marginRight: "2px" }}
+                              disabled={
+                                isRequesting ||
+                                mission.status === "in-progress" ||
+                                mission.status === "completed" ||
+                                mission.status === "cancel"
+                              }
+                              onClick={() => {
+                                handleFuelRequestClick(mission);
+                              }}
+                            >
+                              <LocalGasStationIcon />
+                              {isRequesting}
+                            </IconButton>
 
-                          {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
-                          {isAdmin &&
-                            new Date() >= new Date(mission.end_date) && (
-                              <IconButton
-                                variant="outlined"
-                                color="success"
-                                style={{ marginRight: "2px" }}
-                                onClick={() => {
-                                  handleReturnClick(mission);
-                                  handleGoToReturn();
-                                }}
-                                disabled={
-                                  mission.status === "completed" ||
-                                  mission.status === "cancel" ||
-                                  (!isAdmin && mission.status !== "pending")
-                                }
-                              >
-                                <TodayIcon />
-                              </IconButton>
-                            )}
-                        </TableCell>
-                      )}
+                            {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}
+                            {isAdmin &&
+                              new Date() >= new Date(mission.end_date) && (
+                                <IconButton
+                                  variant="outlined"
+                                  color="success"
+                                  style={{ marginRight: "2px" }}
+                                  onClick={() => {
+                                    handleReturnClick(mission);
+                                    handleGoToReturn();
+                                  }}
+                                  disabled={
+                                    mission.status === "completed" ||
+                                    mission.status === "cancel" ||
+                                    (!isAdmin && mission.status !== "pending")
+                                  }
+                                >
+                                  <TodayIcon />
+                                </IconButton>
+                              )}
+                          </TableCell>
+                        )}
                     </TableRow>
                   );
                 })}
@@ -730,11 +748,11 @@ const MissionList = () => {
                 </p>
                 <p>
                   <strong>วันที่จอง:</strong>{" "}
-                  {new Date(selectedMission.start_date).toLocaleDateString()}
+                  {new Date(selectedMission.start_date).toLocaleDateString(locale, dateOptions)}
                 </p>
                 <p>
                   <strong>วันที่คืน:</strong>{" "}
-                  {new Date(selectedMission.end_date).toLocaleDateString()}
+                  {new Date(selectedMission.end_date).toLocaleDateString(locale, dateOptions)}
                 </p>
                 <p>
                   <strong>ยี่ห้อรถ:</strong>{" "}

@@ -6,6 +6,11 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import Modal from 'react-bootstrap/Modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import th from 'date-fns/locale/th';
+
+registerLocale('th', th);
 
 const MySwal = withReactContent(Swal);
 
@@ -132,24 +137,27 @@ const CreateMission = () => {
 
           <div>
             <label className="block text-lg font-medium text-gray-700">วันที่จอง:</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              dateFormat="d MMMM yyyy"
+              locale="th"
+              placeholderText="เลือกวันที่"
               className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-700">วันที่คืน:</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              required
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              dateFormat="d MMMM yyyy"
+              locale="th"
+              placeholderText="เลือกวันที่"
               className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
+
 
           <div>
             <label className="block text-lg font-medium text-gray-700">ยี่ห้อรถ:</label>

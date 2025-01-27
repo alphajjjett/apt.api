@@ -208,6 +208,23 @@ const ReturnInformation = () => {
       : false
   );
 
+  const dateOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Bangkok'
+  };
+
+  const timeOptions = {
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  };
+
+  const combinedOptions = { ...dateOptions, ...timeOptions };
+
+  const locale = 'th-TH';
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -269,10 +286,10 @@ const ReturnInformation = () => {
                     {ret.vehicle.license_plate}
                   </TableCell>
                   <TableCell align="left">
-                    {new Date(ret.bookingDate).toLocaleDateString()}
+                    {new Date(ret.bookingDate).toLocaleDateString(locale, dateOptions)}
                   </TableCell>
                   <TableCell align="left">
-                    {new Date(ret.returnDate).toLocaleDateString()}
+                    {new Date(ret.returnDate).toLocaleDateString(locale, dateOptions)}
                   </TableCell>
                   <TableCell align="left">
                     {ret.returnStatus === "pending" ? (

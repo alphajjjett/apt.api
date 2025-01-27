@@ -273,6 +273,23 @@ const FuelPage = () => {
     setSelectedFuelRecord(null);
   };
 
+  const dateOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Bangkok'
+  };
+
+  const timeOptions = {
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  };
+
+  const combinedOptions = { ...dateOptions, ...timeOptions };
+
+  const locale = 'th-TH';
+
   return (
     <ThemeProvider theme={theme}>
       <div className="mx-auto p-6 bg-white shadow-lg rounded-lg w-full font-noto">
@@ -368,7 +385,7 @@ const FuelPage = () => {
                         {record.fuelCapacity} ลิตร{" "}
                       </TableCell>
                       <TableCell align="left">
-                        {new Date(record.fuelDate).toLocaleString()}
+                        {new Date(record.fuelDate).toLocaleString(locale, combinedOptions)}
                       </TableCell>
                       <TableCell align="left">
                         {record.status === "pending" ? (
@@ -520,7 +537,7 @@ const FuelPage = () => {
               </p>
               <p>
                 <strong>วันที่เบิก: </strong>
-                {new Date(selectedFuelRecord.fuelDate).toLocaleString()}
+                {new Date(selectedFuelRecord.fuelDate).toLocaleDateString(locale, dateOptions)}
               </p>
               <p>
                 <strong>สถานะ: </strong>

@@ -410,7 +410,7 @@ const MissionList = () => {
       });
 
       setEditDialogOpen(false);
-      window.location.reload();
+      
     } catch (error) {
       MySwal.fire({
         title: "Error",

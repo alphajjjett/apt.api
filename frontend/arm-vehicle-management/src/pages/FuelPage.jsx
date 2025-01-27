@@ -203,12 +203,12 @@ const FuelPage = () => {
           }
         },
       });
-  
+
       if (newFuelCapacity) {
         await axios.put(`http://localhost:5000/api/fuel/${fuelRecordId}`, {
           fuelCapacity: newFuelCapacity,
         });
-  
+
         const token = localStorage.getItem("token");
         const response = await axios.get("http://localhost:5000/api/fuel", {
           headers: {
@@ -216,7 +216,7 @@ const FuelPage = () => {
           },
         });
         setFuelRecords(response.data);
-  
+
         Swal.fire({
           title: "Success!",
           text: "แก้ไขปริมาณน้ำมันสำเร็จ",
@@ -231,9 +231,6 @@ const FuelPage = () => {
       });
     }
   };
-  
-  
-
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -274,21 +271,21 @@ const FuelPage = () => {
   };
 
   const dateOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Asia/Bangkok'
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Bangkok",
   };
 
   const timeOptions = {
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
   };
 
   const combinedOptions = { ...dateOptions, ...timeOptions };
 
-  const locale = 'th-TH';
+  const locale = "th-TH";
 
   return (
     <ThemeProvider theme={theme}>
@@ -354,6 +351,7 @@ const FuelPage = () => {
             </TableHead>
             <TableBody>
               {filteredFuelRecords
+                .slice()
                 .reverse()
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((record, index) => {
@@ -385,7 +383,10 @@ const FuelPage = () => {
                         {record.fuelCapacity} ลิตร{" "}
                       </TableCell>
                       <TableCell align="left">
-                        {new Date(record.fuelDate).toLocaleString(locale, combinedOptions)}
+                        {new Date(record.fuelDate).toLocaleString(
+                          locale,
+                          combinedOptions
+                        )}
                       </TableCell>
                       <TableCell align="left">
                         {record.status === "pending" ? (
@@ -467,7 +468,12 @@ const FuelPage = () => {
                           <Button
                             variant="outlined"
                             color="secondary"
-                            onClick={() => handleEditFuelCapacity(record._id, record.fuelCapacity)}
+                            onClick={() =>
+                              handleEditFuelCapacity(
+                                record._id,
+                                record.fuelCapacity
+                              )
+                            }
                             disabled={
                               (record.status === "cancel" ||
                                 record.status === "completed") &&
@@ -537,7 +543,10 @@ const FuelPage = () => {
               </p>
               <p>
                 <strong>วันที่เบิก: </strong>
-                {new Date(selectedFuelRecord.fuelDate).toLocaleDateString(locale, dateOptions)}
+                {new Date(selectedFuelRecord.fuelDate).toLocaleDateString(
+                  locale,
+                  dateOptions
+                )}
               </p>
               <p>
                 <strong>สถานะ: </strong>

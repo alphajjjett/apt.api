@@ -246,7 +246,7 @@ const VehicleList = () => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((vehicle, index) => (
                   <TableRow key={vehicle._id}>
-                    <TableCell align="left">{index + 1}</TableCell>
+                    <TableCell align="left">{filteredVehicles.length - (page * rowsPerPage + index)}</TableCell>
                     <TableCell component="th" scope="row">
                       {vehicle.name}
                     </TableCell>

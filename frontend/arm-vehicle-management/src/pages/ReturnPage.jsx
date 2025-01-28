@@ -275,7 +275,7 @@ const ReturnInformation = () => {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((ret, index) => (
                 <TableRow key={ret._id}>
-                  <TableCell align="left">{index + 1}</TableCell>
+                  <TableCell align="left">{filteredReturn.length - (page * rowsPerPage + index)}</TableCell>
                   <TableCell align="left">{ret.mission.mission_name}</TableCell>
                   {isAdmin && (
                     <TableCell align="left">{ret.user.selfid}</TableCell>

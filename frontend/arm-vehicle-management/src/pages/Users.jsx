@@ -269,7 +269,7 @@ const Users = () => {
     <div className="container mx-auto p-4 font-noto">
       <h2 className="text-2xl font-bold mb-4">Users and Admins</h2>
 
-      {/* Admin Profile Button */}
+      {/* เดี๋ยวเปลี่ยนมาใช้ MUI */}
       <button
         onClick={handleProfileClick}
         className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 mt-4 rounded"

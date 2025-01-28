@@ -420,6 +420,7 @@ const MissionList = () => {
     }
   };
 
+  // date เวลาไทย
   const dateOptions = {
     day: "numeric",
     month: "long",
@@ -502,7 +503,7 @@ const MissionList = () => {
                     ).selfid;
                   return (
                     <TableRow key={mission._id}>
-                      <TableCell align="left">{index + 1}</TableCell>
+                      <TableCell align="left"> {filteredMissions.length - (page * rowsPerPage + index)}</TableCell>
                       <TableCell component="th" scope="row">
                         {mission.mission_name}
                       </TableCell>

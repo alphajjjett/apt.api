@@ -366,7 +366,7 @@ const FuelPage = () => {
 
                   return (
                     <TableRow key={record._id}>
-                      <TableCell align="left">{index + 1}</TableCell>
+                      <TableCell align="left">{filteredFuelRecords.length - (page * rowsPerPage + index)}</TableCell>
                       <TableCell align="left">
                         {vehicle ? vehicle.name : "N/A"}
                       </TableCell>

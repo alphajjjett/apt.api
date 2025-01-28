@@ -209,7 +209,7 @@ const MaintenancePage = () => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((maintenance, index) => (
                   <TableRow key={maintenance._id}>
-                    <TableCell align="left">{index + 1}</TableCell>
+                    <TableCell align="left">{filteredData.length - (page * rowsPerPage + index)}</TableCell>
                     <TableCell component="th" scope="row">
                       {maintenance.vehicleId
                         ? maintenance.vehicleId.name

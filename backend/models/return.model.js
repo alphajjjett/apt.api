@@ -17,7 +17,7 @@ const returnSchema = new mongoose.Schema({
   returnStatus: { type: String, 
               enum: ['pending', 'completed'], 
               default: 'pending' },
-  description: { type: String },
+//   description: { type: String },
 }, { timestamps: true }); 
 
 module.exports = mongoose.model('Return', returnSchema);

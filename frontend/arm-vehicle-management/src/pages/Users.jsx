@@ -76,7 +76,7 @@ const Users = () => {
         try {
           const token = localStorage.getItem("token");
           await axios.post(
-            "${process.env.REACT_APP_API_URL}/api/admins/register",
+            `${backend}/api/admins/register`,
             { name, email, password, description },
             { headers: { Authorization: `Bearer ${token}` } }
           );

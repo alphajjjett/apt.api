@@ -20,6 +20,7 @@ const UserProfilePage = () => {
   const [editablePassword, setEditablePassword] = useState("");
   const [editablePhone, setEditablePhone] = useState("");
   const [profileImage, setProfileImage] = useState(null); 
+  const backend = process.env.REACT_APP_API_URL;
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -44,7 +45,7 @@ const UserProfilePage = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/users/${id}`,
+        `${backend}/api/users/${id}`,
         updatedUser,
         {
           headers: {
@@ -95,7 +96,7 @@ const UserProfilePage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/upload",
+        `${backend}/api/upload`,
         formData,
         {
           headers: {
@@ -127,7 +128,7 @@ const UserProfilePage = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/users/${id}`,
+        `${backend}/api/users/${id}`,
         updatedUser,
         {
           headers: {

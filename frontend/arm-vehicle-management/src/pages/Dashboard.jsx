@@ -19,6 +19,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const backend = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -28,7 +29,7 @@ const Dashboard = () => {
       const fetchData = async () => {
         try {
           const response = await axios.get(
-            "http://localhost:5000/api/dashboard",
+            `${backend}/api/dashboard`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -47,7 +48,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchMissions = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/missions");
+        const response = await axios.get(`${backend}/api/missions`);
         setMissions(response.data);
       } catch (error) {
         setError("Failed to fetch mission data");
@@ -62,7 +63,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchFuelData = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/fuel");
+        const response = await axios.get(`${backend}/api/fuel`);
         const fuelRecords = response.data;
 
         // แยกข้อมูลตามสถานะ (pending, completed)

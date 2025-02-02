@@ -25,12 +25,13 @@ const ReturnInformation = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
+  const backend = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchReturns = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/return", {
+        const response = await axios.get(`${backend}/api/return`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -79,7 +80,7 @@ const ReturnInformation = () => {
       if (description) {
         // อัปเดตสถานะการคืนรถเป็น 'completed'
         await axios.put(
-          `http://localhost:5000/api/return/${returnId}`,
+          `${backend}/api/return/${returnId}`,
           { returnStatus: "completed" },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -92,7 +93,7 @@ const ReturnInformation = () => {
 
         // อัปเดตสถานะของรถเป็น 'available'
         await axios.put(
-          `http://localhost:5000/api/vehicles/${vehicleId}`,
+          `${backend}/api/vehicles/${vehicleId}`,
           { status: "maintenance" },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -116,7 +117,7 @@ const ReturnInformation = () => {
         };
 
         await axios.post(
-          "http://localhost:5000/api/maintenance",
+          `${backend}/api/maintenance`,
           maintenanceData,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -144,7 +145,7 @@ const ReturnInformation = () => {
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `http://localhost:5000/api/return/${returnId}`,
+        `${backend}/api/return/${returnId}`,
         { returnStatus: "completed" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -156,7 +157,7 @@ const ReturnInformation = () => {
       );
 
       await axios.put(
-        `http://localhost:5000/api/vehicles/${vehicleId}`,
+        `${backend}/api/vehicles/${vehicleId}`,
         { status: "available" },
         { headers: { Authorization: `Bearer ${token}` } }
       );

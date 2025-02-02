@@ -7,20 +7,18 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
+  const backend = process.env.REACT_APP_API_URL;
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+ 
     try {
-      let apiUrl = 'http://localhost:5000/api/users/login';
+      let apiUrl = `${backend}/api/users/login`;
       let response = await axios.post(apiUrl, { email, password });
-  
-
-      let { token} = response.data;
+ 
+      let { token } = response.data;
       localStorage.setItem('token', token);
-  
-
+ 
       Swal.fire({
         icon: 'success',
         title: 'Login Successful!',
@@ -30,15 +28,15 @@ const Login = () => {
           navigate('/main'); 
         window.location.reload();
       });
-  
+ 
     } catch (userError) {
       try {
-        const apiUrl = 'http://localhost:5000/api/admins/login';
+        const apiUrl = `${backend}/api/admins/login`;
         const response = await axios.post(apiUrl, { email, password });
-  
-        const { token} = response.data;
+ 
+        const { token } = response.data;
         localStorage.setItem('token', token);
-  
+ 
         // แสดงข้อความแจ้งเตือนเมื่อ login สำเร็จ
         Swal.fire({
           icon: 'success',
@@ -61,16 +59,13 @@ const Login = () => {
       }
     }
   };
-  
 
   const goToRegister = () => {
     navigate('/register');
   };
 
   return (
-    <div className="container min-h-screen flex items-center 
-                    justify-center rounded-lg font-noto"
-                    >
+    <div className="container min-h-screen flex items-center justify-center rounded-lg font-noto">
       <div className="w-full max-w-sm p-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 

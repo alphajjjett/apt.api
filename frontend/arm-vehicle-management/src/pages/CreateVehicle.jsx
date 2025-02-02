@@ -13,13 +13,12 @@ const VehiclePage = () => {
     license_plate: '',
     model: '',
     fuel_type: '',
-    // fuel_capacity: '',
-    // description: ''
   });
+  const backend = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchVehicles = async () => {
-      const response = await axios.get('http://localhost:5000/api/vehicles');
+      const response = await axios.get(`${backend}/api/vehicles`);
       setVehicles(response.data);
     };
     fetchVehicles();
@@ -42,7 +41,7 @@ const VehiclePage = () => {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      await axios.post('http://localhost:5000/api/vehicles/create', vehicleData, config);
+      await axios.post(`${backend}/api/vehicles/create`, vehicleData, config);
       MySwal.fire({
         icon: 'success',
         title: 'Created successfully',

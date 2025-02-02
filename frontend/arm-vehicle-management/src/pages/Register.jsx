@@ -12,6 +12,7 @@ const Register = () => {
   const [description, setDescription] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const backend = process.env.REACT_APP_API_URL;
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -22,7 +23,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/users/register', {
+      const response = await axios.post(`${backend}/api/users/register`, {
         name,
         email,
         password,

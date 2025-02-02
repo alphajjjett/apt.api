@@ -27,6 +27,7 @@ const CreateMission = () => {
   const [error, setError] = useState(null);
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
+  const backend = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -39,7 +40,7 @@ const CreateMission = () => {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/vehicles');
+        const response = await axios.get(`${backend}/api/vehicles`);
         const availableVehicles = response.data.filter(vehicle => vehicle.status === 'available');
         setVehicles(availableVehicles);
       } catch (error) {
@@ -78,7 +79,7 @@ const CreateMission = () => {
         end_date: endDate,
       };
 
-      await axios.post('http://localhost:5000/api/missions', missionData, {
+      await axios.post(`${backend}/api/missions`, missionData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       MySwal.fire({

@@ -15,6 +15,7 @@ const Users = () => {
   const [error, setError] = useState(null);
   const [editingUserId, setEditingUserId] = useState(null);
   const [updatedUser, setUpdatedUser] = useState({});
+  const backend = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const handleBackClick = () => {
     navigate("/dashboard");
@@ -30,7 +31,7 @@ const Users = () => {
     try {
       const decodedToken = jwtDecode(token);
       if (decodedToken.role === "admin") {
-        navigate(`/admins/${decodedToken.id}`, { replace: true });
+        navigate(`${backend}/admins/${decodedToken.id}`, { replace: true });
       } else {
         MySwal.fire({
           title: "Access Denied",
@@ -75,7 +76,7 @@ const Users = () => {
         try {
           const token = localStorage.getItem("token");
           await axios.post(
-            "http://localhost:5000/api/admins/register",
+            "${process.env.REACT_APP_API_URL}/api/admins/register",
             { name, email, password, description },
             { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -102,13 +103,13 @@ const Users = () => {
           const fetchUsersAndAdmins = async () => {
             try {
               const responseUsers = await axios.get(
-                "http://localhost:5000/api/users",
+                `${backend}/api/users`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }
               );
               const responseAdmins = await axios.get(
-                "http://localhost:5000/api/admins",
+                `${backend}/api/admins`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }
@@ -144,7 +145,7 @@ const Users = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+          await axios.delete(`${backend}/api/users/${userId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
@@ -208,8 +209,8 @@ const Users = () => {
         try {
           const token = localStorage.getItem("token");
           const url = isAdmin
-            ? `http://localhost:5000/api/admins/${userId}`
-            : `http://localhost:5000/api/users/${userId}`;
+            ? `${backend}/api/admins/${userId}`
+            : `${backend}/api/users/${userId}`;
           await axios.put(
             url,
             { password: newPassword },
@@ -233,7 +234,7 @@ const Users = () => {
   const handleSaveEdit = async (userId) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/users/${userId}`,
+        `${backend}/api/users/${userId}`,
         updatedUser,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

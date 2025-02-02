@@ -19,6 +19,7 @@ const AdminProfilePage = () => {
   const [editablePassword, setEditablePassword] = useState("");
   const [editableDescription, setEditableDescription] = useState("");
   const [profileImage, setProfileImage] = useState(null);
+  const backend = process.env.REACT_APP_API_URL;
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -41,7 +42,7 @@ const AdminProfilePage = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/admins/${id}`,
+        `${backend}/api/admins/${id}`,
         updatedAdmin,
         {
           headers: {
@@ -91,7 +92,7 @@ const AdminProfilePage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/upload",
+        `${backend}/api/upload`, 
         formData,
         {
           headers: {
@@ -123,7 +124,7 @@ const AdminProfilePage = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/admins/${id}`,
+        `${backend}/api/admins/${id}`,
         updatedAdmin,
         {
           headers: {
@@ -154,7 +155,7 @@ const AdminProfilePage = () => {
   const fetchAdminData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/admins/${id}`,
+        `${backend}/api/admins/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

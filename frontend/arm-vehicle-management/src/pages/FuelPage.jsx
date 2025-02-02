@@ -41,6 +41,7 @@ const FuelPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedFuelRecord, setSelectedFuelRecord] = useState(null);
+  const backend = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -48,7 +49,7 @@ const FuelPage = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const fuelResponse = await axios.get("http://localhost:5000/api/fuel", {
+        const fuelResponse = await axios.get(`${backend}/api/fuel`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -62,7 +63,7 @@ const FuelPage = () => {
         setTotalFuelCapacity(totalFuel);
 
         const vehicleResponse = await axios.get(
-          "http://localhost:5000/api/vehicles",
+          `${backend}/api/vehicles`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -72,7 +73,7 @@ const FuelPage = () => {
         setVehicles(vehicleResponse.data);
 
         const userResponse = await axios.get(
-          "http://localhost:5000/api/users",
+          `${backend}/api/users`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -106,13 +107,13 @@ const FuelPage = () => {
         updatedFuelCapacity = 0;
       }
 
-      await axios.put(`http://localhost:5000/api/fuel/${fuelRecordId}`, {
+      await axios.put(`${backend}/api/fuel/${fuelRecordId}`, {
         status: newStatus,
         fuelCapacity: updatedFuelCapacity,
       });
 
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/fuel", {
+      const response = await axios.get("${process.env.REACT_APP_API_URL}/api/fuel", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -155,13 +156,13 @@ const FuelPage = () => {
       });
 
       if (result.isConfirmed) {
-        await axios.delete(`http://localhost:5000/api/fuel/${fuelRecordId}`, {
+        await axios.delete(`${process.env.REACT_APP_API_URL}/api/fuel/${fuelRecordId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const response = await axios.get("http://localhost:5000/api/fuel", {
+        const response = await axios.get("${process.env.REACT_APP_API_URL}/api/fuel", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -205,12 +206,12 @@ const FuelPage = () => {
       });
 
       if (newFuelCapacity) {
-        await axios.put(`http://localhost:5000/api/fuel/${fuelRecordId}`, {
+        await axios.put(`${backend}/api/fuel/${fuelRecordId}`, {
           fuelCapacity: newFuelCapacity,
         });
 
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/fuel", {
+        const response = await axios.get(`${backend}/api/fuel`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

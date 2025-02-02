@@ -39,6 +39,7 @@ const VehicleList = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const navigate = useNavigate();
+  const backend = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -49,7 +50,7 @@ const VehicleList = () => {
 
     const fetchVehicles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/vehicles", {
+        const response = await axios.get(`${backend}/api/vehicles`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setVehicles(response.data);
@@ -78,7 +79,7 @@ const VehicleList = () => {
       if (result.isConfirmed) {
         try {
           await axios.delete(
-            `http://localhost:5000/api/vehicles/${vehicleId}`,
+            `${backend}/api/vehicles/${vehicleId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -134,7 +135,7 @@ const VehicleList = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/vehicles/${selectedVehicle._id}`,
+        `${backend}/api/vehicles/${selectedVehicle._id}`,
         updatedVehicle,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -158,7 +159,7 @@ const VehicleList = () => {
     const token = localStorage.getItem("token");
     try {
       await axios.put(
-        `http://localhost:5000/api/vehicles/${vehicleId}`,
+        `${backend}/api/vehicles/${vehicleId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

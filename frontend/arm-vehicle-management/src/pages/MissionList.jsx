@@ -50,6 +50,7 @@ const MissionList = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const navigate = useNavigate();
+  const backend = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -60,7 +61,7 @@ const MissionList = () => {
 
     const fetchMissions = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/missions", {
+        const response = await axios.get(`${backend}/api/missions`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSelectedMission(response.data);
@@ -81,7 +82,7 @@ const MissionList = () => {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/vehicles");
+        const response = await axios.get(`${backend}/api/vehicles`);
         const availableVehicles = response.data.filter(
           (vehicle) => vehicle.status === "available"
         );
@@ -127,7 +128,7 @@ const MissionList = () => {
         const token = localStorage.getItem("token");
 
         return axios
-          .post(`http://localhost:5000/api/fuel/${mission._id}`, fuelData, {
+          .post(`${process.env.REACT_APP_API_URL}/api/fuel/${mission._id}`, fuelData, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -168,7 +169,7 @@ const MissionList = () => {
     console.log("Mission ID:", mission._id);
 
     axios
-      .post(`http://localhost:5000/api/return/${mission._id}`, returnData, {
+      .post(`${backend}/api/return/${mission._id}`, returnData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -221,7 +222,7 @@ const MissionList = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/missions/${missionId}/status`,
+        `${backend}/api/missions/${missionId}/status`,
         {
           status: newStatus,
         }
@@ -230,14 +231,14 @@ const MissionList = () => {
       if (newStatus === "completed" || newStatus === "in-progress") {
         if (missionToUpdate.assigned_vehicle_id) {
           const vehicleId = missionToUpdate.assigned_vehicle_id._id;
-          await axios.put(`http://localhost:5000/api/vehicles/${vehicleId}`, {
+          await axios.put(`${backend}/api/vehicles/${vehicleId}`, {
             status: "in-use",
           });
         }
       } else if (newStatus === "cancel") {
         if (missionToUpdate.assigned_vehicle_id) {
           const vehicleId = missionToUpdate.assigned_vehicle_id._id;
-          await axios.put(`http://localhost:5000/api/vehicles/${vehicleId}`, {
+          await axios.put(`${backend}/api/vehicles/${vehicleId}`, {
             status: "available",
           });
         }
@@ -304,7 +305,7 @@ const MissionList = () => {
           };
 
           await axios.delete(
-            `http://localhost:5000/api/missions/${missionId}`,
+            `${backend}/api/missions/${missionId}`,
             config
           );
           setMissions(missions.filter((mission) => mission._id !== missionId)); // Remove the deleted mission from the state
@@ -386,7 +387,7 @@ const MissionList = () => {
       };
 
       await axios.put(
-        `http://localhost:5000/api/missions/${selectedMission._id}`,
+        `${backend}/api/missions/${selectedMission._id}`,
         updatedMissionWithVehicle,
         config
       );

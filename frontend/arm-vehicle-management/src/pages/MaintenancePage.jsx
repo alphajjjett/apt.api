@@ -39,6 +39,7 @@ const MaintenancePage = () => {
   const [editDescription, setEditDescription] = useState(""); // ข้อมูล description ที่จะถูกแก้ไข
   const [currentMaintenanceId, setCurrentMaintenanceId] = useState(null); // บันทึก id ของการซ่อมบำรุงที่กำลังแก้ไข
   const [searchQuery, setSearchQuery] = useState("");
+  const backend = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -58,7 +59,7 @@ const MaintenancePage = () => {
     const fetchMaintenance = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/maintenance",
+          `${backend}/api/maintenance`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -93,7 +94,7 @@ const MaintenancePage = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/maintenance/${currentMaintenanceId}`,
+        `${backend}/api/maintenance/${currentMaintenanceId}`,
         { description: editDescription },
         { headers: { Authorization: `Bearer ${token}` } }
       );

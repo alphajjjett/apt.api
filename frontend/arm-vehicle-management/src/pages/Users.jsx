@@ -31,7 +31,7 @@ const Users = () => {
     try {
       const decodedToken = jwtDecode(token);
       if (decodedToken.role === "admin") {
-        navigate(`${backend}/admins/${decodedToken.id}`, { replace: true });
+        navigate(`/admins/${decodedToken.id}`, { replace: true });
       } else {
         MySwal.fire({
           title: "Access Denied",

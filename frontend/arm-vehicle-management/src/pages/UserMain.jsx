@@ -39,7 +39,7 @@ const UserMain = () => {
   return (
     <div className="mx-auto p-6 bg-white shadow-lg rounded-lg w-full max-w-7xl">
       <ThemeProvider theme={theme}>
-      <Grid container spacing={4}>
+      <Grid container spacing={2}>
         {/* การจองรถ */}
         <Grid item xs={12} md={8}>
           <Typography variant="h4" component="h2" sx={{ marginBottom: 2 }}>
@@ -163,7 +163,7 @@ const UserMain = () => {
 
         {/* ปฏิทิน */}
         <Grid item xs={12} md={4}>
-          <Card sx={{ maxWidth: 345, marginTop: -22 }}>
+          <Card sx={{ maxWidth: 345}}>
             <CardContent>
               <Typography
                 variant="h6"

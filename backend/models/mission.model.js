@@ -14,8 +14,8 @@ const MissionSchema = new Schema(
         },
         status : {
             type : String,
-            enum : ['pending','in-progress','completed','cancel'],
-            deafault : 'pending'
+            enum : ['pending','in-progress','completed','cancel','waiting'],
+            deafault : 'waiting'
 
         },
         quantity : {

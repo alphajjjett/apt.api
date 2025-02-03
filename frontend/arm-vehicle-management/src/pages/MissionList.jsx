@@ -113,10 +113,10 @@ const MissionList = () => {
       cancelButtonText: "ยกเลิก",
       preConfirm: (fuelCapacity) => {
         if (!fuelCapacity || fuelCapacity <= 0) {
-          Swal.showValidationMessage("Please enter a valid fuel capacity");
+          Swal.showValidationMessage("กรุณาใส่จำนวนเชื้อเพลิง");
           return false;
         }
-
+  
         const fuelData = {
           userId: mission.assigned_user_id._id, // ส่ง userId แทน name
           vehicleId: mission.assigned_vehicle_id._id, // ส่ง vehicleId แทน name
@@ -124,23 +124,44 @@ const MissionList = () => {
           fuelDate: new Date(mission.start_date), // ใช้วันที่ของ mission
           status: "pending",
         };
-
+  
         const token = localStorage.getItem("token");
-
+  
         return axios
-          .post(`${process.env.REACT_APP_API_URL}/api/fuel/${mission._id}`, fuelData, {
+          .post(`${backend}/api/fuel/${mission._id}`, fuelData, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           })
           .then((response) => {
-            Swal.fire({
-              title: "Fuel Request Success",
-              text: "เบิกเชื้อเพลิงสำเร็จ",
-              icon: "success",
-            }).then(() => {
-              handleGoToFuel();
-            });
+            // อัพเดตสถานะของ mission
+            axios
+              .put(
+                `${backend}/api/missions/${mission._id}/status`,
+                { status: "pending" },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              )
+              .then(() => {
+                Swal.fire({
+                  title: "Fuel Request Success",
+                  text: "เบิกเชื้อเพลิงสำเร็จ",
+                  icon: "success",
+                }).then(() => {
+                  handleGoToFuel();
+                });
+              })
+              .catch((error) => {
+                console.error("Error updating mission status:", error);
+                Swal.fire({
+                  title: "Error",
+                  text: "เกิดข้อผิดพลาดในการอัพเดตสถานะภารกิจ",
+                  icon: "error",
+                });
+              });
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -153,6 +174,7 @@ const MissionList = () => {
       },
     });
   };
+  
 
   const handleReturnClick = (mission) => {
     const returnData = {
@@ -558,6 +580,11 @@ const MissionList = () => {
                             <span className="w-2.5 h-2.5 mr-2 rounded-full bg-red-600"></span>
                             ไม่อนุมัติ
                           </span>
+                        ): mission.status === "waiting" ? (
+                          <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
+                            <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
+                            รอเบิกเชื้อเพลิง
+                          </span>
                         ) : null}
                       </TableCell>
 
@@ -636,7 +663,7 @@ const MissionList = () => {
                             color="secondary"
                             style={{ marginRight: "2px" }}
                             disabled={
-                              isRequesting ||
+                              mission.status === "pending" ||
                               mission.status === "in-progress" ||
                               mission.status === "completed" ||
                               mission.status === "cancel"
@@ -646,7 +673,6 @@ const MissionList = () => {
                             }}
                           >
                             <LocalGasStationIcon />
-                            {isRequesting}
                           </IconButton>
 
                           {/* แสดงปุ่มคืนรถเมื่อวันที่ปัจจุบันถึง end_date */}

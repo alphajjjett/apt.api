@@ -18,7 +18,7 @@ const CreateMission = () => {
   const [missionName, setMissionName] = useState('');
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [status] = useState('pending');
+  const [status] = useState('waiting');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedVehicle, setSelectedVehicle] = useState(null);

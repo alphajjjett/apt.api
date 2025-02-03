@@ -61,7 +61,7 @@ const createMission = async (req, res) => {
       const newMission = new Mission({
           mission_name,
           description,
-          status: status || 'pending', // กำหนดค่า default สำหรับ status
+          status: status || 'waiting', // กำหนดค่า default สำหรับ status
           assigned_user_id,
           assigned_vehicle_id,
           quantity,

@@ -331,8 +331,19 @@ const FuelPage = () => {
               onChange={handleSearch}
             />
           </div>
-        </div>
+        </div>  
         <TableContainer component={Paper}>
+          <TableRow>
+              {filteredFuelRecords.map((record) => (
+                <TableCell
+                  key={record.id}
+                  align={record.align}
+                  style={{ top: 57, minWidth: record.minWidth }}
+                >
+                  {record.label}
+                </TableCell>
+              ))}
+            </TableRow>
           <Table>
             <TableHead>
               <TableRow>
@@ -364,7 +375,6 @@ const FuelPage = () => {
                     atob(localStorage.getItem("token")?.split(".")[1])
                   ).selfid;
                   const isCurrentUser = user?.selfid === loggedInUserSelfid;
-
                   return (
                     <TableRow key={record._id}>
                       <TableCell align="left">{filteredFuelRecords.length - (page * rowsPerPage + index)}</TableCell>

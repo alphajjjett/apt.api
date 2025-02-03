@@ -21,6 +21,16 @@ const Register = () => {
       setError('Please fill in all fields.');
       return;
     }
+    Swal.fire({
+      title: 'กำลังสมัครสมาชิก...',
+      text: 'กรุณารอสักครู่',
+      icon: 'info',
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(); 
+      }
+    });
 
     try {
       const response = await axios.post(`${backend}/api/users/register`, {
@@ -32,7 +42,7 @@ const Register = () => {
         selfid,
         role: 'user',
       });
-      
+
       localStorage.setItem('token', response.data.token);
       Swal.fire({
         title: 'Create Success!',
@@ -43,7 +53,7 @@ const Register = () => {
         navigate('/main'); 
         window.location.reload();
       });
-      
+
     } catch (err) {
       console.error(err);
       Swal.fire({

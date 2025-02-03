@@ -11,6 +11,14 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    Swal.fire({
+      title: 'กำลังเข้าสู่ระบบ...',
+      text: 'โปรดรอขณะกำลังตรวจสอบข้อมูล',
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      allowOutsideClick: false, 
+    });
  
     try {
       let apiUrl = `${backend}/api/users/login`;
@@ -25,7 +33,7 @@ const Login = () => {
         text: `ยินดีต้อนรับ User!`,
         confirmButtonColor: '#3085d6',
       }).then(() => {
-          navigate('/main'); 
+        navigate('/main'); 
         window.location.reload();
       });
  
@@ -44,7 +52,7 @@ const Login = () => {
           text: `ยินต้อนรับ Admin!`,
           confirmButtonColor: '#3085d6',
         }).then(() => {
-            navigate('/dashboard'); // ถ้าเป็น admin ให้ไปหน้า dashboard
+          navigate('/dashboard'); // ถ้าเป็น admin ให้ไปหน้า dashboard
           window.location.reload();
         });
       } catch (adminError) {
@@ -57,6 +65,9 @@ const Login = () => {
           confirmButtonText: 'ลองอีกครั้ง',
         });
       }
+    } finally {
+      // ซ่อนการโหลดเมื่อการร้องขอเสร็จสิ้น
+      Swal.hideLoading();
     }
   };
 

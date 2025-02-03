@@ -82,7 +82,7 @@ const FuelPage = () => {
         );
         setUsers(userResponse.data);
       } catch (error) {
-        setError("Failed to fetch fuel records, vehicles, or users");
+        setError("ไม่สามารถเข้าถึงข้อมูล fuel , vehicles, or users");
         MySwal.fire({
           title: "Error!",
           text: "Failed to fetch data from server",
@@ -113,7 +113,7 @@ const FuelPage = () => {
       });
 
       const token = localStorage.getItem("token");
-      const response = await axios.get("${process.env.REACT_APP_API_URL}/api/fuel", {
+      const response = await axios.get(`${backend}/api/fuel`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -156,13 +156,13 @@ const FuelPage = () => {
       });
 
       if (result.isConfirmed) {
-        await axios.delete(`${process.env.REACT_APP_API_URL}/api/fuel/${fuelRecordId}`, {
+        await axios.delete(`${backend}/api/fuel/${fuelRecordId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const response = await axios.get("${process.env.REACT_APP_API_URL}/api/fuel", {
+        const response = await axios.get(`${backend}/api/fuel`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

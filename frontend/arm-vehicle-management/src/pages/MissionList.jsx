@@ -116,7 +116,7 @@ const MissionList = () => {
           Swal.showValidationMessage("กรุณาใส่จำนวนเชื้อเพลิง");
           return false;
         }
-  
+
         const fuelData = {
           userId: mission.assigned_user_id._id, // ส่ง userId แทน name
           vehicleId: mission.assigned_vehicle_id._id, // ส่ง vehicleId แทน name
@@ -124,9 +124,9 @@ const MissionList = () => {
           fuelDate: new Date(mission.start_date), // ใช้วันที่ของ mission
           status: "pending",
         };
-  
+
         const token = localStorage.getItem("token");
-  
+
         return axios
           .post(`${backend}/api/fuel/${mission._id}`, fuelData, {
             headers: {
@@ -174,7 +174,6 @@ const MissionList = () => {
       },
     });
   };
-  
 
   const handleReturnClick = (mission) => {
     const returnData = {
@@ -243,12 +242,9 @@ const MissionList = () => {
     }
 
     try {
-      await axios.put(
-        `${backend}/api/missions/${missionId}/status`,
-        {
-          status: newStatus,
-        }
-      );
+      await axios.put(`${backend}/api/missions/${missionId}/status`, {
+        status: newStatus,
+      });
 
       if (newStatus === "completed" || newStatus === "in-progress") {
         if (missionToUpdate.assigned_vehicle_id) {
@@ -326,10 +322,7 @@ const MissionList = () => {
             },
           };
 
-          await axios.delete(
-            `${backend}/api/missions/${missionId}`,
-            config
-          );
+          await axios.delete(`${backend}/api/missions/${missionId}`, config);
           setMissions(missions.filter((mission) => mission._id !== missionId)); // Remove the deleted mission from the state
 
           MySwal.fire({
@@ -433,7 +426,6 @@ const MissionList = () => {
       });
 
       setEditDialogOpen(false);
-      
     } catch (error) {
       MySwal.fire({
         title: "Error",
@@ -526,7 +518,10 @@ const MissionList = () => {
                     ).selfid;
                   return (
                     <TableRow key={mission._id}>
-                      <TableCell align="left"> {filteredMissions.length - (page * rowsPerPage + index)}</TableCell>
+                      <TableCell align="left">
+                        {" "}
+                        {filteredMissions.length - (page * rowsPerPage + index)}
+                      </TableCell>
                       <TableCell component="th" scope="row">
                         {mission.mission_name}
                       </TableCell>
@@ -580,7 +575,7 @@ const MissionList = () => {
                             <span className="w-2.5 h-2.5 mr-2 rounded-full bg-red-600"></span>
                             ไม่อนุมัติ
                           </span>
-                        ): mission.status === "waiting" ? (
+                        ) : mission.status === "waiting" ? (
                           <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
                             <span className="w-2.5 h-2.5 mr-2 rounded-full bg-blue-400"></span>
                             รอเบิกเชื้อเพลิง
@@ -653,7 +648,12 @@ const MissionList = () => {
                             color="error"
                             style={{ marginRight: "2px" }}
                             onClick={() => handleDelete(mission._id)}
-                            disabled={mission.status !== "pending" && !isAdmin}
+                            disabled={
+                              !(
+                                mission.status === "waiting" ||
+                                mission.status === "pending"
+                              ) && !isAdmin
+                            }
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -858,7 +858,7 @@ const MissionList = () => {
                     value={updatedMission.quantity || ""}
                     onChange={handleEditChange}
                     style={{ marginBottom: "20px" }}
-                    inputProps={{ min: 0 }} 
+                    inputProps={{ min: 0 }}
                   />
 
                   <Button

@@ -62,24 +62,18 @@ const FuelPage = () => {
         );
         setTotalFuelCapacity(totalFuel);
 
-        const vehicleResponse = await axios.get(
-          `${backend}/api/vehicles`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const vehicleResponse = await axios.get(`${backend}/api/vehicles`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setVehicles(vehicleResponse.data);
 
-        const userResponse = await axios.get(
-          `${backend}/api/users`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const userResponse = await axios.get(`${backend}/api/users`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setUsers(userResponse.data);
       } catch (error) {
         setError("ไม่สามารถเข้าถึงข้อมูล fuel , vehicles, or users");
@@ -179,6 +173,8 @@ const FuelPage = () => {
           title: "ลบสำเร็จ!",
           text: "ข้อมูลถูกลบเรียบร้อยแล้ว",
           icon: "success",
+        }).then(() => {
+          window.location.reload(); 
         });
       }
     } catch (error) {
@@ -367,7 +363,10 @@ const FuelPage = () => {
 
                   return (
                     <TableRow key={record._id}>
-                      <TableCell align="left">{filteredFuelRecords.length - (page * rowsPerPage + index)}</TableCell>
+                      <TableCell align="left">
+                        {filteredFuelRecords.length -
+                          (page * rowsPerPage + index)}
+                      </TableCell>
                       <TableCell align="left">
                         {vehicle ? vehicle.name : "N/A"}
                       </TableCell>

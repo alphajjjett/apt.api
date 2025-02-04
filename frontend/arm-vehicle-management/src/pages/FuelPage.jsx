@@ -175,14 +175,14 @@ const FuelPage = () => {
         );
         setTotalFuelCapacity(totalFuel);
 
-        Swal.fire({
+        MySwal.fire({
           title: "ลบสำเร็จ!",
           text: "ข้อมูลถูกลบเรียบร้อยแล้ว",
           icon: "success",
         });
       }
     } catch (error) {
-      Swal.fire({
+      MySwal.fire({
         title: "เกิดข้อผิดพลาด!",
         text: "ไม่สามารถลบข้อมูลได้",
         icon: "error",

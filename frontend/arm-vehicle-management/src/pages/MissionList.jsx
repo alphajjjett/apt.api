@@ -306,7 +306,7 @@ const MissionList = () => {
     }
 
     MySwal.fire({
-      title: "Are you sure?",
+      title: "คุณแน่ใจหรือไม่?",
       text: "ไม่สามารถกู้ข้อมูลกลับได้!",
       icon: "warning",
       showCancelButton: true,

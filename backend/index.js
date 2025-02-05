@@ -3,35 +3,25 @@ const mongoose = require("mongoose");
 const app = express();
 const authRoutes = require("./routes/auth.route");
 const jwt = require("jsonwebtoken");
-const path = require("path");
-const multer = require("multer");
-const FormData = require("form-data");
-const axios = require("axios");
-const { Storage } = require("@google-cloud/storage");
+// const path = require("path");
+// const multer = require("multer");
+// const FormData = require("form-data");
+// const axios = require("axios");
+// const { Storage } = require("@google-cloud/storage");
 require("dotenv").config();
-const { updateUser } = require("./controllers/user.controller");
-const fs = require("fs");
+// const { updateUser } = require("./controllers/user.controller");
 
-// ตั้งค่า multer สำหรับการอัพโหลดไฟล์
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "../apt.api/uploads/");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + path.extname(file.originalname));
-//   },
+// const upload = multer({
+//   storage: multer.memoryStorage(),
 // });
-const upload = multer({
-  storage: multer.memoryStorage(),
-});
 
-const storage = new Storage({
-  projectId: process.env.GOOGLE_CLOUD_BUCKET_NAME,
-});
-const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME;
-const bucket = storage.bucket(bucketName);
+// const storage = new Storage({
+//   projectId: process.env.GOOGLE_CLOUD_BUCKET_NAME,
+// });
+// const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME;
+// const bucket = storage.bucket(bucketName);
 
-app.use("/uploads", express.static(path.join(__dirname, "../apt.api/uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "../apt.api/uploads")));
 
 const cors = require("cors");
 const vehicleRoute = require("./routes/vehicle.route.js");
@@ -44,7 +34,7 @@ const userRoutes = require("./routes/user.route.js");
 const adminRoutes = require("./routes/admin.route.js");
 const dashboardRoute = require("./routes/dashboard.route");
 const vehicleRoutes = require("./routes/vehicle.route");
-const maintenanceRoute = require('./routes/maintenance.route.js');
+const maintenanceRoute = require("./routes/maintenance.route.js");
 
 const uri = process.env.MONGO_URI;
 console.log(uri);
@@ -60,13 +50,14 @@ app.use(cors());
 app.use("/api/vehicles", vehicleRoute);
 app.use("/api/fuel", fuelRoute);
 app.use("/api/return", returnRoute);
-app.use('/api/maintenance', maintenanceRoute);
+app.use("/api/maintenance", maintenanceRoute);
 
 app.use("/api/missions", missionRoutes);
 app.use("/api", dashboardRoute); // กำหนด route dashboard ที่ /api/dashboard
 
 // ใช้ route ของ admin ซึ่งมีการใช้ auth middleware ใน route นั้น ๆ
 app.use("/api/admins", adminRoutes);
+//
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api", vehicleRoutes); // รวม route เข้า API path
@@ -171,56 +162,54 @@ app.post("/login", async (req, res) => {
 });
 
 // API สำหรับอัพโหลดรูปภาพ
-app.post("/api/upload", upload.single("file"), async (req, res) => {
-  const { id } = req.body;
+// app.post("/api/upload", upload.single("file"), async (req, res) => {
+//   const { id } = req.body;
 
-  const file = req.file;
+//   const file = req.file;
 
-  if (!file) {
-    return res.status(400).send("No file uploaded");
-  }
+//   if (!file) {
+//     return res.status(400).send("No file uploaded");
+//   }
 
-  const formData = new FormData();
-  formData.append("file", file.buffer, file.originalname);
+//   const formData = new FormData();
+//   formData.append("file", file.buffer, file.originalname);
 
-  try {
-    const { data } = await axios.post(
-      "http://45.144.167.78:8080/upload-to-gcloud",
-      formData,
-      {
-        headers: {
-          ...formData.getHeaders(),
-        },
-      }
-    );
+//   try {
+//     const { data } = await axios.post(
+//       "http://45.144.167.78:8080/upload-to-gcloud",
+//       formData,
+//       {
+//         headers: {
+//           ...formData.getHeaders(),
+//         },
+//       }
+//     );
 
-    console.log("data is ", data, "publicUrl is", data.publicUrl);
+//     let publicUrl = data.publicUrl;
 
-    let publicUrl = data.publicUrl;
+//     const updateReq = {
+//       params: { id },
+//       body: { profileImage: publicUrl },
+//     };
 
-    const updateReq = {
-      params: { id },
-      body: { profileImage: publicUrl },
-    };
+//     const updateRes = {
+//       json: (data) =>
+//         res.json({ message: "Image uploaded and user updated", data }),
+//       status: (statusCode) => ({
+//         json: (data) => res.status(statusCode).json(data),
+//       }),
+//     };
 
-    const updateRes = {
-      json: (data) =>
-        res.json({ message: "Image uploaded and user updated", data }),
-      status: (statusCode) => ({
-        json: (data) => res.status(statusCode).json(data),
-      }),
-    };
+//     await updateUser(updateReq, updateRes);
 
-    await updateUser(updateReq, updateRes);
-
-    // fs.unlinkSync(file.path);
-  } catch (error) {
-    console.error("Error uploading image", error);
-    return res
-      .status(500)
-      .json({ message: "Failed to upload image", error: error.message });
-  }
-});
+//     // fs.unlinkSync(file.path);
+//   } catch (error) {
+//     console.error("Error uploading image", error);
+//     return res
+//       .status(500)
+//       .json({ message: "Failed to upload image", error: error.message });
+//   }
+// });
 
 app.get("/", (req, res) => {
   res.send("Hello form APT API");

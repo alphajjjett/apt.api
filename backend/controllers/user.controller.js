@@ -1,6 +1,8 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const FormData = require("form-data");
+const axios = require("axios");
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -125,10 +127,36 @@ const getCurrentUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const decodedToken = req.headers.authorization.split(" ")[1];
-  const { name, email, description, profileImage, phone, password } = req.body;
+  // const decodedToken = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(
+    req.headers.authorization.split(" ")[1],
+    process.env.JWT_SECRET
+  );
+  const { name, email, description, phone, password } = req.body;
+  let profileImage = req.file;
 
-  console.log("decodedToken is ", decodedToken);
+  console.log("decoded is =========>", decoded);
+
+  if (profileImage) {
+    const formData = new FormData();
+    formData.append("file", profileImage.buffer, profileImage.originalname);
+
+    try {
+      const { data } = await axios.post(
+        "http://45.144.167.78:8080/upload-to-gcloud",
+        formData,
+        {
+          headers: {
+            ...formData.getHeaders(),
+          },
+        }
+      );
+      profileImage = data.publicUrl;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      return res.status(500).json({ message: "Error uploading image" });
+    }
+  }
 
   try {
     const user = await User.findById(id);
@@ -150,13 +178,13 @@ const updateUser = async (req, res) => {
 
     const token = jwt.sign(
       {
-        id: decodedToken.id,
-        selfid: decodedToken.selfid,
-        name: decodedToken.name,
-        email: decodedToken.email,
-        phone: decodedToken.phone,
-        role: decodedToken.role,
-        description: decodedToken.description,
+        id: decoded.id,
+        selfid: decoded.selfid,
+        name: decoded.name,
+        email: decoded.email,
+        phone: decoded.phone,
+        role: decoded.role,
+        description: decoded.description,
         profileImage: user.profileImage,
       },
       process.env.JWT_SECRET,
@@ -164,8 +192,9 @@ const updateUser = async (req, res) => {
     );
 
     const updatedUser = await user.save();
+    // res.json(updatedUser);
 
-    res.json(updatedUser);
+    res.status(200).json({ updatedUser, token });
   } catch (error) {
     console.error("error is :", error);
     res.status(500).json({ message: "Server error" });

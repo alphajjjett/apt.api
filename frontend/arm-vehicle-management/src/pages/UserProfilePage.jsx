@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "axios";
-
 
 const MySwal = withReactContent(Swal);
 
@@ -19,7 +18,7 @@ const UserProfilePage = () => {
   const [editableDescription, setEditableDescription] = useState("");
   const [editablePassword, setEditablePassword] = useState("");
   const [editablePhone, setEditablePhone] = useState("");
-  const [profileImage, setProfileImage] = useState(null); 
+  const [profileImage, setProfileImage] = useState(null);
   const backend = process.env.REACT_APP_API_URL;
 
   const handleEditClick = () => {
@@ -32,29 +31,29 @@ const UserProfilePage = () => {
   };
 
   const handleSaveClick = async () => {
-    const updatedUser = {
-      name: editableName,
-      email: editableEmail,
-      description: editableDescription,
-      phone: editablePhone,
-      profileImage: user.profileImage, 
-    };
+    console.log("profileImage is ", profileImage);
+    const formData = new FormData();
+    formData.append("name", editableName);
+    formData.append("email", editableEmail);
+    formData.append("description", editableDescription);
+    formData.append("phone", editablePhone);
+    formData.append("file", profileImage);
     if (editablePassword) {
-      updatedUser.password = editablePassword;
+      formData.append("password", editablePassword);
     }
 
     try {
-      const response = await axios.put(
-        `${backend}/api/users/${id}`,
-        updatedUser,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.put(`${backend}/api/users/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
-      setUser(response.data);
+      console.log("response.data.token)", response.data.token);
+
+      setUser(response.data.updatedUser);
+      localStorage.setItem("token", response.data.token);
       setIsEditing(false);
       fetchUserData();
       MySwal.fire({
@@ -81,7 +80,7 @@ const UserProfilePage = () => {
     setEditablePhone(user.phone);
     setIsEditing(false);
   };
-  
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -89,72 +88,68 @@ const UserProfilePage = () => {
     }
   };
 
-  const handleImageUpload = async () => {
-    const formData = new FormData();
-    formData.append("file", profileImage);
-    formData.append("id" , id);
+  // const handleImageUpload = async () => {
+  //   const formData = new FormData();
+  //   formData.append("file", profileImage);
+  //   formData.append("id", id);
 
-    try {
-      const response = await axios.post(
-        `${backend}/api/upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+  //   try {
+  //     const response = await axios.post(`${backend}/api/upload`, formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     });
 
-      const imageUrl = response.data.path; 
-      await handleSaveProfileImage(imageUrl);
-    } catch (error) {
-      MySwal.fire({
-        icon: "error",
-        title: "Upload Failed!",
-        text: "เกิดข้อผิดพลาดในการอัพโหลด",
-        confirmButtonText: "ลองอีกครั้ง",
-      });
-    }
-  };
+  //     const imageUrl = response.data.path;
+  //     await handleSaveProfileImage(imageUrl);
+  //   } catch (error) {
+  //     MySwal.fire({
+  //       icon: "error",
+  //       title: "Upload Failed!",
+  //       text: "เกิดข้อผิดพลาดในการอัพโหลด",
+  //       confirmButtonText: "ลองอีกครั้ง",
+  //     });
+  //   }
+  // };
 
-  const handleSaveProfileImage = async (imageUrl) => {
-    const updatedUser = {
-      name: editableName,
-      email: editableEmail,
-      description: editableDescription,
-      profileImage: imageUrl, 
-    };
+  // const handleSaveProfileImage = async (imageUrl) => {
+  //   const updatedUser = {
+  //     name: editableName,
+  //     email: editableEmail,
+  //     description: editableDescription,
+  //     profileImage: imageUrl,
+  //   };
 
-    try {
-      const response = await axios.put(
-        `${backend}/api/users/${id}`,
-        updatedUser,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+  //   try {
+  //     const response = await axios.put(
+  //       `${backend}/api/users/${id}`,
+  //       updatedUser,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //         },
+  //       }
+  //     );
 
-      setUser(response.data);
-      setIsEditing(false);
-      MySwal.fire({
-        icon: "success",
-        title: "Profile Updated!",
-        text: "อัพเดทรูปโปรไฟล์สำเร็จ",
-        confirmButtonText: "OK",
-      });
-    } catch (error) {
-      setError("Error updating user data");
-      MySwal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "เกิดข้อผิดพลาดในการอัพเดท",
-        confirmButtonText: "ลองอีกครั้ง",
-      });
-    }
-  };
+  //     setUser(response.data);
+  //     setIsEditing(false);
+  //     MySwal.fire({
+  //       icon: "success",
+  //       title: "Profile Updated!",
+  //       text: "อัพเดทรูปโปรไฟล์สำเร็จ",
+  //       confirmButtonText: "OK",
+  //     });
+  //   } catch (error) {
+  //     setError("Error updating user data");
+  //     MySwal.fire({
+  //       icon: "error",
+  //       title: "Error!",
+  //       text: "เกิดข้อผิดพลาดในการอัพเดท",
+  //       confirmButtonText: "ลองอีกครั้ง",
+  //     });
+  //   }
+  // };
 
   const fetchUserData = async () => {
     try {
@@ -163,7 +158,7 @@ const UserProfilePage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      setUser(response.data); 
+      setUser(response.data);
     } catch (error) {
       console.error("Error fetching user data", error);
     } finally {
@@ -206,7 +201,7 @@ const UserProfilePage = () => {
             phone: decodedToken.phone,
             role: decodedToken.role,
             description: decodedToken.description || "",
-            profileImage: decodedToken.profileImage || "", 
+            profileImage: decodedToken.profileImage || "",
           };
           setUser(userData);
         }
@@ -231,11 +226,15 @@ const UserProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg font-noto">
-      <h2 className="text-3xl font-bold mb-6 text-gray-900 text-center">โปรไฟล์ส่วนตัว</h2>
+      <h2 className="text-3xl font-bold mb-6 text-gray-900 text-center">
+        โปรไฟล์ส่วนตัว
+      </h2>
       {user && (
         <div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">รูปโปรไฟล์:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              รูปโปรไฟล์:
+            </label>
             {isEditing ? (
               <>
                 <input
@@ -244,14 +243,14 @@ const UserProfilePage = () => {
                   accept="image/*"
                   onChange={handleImageChange}
                 />
-                {profileImage && (
+                {/* {profileImage && (
                   <button
                     className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none"
                     onClick={handleImageUpload}
                   >
                     อัพโหลดรูป
                   </button>
-                )}
+                )} */}
               </>
             ) : (
               <div>
@@ -268,12 +267,16 @@ const UserProfilePage = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">หมายเลขประจำตัว:</label>
-              <span>{user.selfid}</span>
+            <label className="block text-sm font-medium text-gray-700">
+              หมายเลขประจำตัว:
+            </label>
+            <span>{user.selfid}</span>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">ชื่อ-นามสกุล:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              ชื่อ-นามสกุล:
+            </label>
             {isEditing ? (
               <input
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -286,7 +289,9 @@ const UserProfilePage = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Email:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email:
+            </label>
             {isEditing ? (
               <input
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -300,7 +305,9 @@ const UserProfilePage = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">รหัสผ่าน:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              รหัสผ่าน:
+            </label>
             {isEditing ? (
               <input
                 type="password"
@@ -309,16 +316,21 @@ const UserProfilePage = () => {
                 onChange={(e) => setEditablePassword(e.target.value)}
               />
             ) : (
-              <span>••••••••</span> 
+              <span>••••••••</span>
             )}
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">บทบาท:</label> {user.role}
+            <label className="block text-sm font-medium text-gray-700">
+              บทบาท:
+            </label>{" "}
+            {user.role}
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">ตำแหน่ง:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              ตำแหน่ง:
+            </label>
             {isEditing ? (
               <textarea
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -331,7 +343,9 @@ const UserProfilePage = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">เบอร์โทรศัพท์:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              เบอร์โทรศัพท์:
+            </label>
             {isEditing ? (
               <input
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -342,8 +356,6 @@ const UserProfilePage = () => {
               <span>{user.phone}</span>
             )}
           </div>
-
-          
         </div>
       )}
 

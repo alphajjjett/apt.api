@@ -84,8 +84,7 @@ const CreateMission = () => {
       });
       MySwal.fire({
         icon: 'success',
-        title: 'Mission created successfully',
-        text: 'Your mission has been created successfully.',
+        title: 'จองรถสำเร็จ!',
         confirmButtonText: 'OK'
       }).then(() => {
         navigate('/missionslist');

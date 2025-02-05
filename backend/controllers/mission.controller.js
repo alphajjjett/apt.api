@@ -75,19 +75,20 @@ const createMission = async (req, res) => {
     // บันทึกข้อมูลภารกิจ
     await newMission.save();
 
-    // ส่งการแจ้งเตือนไปที่ Line
-    const lineMessage = `
-  ภารกิจ: ${mission_name}
-  รายละเอียดภารกิจ: \n ${description}
-  ผู้จอง: \n ${user.name}
-  จำนวน: ${quantity} คน
-  รถ: ${vehicle.name}
-  ทะเบียน: ${vehicle.license_plate}
-  วันที่จอง: ${startDate.toLocaleDateString()}
-  วันที่คืน: ${endDate.toLocaleDateString()}
-`;
+//     // ส่งการแจ้งเตือนไปที่ Line
+//     const lineMessage = `
+//   ภารกิจ: ${mission_name}
+//   รายละเอียดภารกิจ: \n ${description}
+//   ผู้จอง: \n ${user.name}
+//   จำนวน: ${quantity} คน
+//   รถ: ${vehicle.name}
+//   ทะเบียน: ${vehicle.license_plate}
+//   วันที่จอง: ${startDate.toLocaleDateString()}
+//   วันที่คืน: ${endDate.toLocaleDateString()}
+//   สถานะ: ${status}
+// `;
 
-    await notifyLine(tokenLine, lineMessage);
+//     await notifyLine(tokenLine, lineMessage);
 
     res.status(201).json(newMission);
   } catch (error) {
@@ -127,7 +128,7 @@ const updateMissionStatus = async (req, res) => {
     mission.status = status;
     await mission.save();
 
-    // If the mission is completed, update the status of the assigned vehicle
+    // If the mission is completed or in-progress, update the status of the assigned vehicle
     if ((status === 'completed' || status === 'in-progress') && mission.assigned_vehicle_id) {
       const vehicle = await Vehicle.findById(mission.assigned_vehicle_id);
       if (vehicle) {
@@ -136,11 +137,29 @@ const updateMissionStatus = async (req, res) => {
       }
     }
 
+    if (status === 'in-progress') {
+      const user = await User.findById(mission.assigned_user_id);
+      const vehicle = await Vehicle.findById(mission.assigned_vehicle_id);
+
+    const lineMessage = `
+  ภารกิจ: ${mission.mission_name}
+  รายละเอียดภารกิจ: \n ${mission.description}
+  จำนวน: ${mission.quantity} คน
+  ผู้จอง: \n ${user ? user.name : 'N/A'}
+  รถ: ${vehicle ? vehicle.name : 'N/A'}
+  ทะเบียน: ${vehicle ? vehicle.license_plate : 'N/A'}
+  วันที่จอง: ${mission.start_date.toLocaleDateString()}
+  วันที่คืน: ${mission.end_date.toLocaleDateString()}
+  `;
+      await notifyLine(tokenLine, lineMessage);
+    }
+
     res.json({ message: 'Mission status updated successfully', mission });
   } catch (error) {
     res.status(500).json({ message: 'Error updating mission status', error });
   }
 };
+
 
 
 // Update mission controller

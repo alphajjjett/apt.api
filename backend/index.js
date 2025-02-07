@@ -22,6 +22,15 @@ require("dotenv").config();
 // const bucket = storage.bucket(bucketName);
 
 // app.use("/uploads", express.static(path.join(__dirname, "../apt.api/uploads")));
+const line = require("@line/bot-sdk");
+
+// ตั้งค่า LINE Messaging API
+const config = {
+  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.CHANNEL_SECRET,
+};
+
+const client = new line.Client(config);
 
 const cors = require("cors");
 const vehicleRoute = require("./routes/vehicle.route.js");
@@ -161,6 +170,27 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.post("/api/line/webhook", line.middleware(config), async (req, res) => {
+  try {
+    const events = req.body.events;
+
+    await Promise.all(
+      events.map(async (event) => {
+        if (event.type === "message" && event.message.type === "text") {
+          await client.replyMessage(event.replyToken, {
+            type: "text",
+            text: `คุณพิมพ์ว่า: ${event.message.text}`,
+          });
+        }
+      })
+    );
+
+    res.status(200).send("OK");
+  } catch (error) {
+    console.error("Error handling webhook:", error);
+    res.status(500).json({ message: "Webhook error", error });
+  }
+});
 // API สำหรับอัพโหลดรูปภาพ
 // app.post("/api/upload", upload.single("file"), async (req, res) => {
 //   const { id } = req.body;

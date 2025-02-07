@@ -1,18 +1,22 @@
 const axios = require('axios');
+const lineUserId = process.env.LINE_USER_ID;
 
-exports.notifyLine = async (token, message) => {
-    try {
-        const response = await axios({
-            method: "POST",
-            url: "https://notify-api.line.me/api/notify",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                Authorization: `Bearer ${token}`, 
-            },
-            data: new URLSearchParams({ message }), 
-        });
-        console.log('notify response', response.data);
-    } catch (err) {
-        console.log('Error in notifyLine:', err);
-    }
+exports.pushMessage = async (channelAccessToken, messages) => {
+  try {
+    const response = await axios({
+      method: 'POST',
+      url: 'https://api.line.me/v2/bot/message/push',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${channelAccessToken}`,
+      },
+      data: {
+        to: lineUserId, 
+        messages,
+      },
+    });
+    console.log('Push message response:', response.data);
+  } catch (err) {
+    console.error('Error in pushMessage:', err.response ? err.response.data : err);
+  }
 };

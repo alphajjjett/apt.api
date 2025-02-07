@@ -1,9 +1,12 @@
 const Mission = require('../models/mission.model');
 const Vehicle = require('../models/vehicle.model'); // สมมติว่าคุณมี Vehicle model
 const User = require('../models/user.model'); // สมมติว่าคุณมี User model
-const { notifyLine } = require('../notify/notify');
+const { pushMessage } = require('../notify/notify');
 
-const tokenLine = process.env.LINE_TOKEN;
+// const tokenLine = process.env.LINE_TOKEN;
+
+const channelAccessToken = process.env.CHANNEL_ACCESS_TOKEN;
+// const lineUserId = process.env.LINE_USER_ID;
 
 // เพิ่มภารกิจใหม่
 const createMission = async (req, res) => {
@@ -117,41 +120,32 @@ const updateMissionStatus = async (req, res) => {
   const { status } = req.body;
 
   try {
-    // Find the mission by ID
+    // ค้นหาภารกิจจาก ID
     const mission = await Mission.findById(missionId);
-
     if (!mission) {
       return res.status(404).json({ message: 'Mission not found' });
     }
 
-    // Update the mission's status
+    // อัปเดตสถานะของภารกิจ
     mission.status = status;
     await mission.save();
 
-    // If the mission is completed or in-progress, update the status of the assigned vehicle
-    if ((status === 'completed' || status === 'in-progress') && mission.assigned_vehicle_id) {
-      const vehicle = await Vehicle.findById(mission.assigned_vehicle_id);
-      if (vehicle) {
-        vehicle.status = 'in-use'; // or any other status you prefer
-        await vehicle.save();
-      }
-    }
-
+    // หากสถานะเป็น in-progress ให้ส่ง push message ไปยัง LINE ID ที่กำหนดไว้
     if (status === 'in-progress') {
-      const user = await User.findById(mission.assigned_user_id);
       const vehicle = await Vehicle.findById(mission.assigned_vehicle_id);
 
-    const lineMessage = `
-  ภารกิจ: ${mission.mission_name}
-  รายละเอียดภารกิจ: \n ${mission.description}
-  จำนวน: ${mission.quantity} คน
-  ผู้จอง: \n ${user ? user.name : 'N/A'}
-  รถ: ${vehicle ? vehicle.name : 'N/A'}
-  ทะเบียน: ${vehicle ? vehicle.license_plate : 'N/A'}
-  วันที่จอง: ${mission.start_date.toLocaleDateString()}
-  วันที่คืน: ${mission.end_date.toLocaleDateString()}
-  `;
-      await notifyLine(tokenLine, lineMessage);
+      const lineMessage = `
+ภารกิจ: ${mission.mission_name}
+รายละเอียด: ${mission.description}
+จำนวน: ${mission.quantity} คน
+รถที่ใช้: ${vehicle ? vehicle.name : 'ไม่ระบุ'}
+ทะเบียน: ${vehicle ? vehicle.license_plate : 'ไม่ระบุ'}
+วันที่เริ่ม: ${mission.start_date.toLocaleDateString()}
+วันที่สิ้นสุด: ${mission.end_date.toLocaleDateString()}
+สถานะ: ${mission.status}
+      `;
+
+      await pushMessage(channelAccessToken,[{ type: 'text', text: lineMessage.trim() }]);
     }
 
     res.json({ message: 'Mission status updated successfully', mission });

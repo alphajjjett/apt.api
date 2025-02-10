@@ -58,12 +58,9 @@ const MaintenancePage = () => {
 
     const fetchMaintenance = async () => {
       try {
-        const response = await axios.get(
-          `${backend}/api/maintenance`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await axios.get(`${backend}/api/maintenance`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setMaintenanceRecords(response.data);
       } catch (error) {
         setError("Failed to fetch maintenance records");
@@ -135,21 +132,21 @@ const MaintenancePage = () => {
   );
 
   const dateOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Asia/Bangkok'
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Bangkok",
   };
 
   const timeOptions = {
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
   };
 
   const combinedOptions = { ...dateOptions, ...timeOptions };
 
-  const locale = 'th-TH';
+  const locale = "th-TH";
 
   if (loading) return <p>Loading maintenance data...</p>;
   if (error) return <p>{error}</p>;
@@ -170,20 +167,28 @@ const MaintenancePage = () => {
         </div>
         {/* ปุ่มดาวน์โหลด PDF */}
         {isAdmin && (
-          <div className="mb-3">
-            <Button variant="outlined" color="primary">
-              <PDFDownloadLink
-                document={<PrintMaintenance maintenance={maintenanceRecords} />}
-                fileName="Maintenance_Report.pdf"
-              >
-                ดาวน์โหลดข้อมูลทั้งหมด
-              </PDFDownloadLink>
-            </Button>
+          <div style={{ marginBottom: "20px" }}>
+            <PDFDownloadLink
+              document={<PrintMaintenance maintenance={maintenanceRecords} />}
+              fileName="Maintenance_Report.pdf"
+            >
+              {({ loading }) =>
+                loading ? (
+                  <Button variant="contained" color="primary">
+                    กำลังโหลด...
+                  </Button>
+                ) : (
+                  <Button variant="contained" color="primary">
+                    ดาวน์โหลดข้อมูลทั้งหมด
+                  </Button>
+                )
+              }
+            </PDFDownloadLink>
           </div>
         )}
         <div className="flex flex-col mb-4">
           <input
-            className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mt-3"
+            className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
             type="text"
             placeholder="ค้นหาด้วยหมายเลขทะเบียน"
             value={searchQuery}
@@ -206,11 +211,14 @@ const MaintenancePage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredData.reverse()
+              {filteredData
+                .reverse()
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((maintenance, index) => (
                   <TableRow key={maintenance._id}>
-                    <TableCell align="left">{filteredData.length - (page * rowsPerPage + index)}</TableCell>
+                    <TableCell align="left">
+                      {filteredData.length - (page * rowsPerPage + index)}
+                    </TableCell>
                     <TableCell component="th" scope="row">
                       {maintenance.vehicleId
                         ? maintenance.vehicleId.name
@@ -253,7 +261,10 @@ const MaintenancePage = () => {
                     )}
                     <TableCell align="left">
                       {maintenance.updatedAt
-                        ? new Date(maintenance.updatedAt).toLocaleString(locale, combinedOptions)
+                        ? new Date(maintenance.updatedAt).toLocaleString(
+                            locale,
+                            combinedOptions
+                          )
                         : "N/A"}
                     </TableCell>
                     {isAdmin && (
@@ -297,6 +308,9 @@ const MaintenancePage = () => {
               label="รายละเอียดการซ่อมบำรุง"
               type="text"
               fullWidth
+              multiline
+              rows={6} // เพิ่มความสูงของช่องกรอกข้อมูล
+              variant="outlined" // ใช้ขอบที่ดูโดดเด่นขึ้น
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
             />

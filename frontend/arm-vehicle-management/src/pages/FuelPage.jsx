@@ -174,7 +174,7 @@ const FuelPage = () => {
           text: "ข้อมูลถูกลบเรียบร้อยแล้ว",
           icon: "success",
         }).then(() => {
-          window.location.reload(); 
+          window.location.reload();
         });
       }
     } catch (error) {
@@ -310,12 +310,17 @@ const FuelPage = () => {
               }
               fileName="Fuel_all_data.pdf"
             >
-              {({ loading }) => (
-                <Button variant="outlined" color="primary" disabled={loading}>
-                  <PictureAsPdfIcon />
-                  {loading ? "กำลังโหลด..." : "ดาวน์โหลดข้อมูลทั้งหมด"}
-                </Button>
-              )}
+              {({ loading }) =>
+                loading ? (
+                  <Button variant="contained" color="primary">
+                    กำลังโหลด...
+                  </Button>
+                ) : (
+                  <Button variant="contained" color="primary">
+                    ดาวน์โหลดข้อมูลทั้งหมด
+                  </Button>
+                )
+              }
             </PDFDownloadLink>
           )}
           <div className="flex flex-col mb-4">
@@ -338,7 +343,7 @@ const FuelPage = () => {
                 <TableCell align="left">หมายเลขประจำตัว</TableCell>
                 <TableCell align="left">ผู้เบิก</TableCell>
                 <TableCell align="left">จำนวนเชื้อเพลิง (ลิตร)</TableCell>
-                <TableCell align="left">วันที่อนุมัติ</TableCell>
+                <TableCell align="left">วันที่และเวลาที่อนุมัติ</TableCell>
                 <TableCell align="left">สถานะ</TableCell>
                 {isAdmin && <TableCell align="left">Action</TableCell>}
                 {/* <TableCell align="left">ดาวน์โหลดข้อมูล</TableCell> */}
@@ -565,7 +570,7 @@ const FuelPage = () => {
                 >
                   {({ loading }) => (
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       color="primary"
                       disabled={loading}
                     >

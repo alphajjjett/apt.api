@@ -30,11 +30,12 @@ import Modal from "react-bootstrap/Modal";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import BookingPrint from "../components/print/BookingPrint";
 import theme from "../css/theme";
-
+import AllMissionsPrint from "../components/print/AllMissionsPrint";
 const MySwal = withReactContent(Swal);
 
 const MissionList = () => {
   const [missions, setMissions] = useState([]);
+  const [fuelRecords, setFuelRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -92,6 +93,22 @@ const MissionList = () => {
       }
     };
     fetchVehicles();
+  }, []);
+
+  useEffect(() => {
+    const fetchFuelRecords = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${backend}/api/fuel`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setFuelRecords(response.data);
+      } catch (error) {
+        console.error("Error fetching fuel records:", error);
+      }
+    };
+
+    fetchFuelRecords();
   }, []);
 
   const handleVehicleSelect = (vehicleId) => {
@@ -435,6 +452,16 @@ const MissionList = () => {
     }
   };
 
+  const getFuelForMission = (mission) => {
+    // ตรวจสอบว่า fuelRecords มีเชื้อเพลิงที่ตรงกับภารกิจนี้หรือไม่
+    const fuelRecord = fuelRecords.find(
+      (fuel) =>
+        String(fuel.userId) === String(mission.assigned_user_id?._id) &&
+        String(fuel.vehicleId) === String(mission.assigned_vehicle_id?._id)
+    );
+    return fuelRecord ? `${fuelRecord.fuelCapacity} ลิตร` : "N/A";
+  };
+
   // date เวลาไทย
   const dateOptions = {
     day: "numeric",
@@ -460,16 +487,42 @@ const MissionList = () => {
   }
 
   return (
-    <div className=" mx-auto p-6 bg-white shadow-lg rounded-lg w-full font-noto">
-      <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลการจองรถ</h2>
+    <ThemeProvider theme={theme}>
+      <div className=" mx-auto p-6 bg-white shadow-lg rounded-lg w-full font-noto">
+        <h2 className="text-2xl font-bold text-center mb-6">ข้อมูลการจองรถ</h2>
 
-      <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
-        <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
-          <h3 className="text-xl font-semibold">ยอดการจองรถ</h3>
-          <p className="text-gray-600 text-2xl">{missions.length} คัน</p>
+        <div className="flex flex-col lg:flex-row gap-6 mb-8 w-full max-w-6xl">
+          <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
+            <h3 className="text-xl font-semibold">ยอดการจองรถ</h3>
+            <p className="text-gray-600 text-2xl">{missions.length} คัน</p>
+          </div>
         </div>
-      </div>
-      <ThemeProvider theme={theme}>
+        {isAdmin && (
+          <div style={{ marginBottom: "20px" }}>
+            <PDFDownloadLink
+              document={
+                <AllMissionsPrint
+                  missions={missions}
+                  fuelRecords={fuelRecords}
+                />
+              }
+              fileName="All_Missions.pdf"
+            >
+              {({ loading }) =>
+                loading ? (
+                  <Button variant="contained" color="primary">
+                    กำลังโหลด...
+                  </Button>
+                ) : (
+                  <Button variant="contained" color="primary">
+                    ดาวน์โหลดข้อมูลทั้งหมด
+                  </Button>
+                )
+              }
+            </PDFDownloadLink>
+          </div>
+        )}
+
         {/* Search box */}
         <TextField
           label="ค้นหาด้วย หมายเลขประจำตัว"
@@ -554,6 +607,9 @@ const MissionList = () => {
                         {mission.assigned_vehicle_id?.name || "N/A"}(
                         {mission.assigned_vehicle_id?.license_plate || "N/A"})
                       </TableCell>
+                      {/* <TableCell align="left">
+                        {getFuelForMission(mission)}
+                      </TableCell> */}
                       <TableCell align="left">
                         {mission.status === "pending" ? (
                           <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full border border-blue-400 text-blue-400">
@@ -606,7 +662,7 @@ const MissionList = () => {
                             } // disabled ถ้าสถานะเป็น completed หรือ in-progress
                           >
                             {mission.status === "in-progress"
-                              ? "อนุมัติเรียบร้อย"
+                              ? "อนุมัติ"
                               : "อนุมัติ"}
                           </Button>
                           <Button
@@ -798,21 +854,24 @@ const MissionList = () => {
                   <strong>ประเภทเชื้อเพลิง:</strong>{" "}
                   {selectedMission.assigned_vehicle_id?.fuel_type || "N/A"}
                 </p>
-
-                {/* เพิ่ม PDFDownloadLink ที่นี่ */}
+                <p>
+                  <strong>เชื้อเพลิง:</strong>
+                  {getFuelForMission(selectedMission) || "N/A"}
+                </p>
                 <PDFDownloadLink
                   document={
                     <BookingPrint
-                      mission={selectedMission} // ส่ง mission เดี่ยวๆ
+                      mission={selectedMission} 
                       vehicle={selectedMission}
                       user={selectedMission}
+                      fuelRecords={fuelRecords}
                     />
                   }
                   fileName={`Mission_.pdf`}
                 >
                   {({ loading }) => (
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       color="primary"
                       disabled={loading}
                     >
@@ -963,8 +1022,8 @@ const MissionList = () => {
             </button>
           </Modal.Footer>
         </Modal>
-      </ThemeProvider>
-    </div>
+      </div>
+    </ThemeProvider>
   );
 };
 

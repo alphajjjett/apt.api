@@ -224,163 +224,169 @@ const UserProfilePage = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
-  return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg font-noto">
-      <h2 className="text-3xl font-bold mb-6 text-gray-900 text-center">
+  return(
+    <div className="max-w-3xl mx-auto p-8 bg-white shadow-lg rounded-lg font-noto border border-gray-200">
+      <h2 className="text-3xl font-extrabold mb-6 text-gray-900 text-center">
         โปรไฟล์ส่วนตัว
       </h2>
+
       {user && (
-        <div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              รูปโปรไฟล์:
-            </label>
-            {isEditing ? (
-              <>
+        <div className="space-y-6">
+          {/* รูปโปรไฟล์ */}
+          <div className="flex flex-col items-center">
+            <div className="relative mb-4">
+              <img
+                src={user.profileImage || "/default-profile.png"}
+                alt="Profile"
+                className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-sm"
+              />
+              {isEditing && (
                 <input
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
+                  className="mt-3 block w-full text-sm text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border file:border-gray-300 file:text-sm file:font-medium file:bg-gray-50 hover:file:bg-gray-100"
                 />
-                {/* {profileImage && (
-                  <button
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none"
-                    onClick={handleImageUpload}
-                  >
-                    อัพโหลดรูป
-                  </button>
-                )} */}
+              )}
+            </div>
+          </div>
+
+          {/* ข้อมูลโปรไฟล์ */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* หมายเลขประจำตัว */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                หมายเลขประจำตัว:
+              </label>
+              <p className="text-lg font-semibold text-gray-800">
+                {user.selfid}
+              </p>
+            </div>
+
+            {/* ชื่อ */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                ชื่อ-นามสกุล:
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editableName}
+                  onChange={(e) => setEditableName(e.target.value)}
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              ) : (
+                <p className="text-lg font-semibold text-gray-800">
+                  {user.name}
+                </p>
+              )}
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Email:
+              </label>
+              {isEditing ? (
+                <input
+                  type="email"
+                  value={editableEmail}
+                  onChange={(e) => setEditableEmail(e.target.value)}
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              ) : (
+                <p className="text-gray-700">{user.email}</p>
+              )}
+            </div>
+
+            {/* รหัสผ่าน */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                รหัสผ่าน:
+              </label>
+              {isEditing ? (
+                <input
+                  type="password"
+                  value={editablePassword}
+                  onChange={(e) => setEditablePassword(e.target.value)}
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              ) : (
+                <p className="text-gray-500">••••••••</p>
+              )}
+            </div>
+
+            {/* ตำแหน่ง */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                ตำแหน่ง:
+              </label>
+              {isEditing ? (
+                <textarea
+                  value={editableDescription}
+                  onChange={(e) => setEditableDescription(e.target.value)}
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              ) : (
+                <p className="text-gray-700">
+                  {user.description || "ไม่มีข้อมูล"}
+                </p>
+              )}
+            </div>
+
+            {/* เบอร์โทรศัพท์ */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                เบอร์โทรศัพท์:
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editablePhone}
+                  onChange={(e) => setEditablePhone(e.target.value)}
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              ) : (
+                <p className="text-gray-700">{user.phone || "ไม่มีข้อมูล"}</p>
+              )}
+            </div>
+
+            {/* บทบาท */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                บทบาท:
+              </label>
+              <p className="text-gray-700">{user.role}</p>
+            </div>
+          </div>
+
+          {/* ปุ่ม */}
+          <div className="mt-6 flex justify-center gap-4">
+            {isEditing ? (
+              <>
+                <button
+                  className="px-6 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition duration-200 ease-in-out"
+                  onClick={handleSaveClick}
+                >
+                  บันทึก
+                </button>
+                <button
+                  className="px-6 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition duration-200 ease-in-out"
+                  onClick={handleCancelClick}
+                >
+                  ยกเลิก
+                </button>
               </>
             ) : (
-              <div>
-                {user.profileImage ? (
-                  <img
-                    src={`${user.profileImage}`}
-                    alt="Profile"
-                    className="w-24 h-24 rounded-full"
-                  />
-                ) : (
-                  <span>ไม่มีรูปโปรไฟล์</span>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              หมายเลขประจำตัว:
-            </label>
-            <span>{user.selfid}</span>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              ชื่อ-นามสกุล:
-            </label>
-            {isEditing ? (
-              <input
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                type="text"
-                value={editableName}
-                onChange={(e) => setEditableName(e.target.value)}
-              />
-            ) : (
-              <span>{user.name}</span>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Email:
-            </label>
-            {isEditing ? (
-              <input
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                type="email"
-                value={editableEmail}
-                onChange={(e) => setEditableEmail(e.target.value)}
-              />
-            ) : (
-              <span>{user.email}</span>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              รหัสผ่าน:
-            </label>
-            {isEditing ? (
-              <input
-                type="password"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                value={editablePassword}
-                onChange={(e) => setEditablePassword(e.target.value)}
-              />
-            ) : (
-              <span>••••••••</span>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              บทบาท:
-            </label>{" "}
-            {user.role}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              ตำแหน่ง:
-            </label>
-            {isEditing ? (
-              <textarea
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                value={editableDescription}
-                onChange={(e) => setEditableDescription(e.target.value)}
-              />
-            ) : (
-              <span>{user.description}</span>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              เบอร์โทรศัพท์:
-            </label>
-            {isEditing ? (
-              <input
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                value={editablePhone}
-                onChange={(e) => setEditablePhone(e.target.value)}
-              />
-            ) : (
-              <span>{user.phone}</span>
+              <button
+                className="px-6 py-2 bg-indigo-500 text-white rounded-lg shadow-md hover:bg-indigo-600 transition duration-200 ease-in-out"
+                onClick={handleEditClick}
+              >
+                แก้ไขโปรไฟล์
+              </button>
             )}
           </div>
         </div>
-      )}
-
-      {isEditing ? (
-        <>
-          <button
-            className="px-4 py-2 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 focus:outline-none"
-            onClick={handleSaveClick}
-          >
-            บันทึก
-          </button>
-          <button
-            className="ml-4 px-4 py-2 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 focus:outline-none"
-            onClick={handleCancelClick}
-          >
-            ยกเลิก
-          </button>
-        </>
-      ) : (
-        <button
-          className="px-4 py-2 bg-indigo-500 text-white rounded-md shadow-sm hover:bg-indigo-600 focus:outline-none"
-          onClick={handleEditClick}
-        >
-          Edit Profile
-        </button>
       )}
     </div>
   );

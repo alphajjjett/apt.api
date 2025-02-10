@@ -13,7 +13,7 @@ const fuelSchema = new mongoose.Schema({
   },
   fuelCapacity: { 
     type: Number, 
-    required: true 
+    required: true
   },
   fuelDate: { 
     type: Date, 

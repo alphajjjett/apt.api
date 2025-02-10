@@ -9,6 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import th from 'date-fns/locale/th';
+import theme from "../css/theme";
 
 registerLocale('th', th);
 
@@ -100,75 +101,77 @@ const CreateMission = () => {
     }
   };
 
-  return (
-    <div className="container min-h-screen w-full p-6 items-center justify-center">
-      <div className=" max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg font-noto">
-        <h2 className="text-2xl font-bold text-center mb-4">สร้างข้อมูลการจอง</h2>
+  return ( 
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 font-noto">
+      <div className="max-w-2xl w-full bg-white p-8 shadow-lg rounded-lg">
+        <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
+          สร้างข้อมูลการจอง 🚗
+        </h2>
+
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ชื่อภารกิจ */}
           <div>
-            <label className="block text-lg font-medium text-gray-700">ภารกิจ:</label>
+            <label className="block text-lg font-semibold text-gray-700">ภารกิจ:</label>
             <input
               type="text"
               value={missionName}
               onChange={(e) => setMissionName(e.target.value)}
               required
-              className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="mt-2 p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition"
             />
           </div>
+
+          {/* รายละเอียด */}
           <div>
-            <label className="block text-lg font-medium text-gray-700">รายละเอียดภารกิจ:</label>
+            <label className="block text-lg font-semibold text-gray-700">รายละเอียดภารกิจ:</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="mt-2 p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition"
             />
           </div>
-          {loggedUser && (
-            <div>
-              <label className="block text-lg font-medium text-gray-700">ชื่อผู้จอง:</label>
-              <input
-                type="text"
-                value={loggedUser.name}
-                readOnly
-                className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-          )}
+
+          {/* จำนวนคนที่ไป */}
           <div>
-            <label className="block text-lg font-medium text-gray-700">จำนวนคนที่ไป:</label>
+            <label className="block text-lg font-semibold text-gray-700">จำนวนคนที่ไป:</label>
             <input
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              min="0" 
+              min="1"
               required
-              className="mt-2 p-2  border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="mt-2 p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition"
             />
           </div>
 
-          <div>
-            <label className="block text-lg font-medium text-gray-700">วันที่จอง:</label>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              dateFormat="d MMMM yyyy"
-              locale="th"
-              placeholderText="เลือกวันที่"
-              className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-700">วันที่คืน:</label>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              dateFormat="d MMMM yyyy"
-              locale="th"
-              placeholderText="เลือกวันที่"
-              className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+          {/* วันที่ */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-lg font-semibold text-gray-700">วันที่จอง:</label>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                dateFormat="d MMMM yyyy"
+                locale="th"
+                placeholderText="เลือกวันที่"
+                className="mt-2 p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-lg font-semibold text-gray-700">วันที่คืน:</label>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                dateFormat="d MMMM yyyy"
+                locale="th"
+                placeholderText="เลือกวันที่"
+                className="mt-2 p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition"
+              />
+            </div>
           </div>
 
 
@@ -188,7 +191,7 @@ const CreateMission = () => {
 
           {/* Modal for vehicle selection */}
           <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
-            <Modal.Header closeButton>
+            <Modal.Header closeButton className="font-noto">
               <Modal.Title>เลือกรถ</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -196,7 +199,7 @@ const CreateMission = () => {
                 {vehicles.map((vehicle) => (
                   <div
                     key={vehicle._id}
-                    className="border border-gray-300 p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg"
+                    className="border border-gray-300 p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg font-noto"
                     onClick={() => handleVehicleSelect(vehicle._id)}
                   >
                     <div className="font-bold text-lg">{vehicle.name}</div>

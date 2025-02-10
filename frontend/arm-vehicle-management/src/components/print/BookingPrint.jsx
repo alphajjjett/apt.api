@@ -88,9 +88,66 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
   },
+  signatureContainer: {
+    marginTop: 50,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginRight: 40,
+  },
+  signatureText: {
+    fontSize: 12,
+    textAlign: "right",
+    marginRight: 10, // ขยับ "ลงชื่อ" ไปทางซ้าย
+    color: "#000",
+  },
+  signatureLine: {
+    width: 120, // ทำให้เส้นสั้นลง
+    borderBottomWidth: 1,
+    borderBottomColor: "#000",
+    marginBottom: 5,
+  },
+  signatureLabel: {
+    fontSize: 12,
+    textAlign: "right",
+    marginTop: 5,
+    marginRight: 70, // ขยับมาทางซ้ายเล็กน้อย
+    color: "#000",
+  },
+  datePlaceholder: {
+    fontSize: 12,
+    textAlign: "right",
+    marginTop: 10,
+    marginRight: 65, // ขยับให้ตรงกับตำแหน่งเส้น
+    color: "#000",
+  },
 });
 
-const Print = ({ vehicle, mission, user }) => {
+const getStatusText = (status) => {
+  switch (status) {
+    case "pending":
+      return "รออนุมัติ";
+    case "in-progress":
+      return "อยู่ระหว่างภารกิจ";
+    case "completed":
+      return "อนุมัติ";
+    case "cancel":
+      return "ไม่อนุมัติ";
+    case "waiting":
+      return "รอเบิกเชื้อเพลิง";
+    default:
+      return "ไม่ทราบสถานะ";
+  }
+};
+
+const Print = ({ vehicle, mission, user, fuelRecords }) => {
+  // ดึงข้อมูลเชื้อเพลิงที่ตรงกับภารกิจนี้
+  const fuelRecord = fuelRecords.find(
+    (fuel) =>
+      String(fuel.userId) === String(mission.assigned_user_id?._id) &&
+      String(fuel.vehicleId) === String(mission.assigned_vehicle_id?._id)
+  );
+
   return (
     <Document>
       <Page style={styles.page}>
@@ -109,42 +166,50 @@ const Print = ({ vehicle, mission, user }) => {
           <View style={[styles.table, styles.tableHeader]}>
             <View style={styles.tableRow}>
               <Text
-                style={[styles.tableCell, styles.boldText, { width: "25%" }]}
+                style={[styles.tableCell, styles.boldText, { width: "20%" }]}
               >
                 ภารกิจ
               </Text>
               <Text
-                style={[styles.tableCell, styles.boldText, { width: "25%" }]}
+                style={[styles.tableCell, styles.boldText, { width: "20%" }]}
               >
                 รายละเอียดภารกิจ
               </Text>
               <Text
-                style={[styles.tableCell, styles.boldText, { width: "25%" }]}
+                style={[styles.tableCell, styles.boldText, { width: "20%" }]}
               >
                 รถที่จอง
               </Text>
               <Text
-                style={[styles.tableCell, styles.boldText, { width: "25%" }]}
+                style={[styles.tableCell, styles.boldText, { width: "20%" }]}
               >
                 ประเภทเชื้อเพลิง
+              </Text>
+              <Text
+                style={[styles.tableCell, styles.boldText, { width: "20%" }]}
+              >
+                เชื้อเพลิงที่ใช้
               </Text>
             </View>
           </View>
 
           <View style={styles.table}>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { width: "25%" }]}>
+              <Text style={[styles.tableCell, { width: "20%" }]}>
                 {mission.mission_name}
               </Text>
-              <Text style={[styles.tableCell, { width: "25%" }]}>
+              <Text style={[styles.tableCell, { width: "20%" }]}>
                 {vehicle.description}
               </Text>
-              <Text style={[styles.tableCell, { width: "25%" }]}>
+              <Text style={[styles.tableCell, { width: "20%" }]}>
                 {vehicle.assigned_vehicle_id?.name} (
                 {vehicle.assigned_vehicle_id?.license_plate})
               </Text>
-              <Text style={[styles.tableCell, { width: "25%" }]}>
+              <Text style={[styles.tableCell, { width: "20%" }]}>
                 {vehicle.assigned_vehicle_id?.fuel_type}
+              </Text>
+              <Text style={[styles.tableCell, { width: "20%" }]}>
+                {fuelRecord ? `${fuelRecord.fuelCapacity} ลิตร` : "N/A"}
               </Text>
             </View>
           </View>
@@ -178,12 +243,12 @@ const Print = ({ vehicle, mission, user }) => {
                 {new Date(mission.end_date).toLocaleDateString()}
               </Text>
               <Text style={[styles.tableCell, { width: "50%" }]}>
-                {mission.status}
+                {getStatusText(mission.status)}
               </Text>
             </View>
           </View>
 
-          <Text style={styles.heading}>ข้อมูลผู้เบิก</Text>
+          <Text style={styles.heading}>ข้อมูลผู้จอง</Text>
           <View style={[styles.table, styles.tableHeader]}>
             <View style={styles.tableRow}>
               <Text
@@ -219,6 +284,14 @@ const Print = ({ vehicle, mission, user }) => {
           </View>
 
           <View style={styles.separator} />
+
+          {/* ลายเซ็น */}
+          <View style={styles.signatureContainer}>
+            <Text style={styles.signatureText}>ลงชื่อ</Text>
+            <View style={styles.signatureLine} />
+          </View>
+          <Text style={styles.signatureLabel}>ผอ.กรว.5 สพ.ทอ.</Text>
+          <Text style={styles.datePlaceholder}>____/_____/_____</Text>
         </View>
       </Page>
     </Document>

@@ -91,16 +91,12 @@ const AdminProfilePage = () => {
     formData.append("id", id);
 
     try {
-      const response = await axios.post(
-        `${backend}/api/upload`, 
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.post(`${backend}/api/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       const imageUrl = response.data.path;
       await handleSaveProfileImage(imageUrl);
@@ -154,14 +150,11 @@ const AdminProfilePage = () => {
 
   const fetchAdminData = async () => {
     try {
-      const response = await axios.get(
-        `${backend}/api/admins/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.get(`${backend}/api/admins/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       setAdmin(response.data);
     } catch (error) {
       console.error("Error fetching admin data", error);
@@ -224,150 +217,158 @@ const AdminProfilePage = () => {
     return () => {
       isMounted = false;
     };
-  }, [id]); 
+  }, [id]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg font-noto">
-      <h2 className="text-3xl font-bold mb-6 text-gray-900 text-center">
-        โปรไฟล์ แอดมิน
+      <h2 className="text-3xl font-bold text-center text-gray-900 mb-6">
+        โปรไฟล์แอดมิน
       </h2>
+
       {admin && (
-        <div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">
-              รูปโปรไฟล์:
-            </label>
+        <div className="space-y-6">
+          {/* รูปโปรไฟล์ */}
+          <div className="flex flex-col items-center">
             {isEditing ? (
               <>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="mt-1"
+                  className="block w-full text-sm text-gray-600 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
-                {profileImage && (
-                  <button
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                    onClick={handleImageUpload}
-                  >
-                    อัพโหลด
-                  </button>
-                )}
               </>
             ) : (
-              <div>
+              <div className="relative">
                 {admin.profileImage ? (
                   <img
-                    src={`${admin.profileImage}`}
+                    src={admin.profileImage}
                     alt="Profile"
-                    className="h-32 w-32 rounded-full mt-2"
+                    className="w-32 h-32 object-cover rounded-full border-4 border-gray-300 shadow-md"
                   />
                 ) : (
-                  <span>ไม่มีรูปโปรไฟล์</span>
+                  <div className="w-32 h-32 flex items-center justify-center bg-gray-200 text-gray-500 rounded-full">
+                    ไม่มีรูปโปรไฟล์
+                  </div>
                 )}
               </div>
             )}
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">
-              ชื่อ-นามสกุล:
-            </label>
+
+          {/* ข้อมูลแอดมิน */}
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                ชื่อ-นามสกุล:
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editableName}
+                  onChange={(e) => setEditableName(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              ) : (
+                <p className="text-gray-900">{admin.name}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Email:
+              </label>
+              {isEditing ? (
+                <input
+                  type="email"
+                  value={editableEmail}
+                  onChange={(e) => setEditableEmail(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              ) : (
+                <p className="text-gray-900">{admin.email}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                รหัสผ่าน:
+              </label>
+              {isEditing ? (
+                <input
+                  type="password"
+                  value={editablePassword}
+                  onChange={(e) => setEditablePassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              ) : (
+                <p className="text-gray-900">••••••••</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                บทบาท:
+              </label>
+              <p className="text-gray-900">{admin.role}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                ตำแหน่ง:
+              </label>
+              {isEditing ? (
+                <textarea
+                  value={editableDescription}
+                  onChange={(e) => setEditableDescription(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              ) : (
+                <p className="text-gray-900">{admin.description}</p>
+              )}
+            </div>
+          </div>
+
+          {/* ปุ่มแก้ไขและบันทึก */}
+          <div className="flex justify-center gap-4">
             {isEditing ? (
-              <input
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                type="text"
-                value={editableName}
-                onChange={(e) => setEditableName(e.target.value)}
-              />
+              <>
+                <button
+                  className="px-6 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition"
+                  onClick={handleSaveClick}
+                >
+                  บันทึก
+                </button>
+                <button
+                  className="px-6 py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition"
+                  onClick={handleCancelClick}
+                >
+                  ยกเลิก
+                </button>
+              </>
             ) : (
-              <span>{admin.name}</span>
+              <button
+                className="px-6 py-2 bg-indigo-500 text-white rounded-md shadow hover:bg-indigo-600 transition"
+                onClick={handleEditClick}
+              >
+                แก้ไขข้อมูล
+              </button>
             )}
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">
-              Email:
-            </label>
-            {isEditing ? (
-              <input
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                type="email"
-                value={editableEmail}
-                onChange={(e) => setEditableEmail(e.target.value)}
-              />
-            ) : (
-              <span>{admin.email}</span>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">รหัสผ่าน:</label>
-            {isEditing ? (
-              <input
-                type="password"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                value={editablePassword}
-                onChange={(e) => setEditablePassword(e.target.value)}
-              />
-            ) : (
-              <span>••••••••</span> 
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">
-              บทบาท:
-            </label>
-            <span>{admin.role}</span>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">
-              ตำแหน่ง:
-            </label>
-            {isEditing ? (
-              <textarea
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                value={editableDescription}
-                onChange={(e) => setEditableDescription(e.target.value)}
-              />
-            ) : (
-              <span>{admin.description}</span>
-            )}
+
+          {/* ปุ่มกลับไปยังหน้าผู้ใช้ */}
+          <div className="text-center mt-6">
+            <button
+              className="px-6 py-2 bg-gray-500 text-white rounded-md shadow hover:bg-gray-600 transition"
+              onClick={() => navigate("/users")}
+            >
+              กลับไปยังหน้าข้อมูลผู้ใช้
+            </button>
           </div>
         </div>
       )}
-
-      {isEditing ? (
-        <>
-          <button
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-            onClick={handleSaveClick}
-          >
-            บันทึก
-          </button>
-          <button
-            className="ml-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-            onClick={handleCancelClick}
-          >
-            ยกเลิก
-          </button>
-        </>
-      ) : (
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          onClick={handleEditClick}
-        >
-          แก้ไขข้อมูล
-        </button>
-      )}
-
-      {/* ปุ่มกลับไปยังหน้าผู้ใช้ */}
-      <button
-        className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 ml-3"
-        onClick={() => navigate("/users")} // เปลี่ยนเส้นทาง
-      >
-        กลับไปยังหน้าข้อมูลผู้ใช้
-      </button>
     </div>
   );
 };

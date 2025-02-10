@@ -68,12 +68,12 @@ const VehicleList = () => {
   const handleDelete = async (vehicleId) => {
     const token = localStorage.getItem("token");
     MySwal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      title: "คุณแน่ใจหรือไม่?",
+      text: "ไม่สามารถกู้คืนข้อมูลได้!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
+      confirmButtonText: "ลบข้อมูล!",
+      cancelButtonText: "ยกเลิก!",
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -85,7 +85,7 @@ const VehicleList = () => {
             }
           );
           setVehicles(vehicles.filter((vehicle) => vehicle._id !== vehicleId));
-          MySwal.fire("Deleted!", "The vehicle has been deleted.", "success");
+          MySwal.fire("ลบสำเร็จ!", "ข้อมูลรถถูกลบแล้ว.", "success");
         } catch (error) {
           MySwal.fire(
             "Error",
@@ -148,7 +148,7 @@ const VehicleList = () => {
             : vehicle
         )
       );
-      MySwal.fire("Updated!", "The vehicle has been updated.", "success");
+      MySwal.fire("อัพเดทสำเร็จ!", "แก้ไขข้อมูลสำเร็จ", "success");
       setEditDialogOpen(false);
     } catch (error) {
       MySwal.fire("Error", "There was an error updating the vehicle.", "error");
@@ -174,8 +174,8 @@ const VehicleList = () => {
 
       // แสดงการแจ้งเตือนสำเร็จ
       Swal.fire({
-        title: "Success",
-        text: `Vehicle status updated to ${newStatus} successfully.`,
+        title: "สำเร็จ",
+        text: `แก้ไขสถานะเป็น ${newStatus} เรียบร้อย.`,
         icon: "success",
         confirmButtonText: "OK",
       });

@@ -462,6 +462,12 @@ const MissionList = () => {
     return fuelRecord ? `${fuelRecord.fuelCapacity} ลิตร` : "N/A";
   };
 
+  const today = new Date();
+  const todayBookingCount = missions.filter((mission) => {
+    const missionDate = new Date(mission.start_date);
+    return missionDate.toDateString() === today.toDateString();
+  }).length;
+
   // date เวลาไทย
   const dateOptions = {
     day: "numeric",
@@ -495,6 +501,10 @@ const MissionList = () => {
           <div className="bg-[rgba(75,192,192,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
             <h3 className="text-xl font-semibold">ยอดการจองรถ</h3>
             <p className="text-gray-600 text-2xl">{missions.length} คัน</p>
+          </div>
+          <div className="bg-[rgba(107,236,105,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
+            <h3 className="text-xl font-semibold">วันนี้มีรถจองแล้ว</h3>
+            <p className="text-gray-600 text-2xl">{todayBookingCount} คัน</p>
           </div>
         </div>
         {isAdmin && (

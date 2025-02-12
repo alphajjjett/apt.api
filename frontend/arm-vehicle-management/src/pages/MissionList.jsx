@@ -50,6 +50,10 @@ const MissionList = () => {
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
+
   const navigate = useNavigate();
   const backend = process.env.REACT_APP_API_URL;
 
@@ -369,8 +373,23 @@ const MissionList = () => {
   };
 
   const filteredMissions = missions.filter((mission) => {
+    // ตรวจสอบ search query (หมายเลขประจำตัว)
     const selfid = mission.assigned_user_id?.selfid || "";
-    return selfid.includes(searchQuery);
+    const matchesSearch = selfid.includes(searchQuery);
+
+    // ตรวจสอบช่วงวันที่ (ใช้ mission.start_date เป็นตัวอย่าง)
+    let matchesDate = true;
+    if (filterStartDate) {
+      matchesDate =
+        matchesDate &&
+        new Date(mission.start_date) >= new Date(filterStartDate);
+    }
+    if (filterEndDate) {
+      matchesDate =
+        matchesDate && new Date(mission.start_date) <= new Date(filterEndDate);
+    }
+
+    return matchesSearch && matchesDate;
   });
 
   const handleGoToFuel = () => {
@@ -464,7 +483,7 @@ const MissionList = () => {
 
   const today = new Date();
   const todayBookingCount = missions.filter((mission) => {
-    const missionDate = new Date(mission.start_date);
+    const missionDate = new Date(mission.updatedAt); //อัพเดทจากวันเวลาที่จองล่าสุด
     return missionDate.toDateString() === today.toDateString();
   }).length;
 
@@ -503,7 +522,7 @@ const MissionList = () => {
             <p className="text-gray-600 text-2xl">{missions.length} คัน</p>
           </div>
           <div className="bg-[rgba(107,236,105,0.2)] p-6 rounded-lg shadow-md w-full sm:w-1/2 lg:w-1/3 max-w-md">
-            <h3 className="text-xl font-semibold">วันนี้มีรถจองแล้ว</h3>
+            <h3 className="text-xl font-semibold">ยอดการจองวันนี้</h3>
             <p className="text-gray-600 text-2xl">{todayBookingCount} คัน</p>
           </div>
         </div>
@@ -533,15 +552,32 @@ const MissionList = () => {
           </div>
         )}
 
-        {/* Search box */}
-        <TextField
-          label="ค้นหาด้วย หมายเลขประจำตัว"
-          variant="outlined"
-          fullWidth
-          value={searchQuery}
-          onChange={handleSearch}
-          style={{ marginBottom: "20px" }}
-        />
+        {/* Date Range Picker */}
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "20px" }}>
+          {/* Search box */}
+          <TextField
+            label="ค้นหาด้วย หมายเลขประจำตัว"
+            variant="outlined"
+            fullWidth
+            value={searchQuery}
+            onChange={handleSearch}
+            style={{ marginBottom: "20px" }}
+          />
+          <TextField
+            label="วันที่เริ่มต้น"
+            type="date"
+            value={filterStartDate}
+            onChange={(e) => setFilterStartDate(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            label="วันที่สิ้นสุด"
+            type="date"
+            value={filterEndDate}
+            onChange={(e) => setFilterEndDate(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+        </div>
 
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="mission table">
@@ -551,7 +587,7 @@ const MissionList = () => {
                 <TableCell>ภารกิจ</TableCell>
                 {isAdmin && <TableCell align="left">หมายเลขประจำตัว</TableCell>}
                 <TableCell align="left">ชื่อผู้จอง</TableCell>
-                <TableCell align="left">จำนวนคนที่ไป</TableCell>
+                <TableCell align="left">จำนวนคน</TableCell>
                 <TableCell align="left">วันที่จอง</TableCell>
                 <TableCell align="left">วันที่คืน</TableCell>
                 <TableCell align="left">รถที่จอง</TableCell>
@@ -871,7 +907,7 @@ const MissionList = () => {
                 <PDFDownloadLink
                   document={
                     <BookingPrint
-                      mission={selectedMission} 
+                      mission={selectedMission}
                       vehicle={selectedMission}
                       user={selectedMission}
                       fuelRecords={fuelRecords}

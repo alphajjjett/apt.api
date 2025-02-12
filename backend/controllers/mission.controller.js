@@ -133,10 +133,12 @@ const updateMissionStatus = async (req, res) => {
     // หากสถานะเป็น in-progress ให้ส่ง push message ไปยัง LINE ID ที่กำหนดไว้
     if (status === 'in-progress') {
       const vehicle = await Vehicle.findById(mission.assigned_vehicle_id);
+      const user = await User.findById(mission.assigned_user_id);
 
       const lineMessage = `
 ภารกิจ: ${mission.mission_name}
 รายละเอียด: ${mission.description}
+ผู้จอง: ${user ? user.name : 'ไม่ระบุ'}
 จำนวน: ${mission.quantity} คน
 รถที่ใช้: ${vehicle ? vehicle.name : 'ไม่ระบุ'}
 ทะเบียน: ${vehicle ? vehicle.license_plate : 'ไม่ระบุ'}

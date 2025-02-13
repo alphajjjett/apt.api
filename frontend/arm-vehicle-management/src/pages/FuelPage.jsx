@@ -189,7 +189,7 @@ const FuelPage = () => {
   const handleEditFuelCapacity = async (fuelRecordId, currentFuelCapacity) => {
     try {
       const { value: newFuelCapacity } = await Swal.fire({
-        title: "แก้ไขปริมาณเชื้อเพลิงมัน",
+        title: "แก้ไขปริมาณเชื้อเพลิง",
         input: "number", // ให้ผู้ใช้ป้อนตัวเลข
         inputLabel: "ปริมาณเชื้อเพลิง (ลิตร)",
         inputValue: currentFuelCapacity, // ค่าเริ่มต้นเป็นค่าเดิมของ fuelCapacity

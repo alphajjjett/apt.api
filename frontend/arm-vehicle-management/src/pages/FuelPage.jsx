@@ -189,14 +189,14 @@ const FuelPage = () => {
   const handleEditFuelCapacity = async (fuelRecordId, currentFuelCapacity) => {
     try {
       const { value: newFuelCapacity } = await Swal.fire({
-        title: "แก้ไขปริมาณน้ำมัน",
+        title: "แก้ไขปริมาณเชื้อเพลิงมัน",
         input: "number", // ให้ผู้ใช้ป้อนตัวเลข
-        inputLabel: "ปริมาณน้ำมันใหม่ (ลิตร)",
+        inputLabel: "ปริมาณเชื้อเพลิง (ลิตร)",
         inputValue: currentFuelCapacity, // ค่าเริ่มต้นเป็นค่าเดิมของ fuelCapacity
         showCancelButton: true,
         inputValidator: (value) => {
           if (!value || value <= 0) {
-            return "กรุณากรอกปริมาณน้ำมันที่มากกว่า 0";
+            return "กรุณากรอกปริมาณเชื้อเพลิงที่มากกว่า 0";
           }
         },
       });
@@ -216,14 +216,14 @@ const FuelPage = () => {
 
         Swal.fire({
           title: "Success!",
-          text: "แก้ไขปริมาณน้ำมันสำเร็จ",
+          text: "แก้ไขปริมาณเชื้อเพลิงสำเร็จ",
           icon: "success",
         });
       }
     } catch (error) {
       Swal.fire({
         title: "Error!",
-        text: "ไม่สามารถแก้ไขปริมาณน้ำมันได้",
+        text: "ไม่สามารถแก้ไขปริมาณเชื้อเพลิงได้",
         icon: "error",
       });
     }

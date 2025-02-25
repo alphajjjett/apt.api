@@ -94,9 +94,8 @@ const CreateMission = () => {
     } catch (error) {
       MySwal.fire({
         icon: 'error',
-        title: 'Error!',
-        text: 'There was an issue creating your mission.',
-        confirmButtonText: 'Try Again'
+        title: 'รถถูกจองแล้ว!',
+        text: 'กรุณาเปลี่ยนรถในการใช้งาน'
       });
     }
   };
